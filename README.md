@@ -25,7 +25,7 @@ Coming soon
 2.  Clone this repository:
 
     ``bash
-    git clone [https://de.wikipedia.org/wiki/Repositorium](https://de.wikipedia.org/wiki/Repositorium)
+    git clone https://github.com/rafeefdev/BookVerse.git
     ```
 
 3.  Go to the project directory:
@@ -51,5 +51,3 @@ Coming soon
 * `http`: To make an HTTP request to the Google Books API.
 * `provider`: For application state management.
 * (Add other dependencies used)
-
-## Struktur Direktori
