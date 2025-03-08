@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_book/app_theme.dart';
 import 'package:google_book/home.dart';
 import 'package:google_book/playbook_services.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'BookVerse', home: Home());
+    return MaterialApp(title: 'BookVerse', theme: themeData, home: Home());
   }
 }

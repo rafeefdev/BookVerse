@@ -16,14 +16,14 @@ class BookProvider with ChangeNotifier {
   static const String _apiKey = "AIzaSyBG-P8d1130vH1HBR-Gq_rz9eOOeUQ_4OA";
   static const String _baseUrl = "https://www.googleapis.com/books/v1/volumes";
 
-  Future<void> fetchBooks(String query) async {
+  Future<void> fetchBooks(String query, int maxResult) async {
     //set ui to loading state to fetch data
     _isLoading = true;
 
     try {
       //parse String url to Uri
       Uri url = Uri.parse(
-        "$_baseUrl?q=subject:$query&printType=books&maxResults=20&key=$_apiKey",
+        "$_baseUrl?q=subject:$query&printType=books&maxResults=$maxResult&key=$_apiKey",
       );
       //save response JSON file to a variable
       final response = await http.get(url);
