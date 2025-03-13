@@ -1,18 +1,25 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http/http.dart' as http;
-import 'book_model.dart';
+import '../model/book_model.dart';
 
-class BookProvider with ChangeNotifier {
-  List<Book> _books = [];
+part 'playbook_services_provider.g.dart';
+
+@riverpod
+class BookNotifier extends _$BookNotifier {
+  @override
+  List<Book> build() => [];
+
   bool _isLoading = false;
   int statusCode = 0;
 
   //declare getter
-  List<Book> get books => _books;
+  List<Book> get books => state;
   bool get isLoading => _isLoading;
 
+  //store apikey and base url
   static const String _apiKey = "AIzaSyBG-P8d1130vH1HBR-Gq_rz9eOOeUQ_4OA";
   static const String _baseUrl = "https://www.googleapis.com/books/v1/volumes";
 
@@ -35,22 +42,23 @@ class BookProvider with ChangeNotifier {
         //decode json response and save data to a variabel
         final data = json.decode(response.body);
         if (data['items'] != null) {
-          _books =
+          state =
               (data['items'] as List)
                   .map((item) => Book.fromJson(item))
                   .toList();
+          List<Book> newState = [...state];
+          state = newState;
         } else {
-          _books = [];
+          state = [];
         }
       } else {
         throw Exception("Gagal mengambil data buku");
       }
     } catch (error) {
-      _books = [];
+      state = [];
       log("Error: $error");
     }
 
     _isLoading = false;
-    notifyListeners();
   }
 }

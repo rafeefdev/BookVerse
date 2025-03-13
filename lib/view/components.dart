@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_book/book_model.dart';
+import 'package:google_book/model/book_model.dart';
 
 Card bookGridTile(Book book, TextTheme textTheme) {
   return Card(
@@ -14,14 +14,22 @@ Card bookGridTile(Book book, TextTheme textTheme) {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Flexible(
-            child: Center(
-              child:
-                  book.thumbnail.isNotEmpty
-                      ? Image.network(book.thumbnail)
-                      : Icon(Icons.broken_image),
-            ),
-          ),
+          book.thumbnail.isNotEmpty
+              ? Flexible(
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: NetworkImage(book.thumbnail),
+                    ),
+                  ),
+                ),
+              )
+              : Expanded(
+                child: Center(
+                  child: Icon(Icons.no_photography_outlined, size: 35),
+                ),
+              ),
           Text(
             book.title.length < 30
                 ? book.title
