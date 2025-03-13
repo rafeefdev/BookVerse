@@ -19,7 +19,11 @@ class DetailPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Detail')),
+      appBar: AppBar(
+        title: Text('Detail'),
+        actionsPadding: EdgeInsets.only(right: 16),
+        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.bookmark))],
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
@@ -43,6 +47,24 @@ class DetailPage extends StatelessWidget {
                       ),
             ),
             SizedBox(height: 12),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+            //   children: [
+            //     Column(
+            //       children: [
+            //         IconButton(onPressed: () {}, icon: Icon(Icons.save)),
+            //         Text('save'),
+            //       ],
+            //     ),
+            //     Column(
+            //       children: [
+            //         IconButton(onPressed: () {}, icon: Icon(Icons.save)),
+            //         Text('save'),
+            //       ],
+            //     ),
+            //   ],
+            // ),
+            // SizedBox(height: 12),
             ListTile(
               title: Text(bookAuthors()),
               subtitle: Text('Author'),
