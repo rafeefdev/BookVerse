@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_book/app_theme.dart';
-import 'package:google_book/home.dart';
-import 'package:google_book/playbook_services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_book/view/app_theme.dart';
+import 'package:google_book/view/pages/chatbot_page.dart';
+import 'package:google_book/view/pages/home.dart';
+import 'package:google_book/view/pages/savedbook_page.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => BookProvider())],
-      child: const MyApp(),
-    ),
-  );
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -18,6 +14,37 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'BookVerse', theme: themeData, home: Home());
+    return MaterialApp(
+      title: 'BookVerse',
+      debugShowCheckedModeBanner: false,
+      theme: themeData,
+      home: MainPage(),
+    );
+  }
+}
+
+List pages = [Home(), ChatbotPage(), SavedbookPage()];
+
+final bottomNavIndexProvider = StateProvider<int>((ref) => 0);
+
+class MainPage extends ConsumerWidget {
+  const MainPage({super.key});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    int index = ref.watch(bottomNavIndexProvider);
+    return Scaffold(
+      body: pages[index],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: index,
+        onTap: (value) {
+          ref.read(bottomNavIndexProvider.notifier).state = value;
+        },
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat AI'),
+          BottomNavigationBarItem(icon: Icon(Icons.save), label: 'Saved Books'),
+        ],
+      ),
+    );
   }
 }
