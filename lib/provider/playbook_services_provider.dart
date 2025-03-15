@@ -1,8 +1,9 @@
-import 'dart:convert';
 import 'dart:developer';
+
+import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_book/source/playbook_services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:http/http.dart' as http;
 import '../model/book_model.dart';
 
 part 'playbook_services_provider.g.dart';
@@ -10,55 +11,61 @@ part 'playbook_services_provider.g.dart';
 @riverpod
 class BookNotifier extends _$BookNotifier {
   @override
-  List<Book> build() => [];
-
-  bool _isLoading = false;
-  int statusCode = 0;
-
-  //declare getter
-  List<Book> get books => state;
-  bool get isLoading => _isLoading;
-
-  //store apikey and base url
-  static const String _apiKey = "AIzaSyBG-P8d1130vH1HBR-Gq_rz9eOOeUQ_4OA";
-  static const String _baseUrl = "https://www.googleapis.com/books/v1/volumes";
-
+  LiveBookState build() => const LiveBookState('', '', []);
   Future<void> fetchBooks(String query, int maxResult) async {
-    //set ui to loading state to fetch data
-    _isLoading = true;
-
-    try {
-      //parse String url to Uri
-      Uri url = Uri.parse(
-        "$_baseUrl?q=subject:$query&printType=books&maxResults=$maxResult&key=$_apiKey",
+    //loading state
+    state = LiveBookState('loading', '', []);
+    await Future.delayed(Duration(seconds: 1));
+    //run getBookData method with await
+    final bookList = await PlaybookServices.getBookData(query, maxResult);
+    if (bookList == null) {
+      state = LiveBookState(
+        'failed',
+        'Something went wrong : ${PlaybookServices.statusCode}',
+        const [],
       );
-      //save response JSON file to a variable
-      final response = await http.get(url);
+    } else {
+      state = LiveBookState('succes', '', bookList);
+    }
+  }
 
-      //if status code show that request is succesfull
-      if (response.statusCode == 200) {
-        statusCode = response.statusCode;
-        log('status code : $statusCode');
-        //decode json response and save data to a variabel
-        final data = json.decode(response.body);
-        if (data['items'] != null) {
-          state =
-              (data['items'] as List)
-                  .map((item) => Book.fromJson(item))
-                  .toList();
-          List<Book> newState = [...state];
-          state = newState;
-        } else {
-          state = [];
-        }
-      } else {
-        throw Exception("Gagal mengambil data buku");
-      }
-    } catch (error) {
-      state = [];
-      log("Error: $error");
+  void changeIsFavorite(Book newBook) {
+    // Cari indeks buku
+    int index = state.data.indexWhere((item) => item.id == newBook.id);
+
+    // Jika buku tidak ditemukan
+    if (index == -1) {
+      log('selected book not found');
+      return;
     }
 
-    _isLoading = false;
+    //cek kesamaan id
+    String newBookId = newBook.id;
+    String oldBookId = state.data[index].id;
+    log('isIdentic ? : ${newBookId == oldBookId}');
+
+    // Buat salinan list baru dengan buku yang diperbarui
+    final updatedBooks = List<Book>.from(state.data);
+    updatedBooks[index] = newBook;
+
+    // Perbarui state dengan list baru
+    state = LiveBookState('success', '', [...updatedBooks]);
   }
+
+  bool isFavoriteBook(Book book) {
+    int index = state.data.indexWhere((element) => element.id == book.id);
+    Book selectedBook = state.data[index];
+    return selectedBook.isFavorite;
+  }
+}
+
+class LiveBookState extends Equatable {
+  final String status;
+  final String message;
+  final List<Book> data;
+
+  const LiveBookState(this.status, this.message, this.data);
+
+  @override
+  List<Object?> get props => [status, message, data];
 }
