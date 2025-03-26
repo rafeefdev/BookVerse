@@ -26,7 +26,7 @@ Coming soon
 
     ``bash
     git clone https://github.com/rafeefdev/BookVerse.git
-    ```
+    ``
 
 3.  Go to the project directory:
 
@@ -49,5 +49,5 @@ Coming soon
 ## Dependencies
 
 * `http`: To make an HTTP request to the Google Books API.
-* `provider`: For application state management.
+* `riverpod`: For application state management.
 * (Add other dependencies used)
