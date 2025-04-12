@@ -72,6 +72,14 @@ class BookNotifier extends _$BookNotifier {
   }
 }
 
+String bookAuthors(Book selectedBook) {
+      String result = '';
+      selectedBook.authors.length == 1 && selectedBook.authors.isNotEmpty
+          ? result = selectedBook.authors[0]
+          : result = '${selectedBook.authors.join(', ')}, dkk';
+      return result;
+    }
+
 class LiveBookState extends Equatable {
   final String status;
   final String message;

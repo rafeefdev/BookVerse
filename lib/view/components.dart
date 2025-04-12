@@ -26,8 +26,12 @@ Card bookGridTile(Book book, TextTheme textTheme) {
                 ),
               )
               : Expanded(
-                child: Center(
-                  child: Icon(Icons.no_photography_outlined, size: 35),
+                flex: 3,
+                child: Container(
+                  color: Colors.grey[300],
+                  child: Center(
+                    child: Icon(Icons.book, size: 48, color: Colors.grey[600]),
+                  ),
                 ),
               ),
           Text(
