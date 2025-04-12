@@ -76,7 +76,8 @@ class _HomeState extends ConsumerState<Home> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DetailPage(selectedBook: book),
+                          builder:
+                              (context) => DetailPage(selectedBookId: book.id),
                         ),
                       );
                     },

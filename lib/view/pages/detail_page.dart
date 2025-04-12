@@ -3,14 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_book/model/book_model.dart';
 import 'package:google_book/provider/playbook_services_provider.dart';
 
-class DetailPage extends StatelessWidget {
-  final Book selectedBook;
+class DetailPage extends ConsumerWidget {
+  final String selectedBookId;
 
-  const DetailPage({required this.selectedBook, super.key});
+  const DetailPage({required this.selectedBookId, super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     var textTheme = Theme.of(context).textTheme;
+    //get selected book data
+    List<Book> books = ref.watch(bookNotifierProvider).data;
+    int index = books.indexWhere((book) => book.id == selectedBookId);
+    Book selectedBook = ref.watch(bookNotifierProvider).data[index];
 
     String bookAuthors() {
       String result = '';
@@ -27,26 +31,16 @@ class DetailPage extends StatelessWidget {
         actions: [
           Consumer(
             builder: (context, wiRef, child) {
-              // Ambil data terbaru dari provider
-              final books = wiRef.watch(bookNotifierProvider).data;
-              // Cari buku yang sama dengan selectedBook dari state terbaru
-              final updatedBook = books.firstWhere(
-                (book) => book.id == selectedBook.id,
-                orElse: () => selectedBook,
-              );
-
               return IconButton(
                 onPressed: () {
                   wiRef
                       .read(bookNotifierProvider.notifier)
                       .changeIsFavorite(
-                        selectedBook.copyWith(
-                          isFavorite: !updatedBook.isFavorite,
-                        ),
+                        selectedBookId
                       );
                 },
                 icon: Icon(
-                  updatedBook.isFavorite
+                  selectedBook.isFavorite
                       ? Icons.bookmark
                       : Icons.bookmark_border_rounded,
                 ),

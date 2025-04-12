@@ -29,31 +29,44 @@ class BookNotifier extends _$BookNotifier {
     }
   }
 
-  void changeIsFavorite(Book newBook) {
+  void changeIsFavorite(String id) {
     // Cari indeks buku
-    int index = state.data.indexWhere((item) => item.id == newBook.id);
-
+    int index = state.data.indexWhere((item) => item.id == id);
     // Jika buku tidak ditemukan
     if (index == -1) {
       log('selected book not found');
       return;
     }
-
-    //cek kesamaan id
-    String newBookId = newBook.id;
-    String oldBookId = state.data[index].id;
-    log('isIdentic ? : ${newBookId == oldBookId}');
-
     // Buat salinan list baru dengan buku yang diperbarui
-    final updatedBooks = List<Book>.from(state.data);
-    updatedBooks[index] = newBook;
+    final newBookList = List<Book>.from(state.data);
+    //create new book object
+    Book newBook = state.data[index];
+    newBookList[index] = newBook;
+    log('newBook state : ${newBook.isFavorite}');
+    if (newBook.isFavorite == false) {
+      //toggle favorite
+      newBook.isFavorite = true;
+      log(
+        'newBook state changed from : ${newBook.isFavorite} to ${newBook.isFavorite}',
+      );
+      //replace with new object
+      newBookList[index] = newBook;
+    } else if (newBook.isFavorite == true) {
+      //toggle favorite
+      newBook.isFavorite = false;
+      log(
+        'newBook state changed from : ${newBook.isFavorite} to ${newBook.isFavorite}',
+      );
+      //replace with new object
+      newBookList[index] = newBook;
+    }
 
     // Perbarui state dengan list baru
-    state = LiveBookState('success', '', [...updatedBooks]);
+    state = LiveBookState('success', '', [...newBookList]);
   }
 
-  bool isFavoriteBook(Book book) {
-    int index = state.data.indexWhere((element) => element.id == book.id);
+  bool isFavoriteBook(String id) {
+    int index = state.data.indexWhere((element) => element.id == id);
     Book selectedBook = state.data[index];
     return selectedBook.isFavorite;
   }
