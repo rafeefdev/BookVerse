@@ -9,12 +9,20 @@ class BookMarkNotifier extends _$BookMarkNotifier {
   @override
   List<Book> build() => [];
 
-  void toggleFavorite(Book newBook) {
-    //toggle isFavorite property
-    newBook.isFavorite = !newBook.isFavorite;
-    //filter oldstate
-    List<Book> newState =
-        state.where((element) => element.id != newBook.id).toList();
-    state = newState;
+  void toggleFavorite(String id) {
+    //get book index
+    int index = state.indexWhere((element)=> element.id == id);
+    //new book object
+    Book newBook = state[index];
+    //new book list
+    List<Book> newBookList = state;
+    if(newBook.isFavorite == true) {
+      newBook.isFavorite = false;
+      newBookList[index] = newBook;
+    } else {
+      newBook.isFavorite = true;
+      newBookList[index] = newBook;
+    }
+    state = newBookList;
   }
 }
