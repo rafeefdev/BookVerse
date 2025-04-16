@@ -16,14 +16,6 @@ class DetailPage extends ConsumerWidget {
     int index = books.indexWhere((book) => book.id == selectedBookId);
     Book selectedBook = ref.watch(bookNotifierProvider).data[index];
 
-    String bookAuthors() {
-      String result = '';
-      selectedBook.authors.length == 1 && selectedBook.authors.isNotEmpty
-          ? result = selectedBook.authors[0]
-          : result = '${selectedBook.authors.join(', ')}, dkk';
-      return result;
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Detail'),
@@ -72,24 +64,6 @@ class DetailPage extends ConsumerWidget {
                       ),
             ),
             SizedBox(height: 12),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-            //   children: [
-            //     Column(
-            //       children: [
-            //         IconButton(onPressed: () {}, icon: Icon(Icons.save)),
-            //         Text('save'),
-            //       ],
-            //     ),
-            //     Column(
-            //       children: [
-            //         IconButton(onPressed: () {}, icon: Icon(Icons.save)),
-            //         Text('save'),
-            //       ],
-            //     ),
-            //   ],
-            // ),
-            // SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Column(
@@ -114,7 +88,7 @@ class DetailPage extends ConsumerWidget {
               ),
             ),
             ListTile(
-              title: Text(bookAuthors()),
+              title: Text(bookAuthors(selectedBook)),
               subtitle: Text('Author'),
               leading: Icon(Icons.person),
             ),
