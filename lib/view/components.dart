@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_book/model/book_model.dart';
 
-Card bookGridTile(Book book, TextTheme textTheme) {
+Widget bookGridTile(Book book, TextTheme textTheme) {
   return Card(
     elevation: 4,
     child: Container(
@@ -13,11 +13,14 @@ Card bookGridTile(Book book, TextTheme textTheme) {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           book.thumbnail.isNotEmpty
               ? Flexible(
                 child: Container(
                   decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black, width: 0.2),
                     image: DecorationImage(
                       fit: BoxFit.fill,
                       image: NetworkImage(book.thumbnail),
@@ -34,19 +37,32 @@ Card bookGridTile(Book book, TextTheme textTheme) {
                   ),
                 ),
               ),
-          Text(
-            book.title.length < 30
-                ? book.title
-                : '${book.title.substring(0, 30)}...',
-            style: textTheme.labelLarge,
-          ),
-          Text(
-            book.authors.length > 1
-                ? "${book.authors[0]}, dkk"
-                : book.authors.isNotEmpty
-                ? book.authors[0]
-                : book.authors.toString(),
-            style: textTheme.bodySmall,
+          Padding(
+            padding: const EdgeInsets.only(left: 6, top: 4),
+            child: SizedBox(
+              height: 72,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    book.title.length < 30
+                        ? book.title
+                        : '${book.title.substring(0, 30)}...',
+                    style: textTheme.labelLarge,
+                    maxLines: 2,
+                  ),
+                  Text(
+                    book.authors.length > 1
+                        ? "${book.authors[0]}, dkk"
+                        : book.authors.isNotEmpty
+                        ? book.authors[0]
+                        : book.authors.toString(),
+                    maxLines: 1,
+                    style: textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
