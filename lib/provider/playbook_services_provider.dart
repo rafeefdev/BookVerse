@@ -44,11 +44,11 @@ class BookNotifier extends _$BookNotifier {
     newBookList[index] = newBook;
     log('newBook state : ${newBook.isFavorite}');
     if (newBook.isFavorite == false) {
+      log(
+        'newBook state changed from : ${newBook.isFavorite} to ${!newBook.isFavorite}',
+      );
       //toggle favorite
       newBook.isFavorite = true;
-      log(
-        'newBook state changed from : ${newBook.isFavorite} to ${newBook.isFavorite}',
-      );
       //replace with new object
       newBookList[index] = newBook;
     } else if (newBook.isFavorite == true) {
@@ -73,12 +73,12 @@ class BookNotifier extends _$BookNotifier {
 }
 
 String bookAuthors(Book selectedBook) {
-      String result = '';
-      selectedBook.authors.length == 1 && selectedBook.authors.isNotEmpty
-          ? result = selectedBook.authors[0]
-          : result = '${selectedBook.authors.join(', ')}, dkk';
-      return result;
-    }
+  String result = '';
+  selectedBook.authors.length == 1 && selectedBook.authors.isNotEmpty
+      ? result = selectedBook.authors[0]
+      : result = '${selectedBook.authors.join(', ')}, dkk';
+  return result;
+}
 
 class LiveBookState extends Equatable {
   final String status;
