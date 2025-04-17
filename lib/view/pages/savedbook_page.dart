@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_book/model/book_model.dart';
 import 'package:google_book/provider/bookmark_provider.dart';
 import 'package:google_book/provider/playbook_services_provider.dart';
+import 'package:google_book/view/components.dart';
 import 'package:google_book/view/pages/detail_page.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:google_book/provider/bookmark_provider.dart';
@@ -91,8 +92,8 @@ class SavedbookPage extends ConsumerWidget {
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 0.75,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
       ),
       itemCount: books.length,
       itemBuilder: (context, index) {
@@ -121,62 +122,23 @@ class SavedbookPage extends ConsumerWidget {
           ),
         );
       },
-      child: Card(
-        elevation: 4,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Container(
-                color: Colors.grey[300],
-                child: Center(
-                  child: Icon(Icons.book, size: 48, color: Colors.grey[600]),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      book.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      bookAuthors(book),
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      child: bookGridTile(book, Theme.of(context).textTheme),
     );
   }
 
   Widget _buildBookListTile(Book book) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 4,
+      margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         leading: Container(
           width: 50,
           height: 80,
-          color: Colors.grey[300],
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(6),
+          ),
           child: Center(child: Icon(Icons.book, color: Colors.grey[600])),
         ),
         title: Text(

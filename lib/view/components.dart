@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_book/model/book_model.dart';
+import 'package:google_book/provider/playbook_services_provider.dart';
 
 Widget bookGridTile(Book book, TextTheme textTheme) {
   return Card(
@@ -52,11 +53,7 @@ Widget bookGridTile(Book book, TextTheme textTheme) {
                     maxLines: 2,
                   ),
                   Text(
-                    book.authors.length > 1
-                        ? "${book.authors[0]}, dkk"
-                        : book.authors.isNotEmpty
-                        ? book.authors[0]
-                        : book.authors.toString(),
+                    bookAuthors(book),
                     maxLines: 1,
                     style: textTheme.bodySmall,
                   ),
