@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_book/view/app_theme.dart';
 import 'package:google_book/view/pages/chatbot_page.dart';
-import 'package:google_book/view/pages/home.dart';
+import 'package:google_book/view/pages/homepage.dart';
 import 'package:google_book/view/pages/savedbook_page.dart';
 
 void main() {
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-List pages = [Home(), ChatbotPage(), SavedbookPage()];
+List pages = [HomePage(), ChatbotPage(), SavedbookPage()];
 
 final bottomNavIndexProvider = StateProvider<int>((ref) => 0);
 
