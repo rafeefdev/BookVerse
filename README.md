@@ -1,4 +1,4 @@
-# Google Books Explorer
+# BookVerse
 
 A simple mobile application that displays book data from the Google Books API. Built using Flutter.
 
@@ -49,4 +49,4 @@ Coming soon
 ## Dependencies
 
 * `http`: To make an HTTP request to the Google Books API.
-* `riverpod`: For application state management.
+* `riverpod`: For application state management with code generation feature.
