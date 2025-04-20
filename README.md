@@ -50,4 +50,3 @@ Coming soon
 
 * `http`: To make an HTTP request to the Google Books API.
 * `riverpod`: For application state management.
-* (Add other dependencies used)
