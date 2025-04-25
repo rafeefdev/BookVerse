@@ -4,8 +4,10 @@ import 'package:google_book/view/app_theme.dart';
 import 'package:google_book/view/pages/chatbot_page.dart';
 import 'package:google_book/view/pages/homepage.dart';
 import 'package:google_book/view/pages/savedbook_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(); //load .env file
   runApp(ProviderScope(child: MyApp()));
 }
 

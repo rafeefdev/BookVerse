@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_book/model/book_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -8,7 +8,7 @@ class PlaybookServices {
   static int statusCode = 0;
 
   static Uri generateUrl(String query, int maxResult) {
-    const String apiKey = "AIzaSyBG-P8d1130vH1HBR-Gq_rz9eOOeUQ_4OA";
+    String apiKey = dotenv.env['API_KEY'] ?? 'default_value';
     const String baseUrl = "https://www.googleapis.com/books/v1/volumes";
     return Uri.parse(
       "$baseUrl?q=subject:$query&printType=books&maxResults=$maxResult&key=$apiKey",
