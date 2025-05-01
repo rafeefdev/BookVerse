@@ -1,15 +1,38 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:hive_flutter/hive_flutter.dart';
+
+part 'book_model.g.dart';
+
+@HiveType(typeId: 1)
 class Book {
+  @HiveField(0)
   final String id;
+
+  @HiveField(1)
   final String title;
+
+  @HiveField(2)
   final String? subTitle;
+
+  @HiveField(3)
   final List<String> authors;
+
+  @HiveField(4)
   final String publisher;
+
+  @HiveField(5)
   final String publishedDate;
+
+  @HiveField(6)
   final String description;
+
+  @HiveField(7)
   final String thumbnail;
-  bool isFavorite = false;
-  int pageCount = 0;
+  
+  @HiveField(8)
+  bool isFavorite;
+  
+  @HiveField(9)
+  int pageCount;
 
   Book({
     required this.id,
@@ -20,8 +43,8 @@ class Book {
     required this.publishedDate,
     required this.description,
     required this.thumbnail,
-    bool isFavorite = false,
-    required this.pageCount,
+    this.isFavorite = false,
+    this.pageCount = 0,
   });
 
   factory Book.fromJson(Map<String, dynamic> json) {
