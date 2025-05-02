@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_book/model/book_model.dart';
 import 'package:google_book/view/app_theme.dart';
 import 'package:google_book/view/pages/chatbot_page.dart';
 import 'package:google_book/view/pages/homepage.dart';
 import 'package:google_book/view/pages/savedbook_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
   await dotenv.load(); //load .env file
+  WidgetsFlutterBinding.ensureInitialized();
+  //get aplication directory
+  final dir = await getApplicationDocumentsDirectory();
+  //init database at the selected directory by running init method
+  Hive.init(dir.path);
+  //register adapter by running register adapter form hive
+  Hive.registerAdapter(BookAdapter());
+  //opening box by running mthod from hive
+  Hive.openBox('cacheBox');
   runApp(ProviderScope(child: MyApp()));
 }
 

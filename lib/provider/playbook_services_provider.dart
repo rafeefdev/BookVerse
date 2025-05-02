@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:equatable/equatable.dart';
-import 'package:google_book/source/playbook_services.dart';
+import 'package:google_book/source/playbook_remote.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../model/book_model.dart';
 
@@ -11,6 +11,7 @@ part 'playbook_services_provider.g.dart';
 class BookNotifier extends _$BookNotifier {
   @override
   LiveBookState build() => const LiveBookState('', '', []);
+
   Future<void> fetchBooks(String query, int maxResult) async {
     //loading state
     state = LiveBookState('loading', '', []);
@@ -79,7 +80,7 @@ String bookAuthors(Book selectedBook) {
     result = '${selectedBook.authors.join(', ')}, dkk';
   } else {
     result = 'Unknown Author';
-  } 
+  }
   return result;
 }
 
