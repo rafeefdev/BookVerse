@@ -13,10 +13,9 @@ String _$bookmarkedBooksHash() => r'8a4badc0d898b604a55c62dbdacbc7cf358d7c3e';
 final bookmarkedBooksProvider = AutoDisposeProvider<List<Book>>.internal(
   bookmarkedBooks,
   name: r'bookmarkedBooksProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$bookmarkedBooksHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$bookmarkedBooksHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );

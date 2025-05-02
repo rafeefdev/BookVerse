@@ -12,15 +12,13 @@ String _$bookNotifierHash() => r'8447440a57f9874a129a1548ba23734a636c8e19';
 @ProviderFor(BookNotifier)
 final bookNotifierProvider =
     AutoDisposeNotifierProvider<BookNotifier, LiveBookState>.internal(
-      BookNotifier.new,
-      name: r'bookNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$bookNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  BookNotifier.new,
+  name: r'bookNotifierProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$bookNotifierHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef _$BookNotifier = AutoDisposeNotifier<LiveBookState>;
 // ignore_for_file: type=lint
