@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:equatable/equatable.dart';
+import 'package:google_book/model/livebookstate_model.dart';
 import 'package:google_book/source/playbook_services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../model/book_model.dart';
@@ -81,15 +81,4 @@ String bookAuthors(Book selectedBook) {
     result = 'Unknown Author';
   } 
   return result;
-}
-
-class LiveBookState extends Equatable {
-  final String status;
-  final String message;
-  final List<Book> data;
-
-  const LiveBookState(this.status, this.message, this.data);
-
-  @override
-  List<Object?> get props => [status, message, data];
 }
