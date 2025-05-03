@@ -21,7 +21,7 @@ class _HomeState extends ConsumerState<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentState = ref.read(bookNotifierProvider);
       if (currentState.data.isEmpty) {
-        ref.read(bookNotifierProvider.notifier).fetchBooks('', 20);
+        ref.read(bookNotifierProvider.notifier).fetchBooks(maxResult: 20);
       }
     });
 
@@ -31,7 +31,7 @@ class _HomeState extends ConsumerState<HomePage> {
         onRefresh: () async {
           await ref
               .read(bookNotifierProvider.notifier)
-              .fetchBooks('flutter', 30);
+              .fetchBooks(isRefetch: true);
         },
         child: Consumer(
           builder: (context, wiRef, _) {
@@ -92,7 +92,11 @@ class _HomeState extends ConsumerState<HomePage> {
                               onPressed: () async {
                                 await ref
                                     .read(bookNotifierProvider.notifier)
-                                    .fetchBooks('indonesia', 30);
+                                    .fetchBooks(
+                                      isRefetch: true,
+                                      maxResult: 20,
+                                      query: 'flutter',
+                                    );
                               },
                               icon: CircleAvatar(
                                 radius: 25,

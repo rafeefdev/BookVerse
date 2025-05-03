@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:equatable/equatable.dart';
+import 'package:google_book/model/livebookstate_model.dart';
 import 'package:google_book/source/playbook_local.dart';
 import 'package:google_book/source/playbook_remote.dart';
 import 'package:google_book/source/playbook_repository.dart';
@@ -14,7 +14,11 @@ class BookNotifier extends _$BookNotifier {
   @override
   LiveBookState build() => const LiveBookState('', '', []);
 
-  Future<void> fetchBooks(String query, int maxResult) async {
+  Future<void> fetchBooks({
+    String query = '',
+    int maxResult = 20,
+    bool isRefetch = false,
+  }) async {
     //loading state
     state = LiveBookState('loading', '', []);
     await Future.delayed(Duration(seconds: 1));
@@ -25,17 +29,38 @@ class BookNotifier extends _$BookNotifier {
       localSource: BookCachingSource(),
     );
 
-    //get book data from book repo service
-    final bookList = await bookRepo.getBooks(query: query, maxItem: maxResult);
-
-    if (bookList.isEmpty) {
-      state = LiveBookState(
-        'failed',
-        'Something went wrong : ${bookRepo.statusCode()}',
-        const [],
+    if (isRefetch == true) {
+      //refetch data  from playbook API
+      final refetchedBookList = await PlaybookServices.getBookData(
+        query,
+        maxResult,
       );
+      //empty checking
+      if (refetchedBookList!.isEmpty) {
+        state = LiveBookState(
+          'failed',
+          'Something went wrong : ${bookRepo.statusCode()}',
+          const [],
+        );
+      } else {
+        state = LiveBookState('succes', '', refetchedBookList);
+      }
     } else {
-      state = LiveBookState('succes', '', bookList);
+      //get book data from book repo service
+      final bookList = await bookRepo.getBooks(
+        query: query,
+        maxItem: maxResult,
+      );
+      //empty checking
+      if (bookList.isEmpty) {
+        state = LiveBookState(
+          'failed',
+          'Something went wrong : ${bookRepo.statusCode()}',
+          const [],
+        );
+      } else {
+        state = LiveBookState('succes', '', bookList);
+      }
     }
   }
 
@@ -92,15 +117,4 @@ String bookAuthors(Book selectedBook) {
     result = 'Unknown Author';
   }
   return result;
-}
-
-class LiveBookState extends Equatable {
-  final String status;
-  final String message;
-  final List<Book> data;
-
-  const LiveBookState(this.status, this.message, this.data);
-
-  @override
-  List<Object?> get props => [status, message, data];
 }
