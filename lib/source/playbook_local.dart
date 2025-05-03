@@ -8,7 +8,7 @@ class BookCachingSource {
   //method to load cached data to UI
   List<Book>? getChacedBooks() {
     //run get method from _box variable and cast it to List?
-    final data = _box.get('books') as List<Book>?;
+    final data = _box.get('books') as List<dynamic>?;
     if (data != null) {
       //return data variable with running cast method
       return data.cast<Book>();

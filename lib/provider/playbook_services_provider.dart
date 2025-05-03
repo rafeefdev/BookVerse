@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:equatable/equatable.dart';
+import 'package:google_book/source/playbook_local.dart';
 import 'package:google_book/source/playbook_remote.dart';
+import 'package:google_book/source/playbook_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../model/book_model.dart';
 
@@ -16,12 +18,20 @@ class BookNotifier extends _$BookNotifier {
     //loading state
     state = LiveBookState('loading', '', []);
     await Future.delayed(Duration(seconds: 1));
-    //run getBookData method with await
-    final bookList = await PlaybookServices.getBookData(query, maxResult);
-    if (bookList == null) {
+
+    //declare book repo object
+    BookRepository bookRepo = BookRepository(
+      remoteSource: PlaybookServices(),
+      localSource: BookCachingSource(),
+    );
+
+    //get book data from book repo service
+    final bookList = await bookRepo.getBooks(query: query, maxItem: maxResult);
+
+    if (bookList.isEmpty) {
       state = LiveBookState(
         'failed',
-        'Something went wrong : ${PlaybookServices.statusCode}',
+        'Something went wrong : ${bookRepo.statusCode()}',
         const [],
       );
     } else {

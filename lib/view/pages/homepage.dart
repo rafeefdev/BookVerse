@@ -27,14 +27,15 @@ class _HomeState extends ConsumerState<HomePage> {
 
     return Scaffold(
       body: RefreshIndicator(
+        triggerMode: RefreshIndicatorTriggerMode.anywhere,
         onRefresh: () async {
           await ref
               .read(bookNotifierProvider.notifier)
               .fetchBooks('flutter', 30);
         },
         child: Consumer(
-          builder: (context, ref, _) {
-            final state = ref.watch(bookNotifierProvider);
+          builder: (context, wiRef, _) {
+            final state = wiRef.watch(bookNotifierProvider);
             if (state.status == 'loading') {
               return const Center();
             }
@@ -88,10 +89,14 @@ class _HomeState extends ConsumerState<HomePage> {
                             ),
                             IconButton(
                               splashColor: Colors.red,
-                              onPressed: () {},
+                              onPressed: () async {
+                                await ref
+                                    .read(bookNotifierProvider.notifier)
+                                    .fetchBooks('indonesia', 30);
+                              },
                               icon: CircleAvatar(
                                 radius: 25,
-                                child: Icon(Icons.person_2, size: 30),
+                                child: Icon(Icons.refresh_rounded, size: 30),
                               ),
                             ),
                           ],
