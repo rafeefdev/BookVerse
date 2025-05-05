@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_book/model/book_model.dart';
 import 'package:google_book/provider/playbook_services_provider.dart';
 import 'package:google_book/view/components.dart';
+import 'package:google_book/view/pages/chatbot_page.dart';
 import 'package:google_book/view/pages/detail_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -134,7 +135,12 @@ class _HomeState extends ConsumerState<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ChatbotPage()),
+          );
+        },
         label: Text('Discuss with AI'),
         icon: Icon(Icons.chat),
       ),
