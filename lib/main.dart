@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-List pages = [HomePage(), ChatbotPage(), SavedbookPage()];
+List pages = [HomePage(), SavedbookPage()];
 
 final bottomNavIndexProvider = StateProvider<int>((ref) => 0);
 
@@ -43,7 +43,6 @@ class MainPage extends ConsumerWidget {
         },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat AI'),
           BottomNavigationBarItem(icon: Icon(Icons.save), label: 'Saved Books'),
         ],
       ),
