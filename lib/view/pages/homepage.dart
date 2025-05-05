@@ -133,6 +133,11 @@ class _HomeState extends ConsumerState<HomePage> {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        label: Text('Discuss with AI'),
+        icon: Icon(Icons.chat),
+      ),
     );
   }
 }
