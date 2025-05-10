@@ -7,7 +7,7 @@ import '../model/book_model.dart';
 
 part 'playbook_services_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class BookNotifier extends _$BookNotifier {
   @override
   LiveBookState build() => const LiveBookState('', '', []);
