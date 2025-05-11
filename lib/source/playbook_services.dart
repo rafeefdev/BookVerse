@@ -11,7 +11,7 @@ class PlaybookServices {
     String apiKey = dotenv.env['API_KEY'] ?? 'default_value';
     const String baseUrl = "https://www.googleapis.com/books/v1/volumes";
     return Uri.parse(
-      "$baseUrl?q=subject:$query&printType=books&maxResults=$maxResult&key=$apiKey",
+      "$baseUrl?q=:$query&printType=books&maxResults=$maxResult&key=$apiKey",
     );
   }
 
