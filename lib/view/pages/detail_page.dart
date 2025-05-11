@@ -27,9 +27,7 @@ class DetailPage extends ConsumerWidget {
                 onPressed: () {
                   wiRef
                       .read(bookNotifierProvider.notifier)
-                      .changeIsFavorite(
-                        selectedBookId
-                      );
+                      .changeIsFavorite(selectedBookId);
                 },
                 icon: Icon(
                   selectedBook.isFavorite
@@ -50,7 +48,12 @@ class DetailPage extends ConsumerWidget {
             ListTile(
               title:
                   selectedBook.thumbnail.isEmpty
-                      ? Center(child: Icon(Icons.print, size: 35))
+                      ? Center(
+                        child: AspectRatio(
+                          aspectRatio: 1.5,
+                          child: SizedBox(child: Icon(Icons.print, size: 35)),
+                        ),
+                      )
                       : Container(
                         height: 200,
                         decoration: BoxDecoration(
