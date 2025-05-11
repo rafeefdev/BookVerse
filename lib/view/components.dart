@@ -45,17 +45,34 @@ Widget bookGridTile(Book book, TextTheme textTheme) {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    book.title.length < 30
-                        ? book.title
-                        : '${book.title.substring(0, 30)}...',
-                    style: textTheme.labelLarge,
-                    maxLines: 2,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.book, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          book.title.length < 30
+                              ? book.title
+                              : '${book.title.substring(0, 30)}...',
+                          style: textTheme.labelLarge,
+                          maxLines: 3,
+                          overflow: TextOverflow.fade,
+                          softWrap: true,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    bookAuthors(book),
-                    maxLines: 1,
-                    style: textTheme.bodySmall,
+                  Row(
+                    children: [
+                      Icon(Icons.person, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Text(
+                        bookAuthors(book),
+                        maxLines: 1,
+                        style: textTheme.bodySmall,
+                      ),
+                    ],
                   ),
                 ],
               ),
