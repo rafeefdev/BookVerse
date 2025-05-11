@@ -4,7 +4,7 @@ import 'package:google_book/provider/playbook_services_provider.dart';
 
 Widget bookGridTile(Book book, TextTheme textTheme) {
   return AspectRatio(
-    aspectRatio: 2/3,
+    aspectRatio: 3 / 4,
     child: Card(
       elevation: 4,
       child: Container(
@@ -21,7 +21,7 @@ Widget bookGridTile(Book book, TextTheme textTheme) {
             book.thumbnail.isNotEmpty
                 ? Expanded(
                   child: AspectRatio(
-                    aspectRatio: 1,
+                    aspectRatio: 3 / 4,
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                       decoration: BoxDecoration(
@@ -37,7 +37,7 @@ Widget bookGridTile(Book book, TextTheme textTheme) {
                 )
                 : Expanded(
                   child: AspectRatio(
-                    aspectRatio: 0.67,
+                    aspectRatio: 3 / 4,
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                       decoration: BoxDecoration(
@@ -46,7 +46,11 @@ Widget bookGridTile(Book book, TextTheme textTheme) {
                         border: Border.all(color: Colors.black, width: 0.05),
                       ),
                       child: Center(
-                        child: Icon(Icons.book, size: 48, color: Colors.grey[600]),
+                        child: Icon(
+                          Icons.book,
+                          size: 48,
+                          color: Colors.grey[600],
+                        ),
                       ),
                     ),
                   ),
