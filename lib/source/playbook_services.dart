@@ -27,11 +27,24 @@ class PlaybookServices {
     );
   }
 
-  static Future<List<Book>?> getBookData(String query, int maxResult) async {
+  static Future<List<Book>?> getBookData({
+    String? query,
+    int maxResult = 20,
+    String? author,
+    String? title,
+    String? publisher
+  }) async {
+
     List<Book> result = [];
     //run http get method with await and save result to a variabel
     try {
-      final response = await http.get(generateUrl());
+      final response = await http.get(generateUrl(
+        query: query,
+        maxResult: maxResult,
+        author: author,
+        title: title,
+        publisher: publisher,
+      ));
       if (response.statusCode == 200) {
         statusCode = response.statusCode;
         log('status code : ${response.statusCode}');

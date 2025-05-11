@@ -22,7 +22,7 @@ class _HomeState extends ConsumerState<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentState = ref.read(bookNotifierProvider);
       if (currentState.data.isEmpty) {
-        ref.read(bookNotifierProvider.notifier).fetchBooks('', 20);
+        ref.read(bookNotifierProvider.notifier).fetchBooks(author: 'salim a fillah');
       }
     });
 
@@ -31,7 +31,7 @@ class _HomeState extends ConsumerState<HomePage> {
         onRefresh: () async {
           await ref
               .read(bookNotifierProvider.notifier)
-              .fetchBooks('flutter', 30);
+              .fetchBooks(query: 'flutter');
         },
         child: Consumer(
           builder: (context, ref, _) {
