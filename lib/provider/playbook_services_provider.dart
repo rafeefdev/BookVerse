@@ -11,12 +11,25 @@ part 'playbook_services_provider.g.dart';
 class BookNotifier extends _$BookNotifier {
   @override
   LiveBookState build() => const LiveBookState('', '', []);
-  Future<void> fetchBooks(String query, int maxResult) async {
+
+  Future<void> fetchBooks({
+    String? query,
+    String? author,
+    int maxResult = 20,
+    String? publisher,
+    String? title,
+  }) async {
     //loading state
     state = LiveBookState('loading', '', []);
     await Future.delayed(Duration(seconds: 1));
     //run getBookData method with await
-    final bookList = await PlaybookServices.getBookData(query, maxResult);
+    final bookList = await PlaybookServices.getBookData(
+      query: query,
+      author: author,
+      maxResult: maxResult,
+      publisher: publisher,
+      title: title,
+    );
     if (bookList == null) {
       state = LiveBookState(
         'failed',
@@ -79,6 +92,6 @@ String bookAuthors(Book selectedBook) {
     result = '${selectedBook.authors.join(', ')}, dkk';
   } else {
     result = 'Unknown Author';
-  } 
+  }
   return result;
 }
