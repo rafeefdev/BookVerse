@@ -22,128 +22,150 @@ class _HomeState extends ConsumerState<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentState = ref.read(bookNotifierProvider);
       if (currentState.data.isEmpty) {
-        ref.read(bookNotifierProvider.notifier).fetchBooks(author: 'malcolm gladwell');
+        ref
+            .read(bookNotifierProvider.notifier)
+            .fetchBooks(author: 'malcolm gladwell');
       }
     });
 
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
-          await ref
-              .read(bookNotifierProvider.notifier)
-              .fetchBooks();
+          await ref.read(bookNotifierProvider.notifier).fetchBooks();
         },
-        child: Consumer(
-          builder: (context, ref, _) {
-            final state = ref.watch(bookNotifierProvider);
-            if (state.status == 'loading') {
-              return const Center();
-            }
-            if (state.status == 'failed') {
-              return Center(child: Text(state.message));
-            }
-            List<Book> books = state.data ?? [];
-            return CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  expandedHeight: 140,
-                  collapsedHeight: 140,
-                  pinned: true,
-                  //snap: true,
-                  floating: true,
-                  flexibleSpace: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 8,
-                      children: [
-                        Text(
-                          'BookVerse App',
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: SearchBar(
-                                padding: WidgetStatePropertyAll(
-                                  EdgeInsets.symmetric(horizontal: 16),
-                                ),
-                                elevation: const WidgetStatePropertyAll(4),
-                                leading: const Icon(Icons.search),
-                                hintText: 'Search',
-                              ),
-                            ),
-                            IconButton(
-                              splashColor: Colors.red,
-                              onPressed: () {},
-                              icon: CircleAvatar(
-                                radius: 25,
-                                child: Icon(Icons.settings, size: 30),
-                              ),
-                            ),
-                            IconButton(
-                              splashColor: Colors.red,
-                              onPressed: () {},
-                              icon: CircleAvatar(
-                                radius: 25,
-                                child: Icon(Icons.person_2, size: 30),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  sliver: SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.75,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                        ),
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      Book book = books[index];
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) =>
-                                      DetailPage(selectedBookId: book.id),
-                            ),
-                          );
-                        },
-                        child: bookGridTile(book, textTheme),
-                      );
-                    }, childCount: books.length),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+        child: _buildBookList(textTheme),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ChatbotPage()),
-          );
-        },
-        label: Text('Discuss with AI'),
-        icon: Icon(Icons.chat),
+      floatingActionButton: _buildChatButton(context),
+    );
+  }
+}
+
+Widget _buildBookList(TextTheme textTheme) {
+  return Consumer(
+    builder: (context, ref, _) {
+      final state = ref.watch(bookNotifierProvider);
+      if (state.status == 'loading') {
+        return const Center();
+      }
+      if (state.status == 'failed') {
+        return Center(child: Text(state.message));
+      }
+      List<Book> books = state.data ?? [];
+      return CustomScrollView(
+        slivers: [_buildAppBar(context), _buildBookGrid(books, textTheme)],
+      );
+    },
+  );
+}
+
+FloatingActionButton _buildChatButton(BuildContext context) {
+  return FloatingActionButton.extended(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ChatbotPage()),
+      );
+    },
+    label: Text('Discuss with AI'),
+    icon: Icon(Icons.chat),
+  );
+}
+
+Widget _buildAppBar(BuildContext context) {
+  return SliverAppBar(
+    expandedHeight: 140,
+    collapsedHeight: 140,
+    pinned: true,
+    //snap: true,
+    floating: true,
+    flexibleSpace: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
+        children: [
+          Text(
+            'BookVerse App',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildSearchBar(),
+              _ActionButton(icon: Icons.settings, onPressed: () {}),
+              _ActionButton(icon: Icons.person_2, onPressed: () {}),
+            ],
+          ),
+        ],
       ),
+    ),
+  );
+}
+
+Widget _buildSearchBar() {
+  return Expanded(
+    child: SearchBar(
+      padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 16)),
+      elevation: const WidgetStatePropertyAll(4),
+      leading: const Icon(Icons.search),
+      hintText: 'Search',
+    ),
+  );
+}
+
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const _ActionButton({required this.icon, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: onPressed,
+      icon: CircleAvatar(radius: 25, child: Icon(icon, size: 30)),
+    );
+  }
+}
+
+Widget _buildBookGrid(List<Book> books, TextTheme textTheme) {
+  return SliverPadding(
+    padding: const EdgeInsets.symmetric(horizontal: 8),
+    sliver: SliverGrid(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.75,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      delegate: SliverChildBuilderDelegate((context, index) {
+        Book book = books[index];
+        return _BuildGridItem(book: book, textTheme: textTheme);
+      }, childCount: books.length),
+    ),
+  );
+}
+
+class _BuildGridItem extends StatelessWidget {
+  const _BuildGridItem({required this.book, required this.textTheme});
+
+  final TextTheme textTheme;
+  final Book book;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailPage(selectedBookId: book.id),
+          ),
+        );
+      },
+      child: bookGridTile(book, textTheme),
     );
   }
 }
