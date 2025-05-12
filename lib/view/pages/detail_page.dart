@@ -27,9 +27,7 @@ class DetailPage extends ConsumerWidget {
                 onPressed: () {
                   wiRef
                       .read(bookNotifierProvider.notifier)
-                      .changeIsFavorite(
-                        selectedBookId
-                      );
+                      .changeIsFavorite(selectedBookId);
                 },
                 icon: Icon(
                   selectedBook.isFavorite
@@ -50,15 +48,34 @@ class DetailPage extends ConsumerWidget {
             ListTile(
               title:
                   selectedBook.thumbnail.isEmpty
-                      ? Center(child: Icon(Icons.print, size: 35))
-                      : Container(
-                        height: 200,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                          border: Border.all(color: Colors.black, width: 0.2),
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(selectedBook.thumbnail),
+                      ? Center(
+                        child: AspectRatio(
+                          aspectRatio: 3 / 4,
+                          child: Container(
+                            height: 200,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 0.05,
+                              ),
+                            ),
+                            child: Icon(Icons.print, size: 35),
+                          ),
+                        ),
+                      )
+                      : AspectRatio(
+                        aspectRatio: 3 / 4,
+                        child: Container(
+                          height: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            border: Border.all(color: Colors.black, width: 0.2),
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(selectedBook.thumbnail),
+                            ),
                           ),
                         ),
                       ),
@@ -103,6 +120,11 @@ class DetailPage extends ConsumerWidget {
               leading: Icon(Icons.menu_book_rounded),
             ),
             ListTile(
+              title: Text(bookCategories(selectedBook)),
+              subtitle: Text('Categories'),
+              leading: Icon(Icons.file_copy),
+            ),
+            ListTile(
               title: Text(selectedBook.publisher),
               subtitle: Text('Publisher'),
               leading: Icon(Icons.print_rounded),
@@ -111,11 +133,25 @@ class DetailPage extends ConsumerWidget {
               subtitle: Text(
                 selectedBook.description,
                 style: textTheme.bodyMedium,
+                textAlign: TextAlign.justify,
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  String bookCategories(Book selectedBook) {
+    List? bookCategories = selectedBook.categories;
+    String result = 'Unknown Category';
+
+    if (bookCategories!.length == 1) {
+      result = bookCategories[0];
+      return result;
+    } else if (bookCategories.length > 1) {
+      result = '${selectedBook.categories!.join(', ')}, etc';
+    }
+    return result;
   }
 }

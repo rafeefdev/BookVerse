@@ -10,6 +10,7 @@ class Book {
   final String thumbnail;
   bool isFavorite = false;
   int pageCount = 0;
+  List? categories;
 
   Book({
     required this.id,
@@ -22,6 +23,7 @@ class Book {
     required this.thumbnail,
     bool isFavorite = false,
     required this.pageCount,
+    this.categories,
   });
 
   factory Book.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,7 @@ class Book {
           [],
       pageCount: json['volumeInfo']['pageCount'] ?? 0,
       publisher: json['volumeInfo']['publisher'] ?? "Unknown Publisher",
+      categories: json['volumeInfo']['categories'] ?? <String>[],
       publishedDate: json['volumeInfo']['publishedDate'] ?? "Unknown Date",
       description: json['volumeInfo']['description'] ?? "No Description",
       thumbnail: json['volumeInfo']['imageLinks']?['thumbnail'] ?? "",
