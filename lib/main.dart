@@ -1,3 +1,4 @@
+import 'package:BookVerse/view/pages/splash_screens/first_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:BookVerse/view/app_theme.dart';
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
       title: 'BookVerse',
       debugShowCheckedModeBanner: false,
       theme: themeData,
-      home: MainPage(),
+      home: FirstScreen(),
     );
   }
 }
