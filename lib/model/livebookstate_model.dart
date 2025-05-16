@@ -1,6 +1,6 @@
-
 import 'package:equatable/equatable.dart';
-import 'package:google_book/model/book_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:BookVerse/model/book_model.dart';
 
 class LiveBookState extends Equatable {
   final String status;

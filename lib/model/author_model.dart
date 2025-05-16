@@ -1,4 +1,4 @@
-import 'package:google_book/model/book_model.dart';
+import 'package:BookVerse/model/book_model.dart';
 
 class Author {
   String name;

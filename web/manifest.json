@@ -1,6 +1,6 @@
 {
-    "name": "google_book",
-    "short_name": "google_book",
+    "name": "BookVerse",
+    "short_name": "BookVerse",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
