@@ -1,7 +1,8 @@
 import 'dart:developer';
 
-import 'package:google_book/model/livebookstate_model.dart';
-import 'package:google_book/source/playbook_services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:BookVerse/model/livebookstate_model.dart';
+import 'package:BookVerse/source/playbook_services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../model/book_model.dart';
 

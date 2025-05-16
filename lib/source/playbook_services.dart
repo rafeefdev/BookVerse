@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_book/model/book_model.dart';
+import 'package:BookVerse/model/book_model.dart';
 import 'package:http/http.dart' as http;
 
 class PlaybookServices {

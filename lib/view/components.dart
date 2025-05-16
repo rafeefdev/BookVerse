@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_book/model/book_model.dart';
-import 'package:google_book/provider/playbook_services_provider.dart';
+import 'package:BookVerse/model/book_model.dart';
+import 'package:BookVerse/provider/playbook_services_provider.dart';
 
 Widget bookGridTile(Book book, TextTheme textTheme) {
   return AspectRatio(
