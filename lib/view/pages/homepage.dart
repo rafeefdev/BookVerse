@@ -150,12 +150,12 @@ class _BuildGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
+      onTap: 
         pushNavigation(
           context,
           destinationPage: DetailPage(selectedBookId: book.id),
-        );
-      },
+        )
+      ,
       child: bookGridTile(book, textTheme),
     );
   }

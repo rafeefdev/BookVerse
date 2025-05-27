@@ -62,11 +62,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             ),
           ),
           if (searchState.isLoading)
-            const Expanded(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
+            const Expanded(child: Center(child: CircularProgressIndicator()))
           else if (searchState.error != null)
             Expanded(
               child: Center(
@@ -82,33 +78,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 itemCount: searchState.result.length,
                 itemBuilder: (context, index) {
                   Book book = searchState.result[index];
-                  return ListTile(
-                    leading: book.thumbnail.isNotEmpty
-                        ? Image.network(
-                            book.thumbnail,
-                            width: 50,
-                            height: 70,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.book),
-                          )
-                        : const Icon(Icons.book),
-                    title: Text(book.title),
-                    subtitle: Text(
-                      book.authors.isNotEmpty
-                          ? book.authors.join(', ')
-                          : 'Unknown Author',
-                    ),
-                  );
+                  return bookListTile(context, book);
                 },
               ),
             )
           else if (searchState.query.isNotEmpty)
-            const Expanded(
-              child: Center(
-                child: Text('No books found'),
-              ),
-            ),
+            const Expanded(child: Center(child: Text('No books found'))),
         ],
       ),
     );

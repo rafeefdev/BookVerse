@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'search_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class SearchNotifier extends _$SearchNotifier {
   PlaybookServices playbookService = PlaybookServices();
   
