@@ -1,3 +1,5 @@
+import 'package:BookVerse/helper/push_navigation.dart';
+import 'package:BookVerse/view/pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:BookVerse/model/book_model.dart';
@@ -61,10 +63,7 @@ Widget _buildBookList(TextTheme textTheme) {
 FloatingActionButton _buildChatButton(BuildContext context) {
   return FloatingActionButton.extended(
     onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ChatbotPage()),
-      );
+      pushNavigation(context, destinationPage: ChatbotPage());
     },
     label: Text('Discuss with AI'),
     icon: Icon(Icons.chat),
@@ -94,24 +93,17 @@ Widget _buildAppBar(BuildContext context) {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _buildSearchBar(),
+              simpleSearcBar(
+                context,
+                isExpanded: true,
+                onTap: pushNavigation(context, destinationPage: SearchPage()),
+              ),
               _ActionButton(icon: Icons.settings, onPressed: () {}),
               _ActionButton(icon: Icons.person_2, onPressed: () {}),
             ],
           ),
         ],
       ),
-    ),
-  );
-}
-
-Widget _buildSearchBar() {
-  return Expanded(
-    child: SearchBar(
-      padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 16)),
-      elevation: const WidgetStatePropertyAll(4),
-      leading: const Icon(Icons.search),
-      hintText: 'Search',
     ),
   );
 }
@@ -159,11 +151,9 @@ class _BuildGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.push(
+        pushNavigation(
           context,
-          MaterialPageRoute(
-            builder: (context) => DetailPage(selectedBookId: book.id),
-          ),
+          destinationPage: DetailPage(selectedBookId: book.id),
         );
       },
       child: bookGridTile(book, textTheme),
