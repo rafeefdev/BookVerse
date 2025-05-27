@@ -10,6 +10,8 @@ part 'playbook_services_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class BookNotifier extends _$BookNotifier {
+  var playbookService = PlaybookServices();
+
   @override
   LiveBookState build() => const LiveBookState('', '', []);
 
@@ -24,7 +26,7 @@ class BookNotifier extends _$BookNotifier {
     state = LiveBookState('loading', '', []);
     await Future.delayed(Duration(seconds: 1));
     //run getBookData method with await
-    final bookList = await PlaybookServices.getBookData(
+    final bookList = await playbookService.getBookData(
       query: query,
       author: author,
       maxResult: maxResult,

@@ -23,20 +23,22 @@ class PlaybookServices {
     String publisherQuery = publisher == null ? '' : '+inpublisher:$publisher';
 
     return Uri.parse(
-      "$baseUrl?q=:$baseQuery$authorQuery$publisherQuery$titleQuery&printType=books&maxResults=$maxResult&key=$apiKey",
+      "$baseUrl?q=$baseQuery$authorQuery$publisherQuery$titleQuery&printType=books&maxResults=$maxResult&key=$apiKey",
     );
   }
 
-  static Future<List<Book>?> getBookData({
+  Future<List<Book>?> searchBooks(String query) async {
+    return getBookData(query: query);
+  }
+
+  Future<List<Book>?> getBookData({
     String? query,
     int maxResult = 20,
     String? author,
     String? title,
     String? publisher
   }) async {
-
     List<Book> result = [];
-    //run http get method with await and save result to a variabel
     try {
       final response = await http.get(generateUrl(
         query: query,
@@ -45,22 +47,25 @@ class PlaybookServices {
         title: title,
         publisher: publisher,
       ));
+      
+      statusCode = response.statusCode;
+      log('status code : ${response.statusCode}');
+      
       if (response.statusCode == 200) {
-        statusCode = response.statusCode;
-        log('status code : ${response.statusCode}');
-        //decode response
         final bookList = jsonDecode(response.body);
         if (bookList['items'] != null) {
-          result =
-              (bookList['items'] as List)
-                  .map((item) => Book.fromJson(item))
-                  .toList();
+          result = (bookList['items'] as List)
+              .map((item) => Book.fromJson(item))
+              .toList();
           return result;
         }
-        return null;
+        return [];
+      } else {
+        throw Exception('Failed to load books: ${response.statusCode}');
       }
     } catch (e) {
-      return null;
+      log('Error fetching books: $e');
+      throw Exception('Failed to load books: $e');
     }
   }
 }

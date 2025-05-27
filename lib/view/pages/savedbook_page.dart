@@ -20,7 +20,7 @@ class SavedbookPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final screenHeight = MediaQuery.of(context).size.height;
     final viewMode = ref.watch(viewModeProvider);
-    final List<Book> bookmarkedBooks = ref.watch(bookmarkedBooksProvider);
+    final List<Book> bookmarkedBooks = ref.watch(bookmarkNotifierProvider);
 
     return Scaffold(
       body: Column(
@@ -107,7 +107,7 @@ class SavedbookPage extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       itemCount: books.length,
       itemBuilder: (context, index) {
-        return _buildBookListTile(books[index]);
+        return bookListTile(context, books[index], isWrappedByCard: true);
       },
     );
   }
@@ -123,30 +123,6 @@ class SavedbookPage extends ConsumerWidget {
         );
       },
       child: bookGridTile(book, Theme.of(context).textTheme),
-    );
-  }
-
-  Widget _buildBookListTile(Book book) {
-    return Card(
-      elevation: 4,
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Container(
-          width: 50,
-          height: 80,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Center(child: Icon(Icons.book, color: Colors.grey[600])),
-        ),
-        title: Text(
-          book.title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(bookAuthors(book)),
-      ),
     );
   }
 }
