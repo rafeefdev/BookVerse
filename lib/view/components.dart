@@ -153,9 +153,15 @@ Widget simpleSearcBar(
   return isExpanded ? Expanded(child: searchBar) : searchBar;
 }
 
-Widget bookListTile(BuildContext context, Book book, {bool isWrappedByCard = false}) {
+Widget bookListTile(BuildContext context, Book book, {bool isWrappedByCard = false, bool isFromSearch = false}) {
   Widget lisTile = InkWell(
-    onTap: pushNavigation(context, destinationPage: DetailPage(selectedBookId: book.id)),
+    onTap: pushNavigation(
+      context, 
+      destinationPage: DetailPage(
+        selectedBookId: book.id,
+        isFromSearch: isFromSearch,
+      )
+    ),
     child: ListTile(
       contentPadding: const EdgeInsets.all(16),
       leading:

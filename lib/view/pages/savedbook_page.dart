@@ -20,7 +20,7 @@ class SavedbookPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final screenHeight = MediaQuery.of(context).size.height;
     final viewMode = ref.watch(viewModeProvider);
-    final List<Book> bookmarkedBooks = ref.watch(bookmarkedBooksProvider);
+    final List<Book> bookmarkedBooks = ref.watch(bookmarkNotifierProvider);
 
     return Scaffold(
       body: Column(

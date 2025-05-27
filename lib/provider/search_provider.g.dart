@@ -6,12 +6,12 @@ part of 'search_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$searchNotifierHash() => r'2d687c1cd8a4697bba041121f01929d24df66e0d';
+String _$searchNotifierHash() => r'befe626f29995d9e84e286b43dd67b36d1af7834';
 
 /// See also [SearchNotifier].
 @ProviderFor(SearchNotifier)
 final searchNotifierProvider =
-    AutoDisposeNotifierProvider<SearchNotifier, SearchState>.internal(
+    NotifierProvider<SearchNotifier, SearchState>.internal(
       SearchNotifier.new,
       name: r'searchNotifierProvider',
       debugGetCreateSourceHash:
@@ -22,6 +22,6 @@ final searchNotifierProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$SearchNotifier = AutoDisposeNotifier<SearchState>;
+typedef _$SearchNotifier = Notifier<SearchState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

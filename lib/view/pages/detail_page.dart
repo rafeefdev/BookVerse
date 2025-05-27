@@ -2,40 +2,54 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:BookVerse/model/book_model.dart';
 import 'package:BookVerse/provider/playbook_services_provider.dart';
+import 'package:BookVerse/provider/search_provider.dart';
+import 'package:BookVerse/provider/bookmark_provider.dart';
 
 class DetailPage extends ConsumerWidget {
   final String selectedBookId;
+  final bool isFromSearch;
 
-  const DetailPage({required this.selectedBookId, super.key});
+  const DetailPage({
+    required this.selectedBookId,
+    this.isFromSearch = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var textTheme = Theme.of(context).textTheme;
-    //get selected book data
-    List<Book> books = ref.watch(bookNotifierProvider).data;
+    
+    // Get book data from appropriate provider
+    List<Book> books = isFromSearch 
+        ? ref.watch(searchNotifierProvider).result
+        : ref.watch(bookNotifierProvider).data;
+        
     int index = books.indexWhere((book) => book.id == selectedBookId);
-    Book selectedBook = ref.watch(bookNotifierProvider).data[index];
+    
+    if (index == -1) {
+      return Scaffold(
+        appBar: AppBar(title: Text('Detail')),
+        body: Center(
+          child: Text('Book not found'),
+        ),
+      );
+    }
+    
+    Book selectedBook = books[index];
+    bool isBookmarked = ref.watch(bookmarkNotifierProvider.notifier).isBookmarked(selectedBookId);
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Detail'),
         actionsPadding: EdgeInsets.only(right: 16),
         actions: [
-          Consumer(
-            builder: (context, wiRef, child) {
-              return IconButton(
-                onPressed: () {
-                  wiRef
-                      .read(bookNotifierProvider.notifier)
-                      .changeIsFavorite(selectedBookId);
-                },
-                icon: Icon(
-                  selectedBook.isFavorite
-                      ? Icons.bookmark
-                      : Icons.bookmark_border_rounded,
-                ),
-              );
+          IconButton(
+            onPressed: () {
+              ref.read(bookmarkNotifierProvider.notifier).toggleBookmark(selectedBook);
             },
+            icon: Icon(
+              isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
+            ),
           ),
         ],
       ),

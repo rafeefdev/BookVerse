@@ -78,7 +78,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 itemCount: searchState.result.length,
                 itemBuilder: (context, index) {
                   Book book = searchState.result[index];
-                  return bookListTile(context, book);
+                  return bookListTile(context, book, isFromSearch: true);
                 },
               ),
             )
