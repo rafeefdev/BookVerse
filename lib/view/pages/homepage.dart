@@ -75,6 +75,7 @@ Widget _buildAppBar(BuildContext context) {
   return SliverAppBar(
     expandedHeight: 140,
     collapsedHeight: 140,
+    automaticallyImplyLeading: false,
     pinned: true,
     //snap: true,
     floating: true,
