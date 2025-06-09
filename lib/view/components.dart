@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:BookVerse/model/book_model.dart';
 import 'package:BookVerse/provider/playbook_services_provider.dart';
 
-Widget bookGridTile(Book book, TextTheme textTheme) {
+Widget bookGridTile({required Book book, required TextTheme textTheme, double? aspectRatio}) {
   return AspectRatio(
-    aspectRatio: 3 / 4,
+    aspectRatio: aspectRatio ?? 3 / 4,
     child: Card(
       elevation: 4,
       child: Container(
