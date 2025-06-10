@@ -6,7 +6,7 @@ part of 'search_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$searchNotifierHash() => r'befe626f29995d9e84e286b43dd67b36d1af7834';
+String _$searchNotifierHash() => r'0a59ae0b7043d54aec920188d24fff8e121aeb0b';
 
 /// See also [SearchNotifier].
 @ProviderFor(SearchNotifier)

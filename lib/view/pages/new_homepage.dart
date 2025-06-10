@@ -115,6 +115,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 controller: queryController,
                 autofocus: true,
                 decoration: InputDecoration.collapsed(hintText: 'Search...'),
+                onChanged: onSearchChange,
               ),
             ),
           ),
@@ -122,6 +123,16 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
+      body:
+          searchState.result.isEmpty
+              ? Center(child: const Text('Book will appear here'))
+              : ListView.builder(
+                itemBuilder: (context, index) {
+                  List<Book> result = ref.watch(searchNotifierProvider).result;
+                  Book book = result[index];
+                return bookListTile(context, book, isFromSearch: true);
+                },
+              ),
     );
   }
 }
