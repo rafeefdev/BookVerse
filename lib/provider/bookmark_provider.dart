@@ -1,4 +1,5 @@
 import 'package:BookVerse/model/book_model.dart';
+import 'package:BookVerse/provider/search_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -12,8 +13,9 @@ class BookmarkNotifier extends _$BookmarkNotifier {
   }
 
   void toggleBookmark(Book book) {
+    final searchResult = ref.watch(searchNotifierProvider).result; 
     final currentBooks = state;
-    final index = currentBooks.indexWhere((b) => b.id == book.id);
+    final index = searchResult.indexWhere((b) => b.id == book.id);
     
     if (index == -1) {
       // Book not in list, add it

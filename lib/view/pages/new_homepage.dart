@@ -1,15 +1,6 @@
-import 'dart:async';
-
-import 'package:BookVerse/helper/push_navigation.dart';
-import 'package:BookVerse/provider/search_provider.dart';
 import 'package:BookVerse/view/pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:BookVerse/model/book_model.dart';
-import 'package:BookVerse/provider/playbook_services_provider.dart';
-import 'package:BookVerse/view/components.dart';
-import 'package:BookVerse/view/pages/chatbot_page.dart';
-import 'package:BookVerse/view/pages/detail_page.dart';
 
 class NewHomePage extends ConsumerStatefulWidget {
   const NewHomePage({super.key});
@@ -66,73 +57,6 @@ class _HomeState extends ConsumerState<NewHomePage> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class SearchPage extends ConsumerStatefulWidget {
-  const SearchPage({super.key});
-
-  @override
-  ConsumerState<SearchPage> createState() => _SearchPageState();
-}
-
-class _SearchPageState extends ConsumerState<SearchPage> {
-  final queryController = TextEditingController();
-  Timer? _debounce;
-
-  @override
-  void dispose() {
-    queryController.dispose();
-    _debounce?.cancel();
-    super.dispose();
-  }
-
-  void onSearchChange(String query) {
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      ref.read(searchNotifierProvider.notifier).onQueryChanged(query);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final searchState = ref.watch(searchNotifierProvider);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Hero(
-          tag: 'searchBar',
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: TextField(
-                controller: queryController,
-                autofocus: true,
-                decoration: InputDecoration.collapsed(hintText: 'Search...'),
-                onChanged: onSearchChange,
-              ),
-            ),
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body:
-          searchState.result.isEmpty
-              ? Center(child: const Text('Book will appear here'))
-              : ListView.builder(
-                itemBuilder: (context, index) {
-                  List<Book> result = ref.watch(searchNotifierProvider).result;
-                  Book book = result[index];
-                return bookListTile(context, book, isFromSearch: true);
-                },
-              ),
     );
   }
 }

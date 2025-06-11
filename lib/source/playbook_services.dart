@@ -9,7 +9,7 @@ class PlaybookServices {
 
   static Uri generateUrl({
     String? query,
-    int maxResult = 20,
+    int maxResult = 30,
     String? author,
     String? title,
     String? publisher,
@@ -33,7 +33,7 @@ class PlaybookServices {
 
   Future<List<Book>?> getBookData({
     String? query,
-    int maxResult = 20,
+    int maxResult = 30,
     String? author,
     String? title,
     String? publisher
