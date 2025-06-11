@@ -6,7 +6,7 @@ part of 'bookmark_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bookmarkNotifierHash() => r'd4a3193c427ebbd5a00ac2af8be0558c3d7b21c8';
+String _$bookmarkNotifierHash() => r'dbfe329f7084b01c8931595383a8d87d4c8fa942';
 
 /// See also [BookmarkNotifier].
 @ProviderFor(BookmarkNotifier)

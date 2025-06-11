@@ -31,12 +31,7 @@ class _HomeState extends ConsumerState<HomePage> {
     });
 
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await ref.read(bookNotifierProvider.notifier).fetchBooks();
-        },
-        child: _buildBookList(textTheme),
-      ),
+      body: _buildBookList(textTheme),
       floatingActionButton: _buildChatButton(context),
     );
   }
@@ -54,7 +49,72 @@ Widget _buildBookList(TextTheme textTheme) {
       }
       List<Book> books = state.data ?? [];
       return CustomScrollView(
-        slivers: [_buildAppBar(context), _buildBookGrid(books, textTheme)],
+        slivers: [
+          _buildAppBar(context),
+          SliverAppBar(
+            automaticallyImplyLeading: false,
+            toolbarHeight: 360,
+            flexibleSpace: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          'More like The Great Shifting - Rhenald Kasali',
+                          maxLines: 2,
+                          softWrap: true,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.arrow_forward),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 260,
+                    child: ListView.separated(
+                      physics: BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemCount: 20,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        // TODO : implement real book
+                        // Book book = books[index];
+                        Book book = Book(
+                          id: 'id',
+                          title: 'title',
+                          subTitle: 'subTitle',
+                          authors: ['authors'],
+                          publisher: 'publisher',
+                          publishedDate: 'publishedDate',
+                          description: 'description',
+                          thumbnail:
+                              'https://imgs.search.brave.com/mBEp4eus0E1w21Ja7IQg_kozkW-Z1G_38RMIPc-hDqc/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9pbWdz/LnNlYXJjaC5icmF2/ZS5jb20vc2lVWHFY/b2ZtZE14SElrbWts/Tjdpai0xcWhuT1pL/czNnS0Npb1NfTUJ2/US9yczpmaXQ6NTAw/OjA6MDowL2c6Y2Uv/YUhSMGNITTZMeTlw/YldjdS9abkpsWlhC/cGF5NWpiMjB2L1pu/SmxaUzF3YUc5MGJ5/OWkvYjI5ckxXTnZi/WEJ2YzJsMC9hVzl1/TFhkcGRHZ3RiM0Js/L2JpMWliMjlyWHpJ/ekxUSXgvTkRjMk9U/QTFOVFV1YW5Cbi9Q/M05sYlhROVlXbHpY/Mmg1L1luSnBaQ1oz/UFRjME1B.jpeg',
+                          pageCount: 200,
+                        );
+                        return bookGridTile(
+                          book: book,
+                          textTheme: Theme.of(context).textTheme,
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return SizedBox(width: 8);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       );
     },
   );
@@ -150,13 +210,11 @@ class _BuildGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: 
-        pushNavigation(
-          context,
-          destinationPage: DetailPage(selectedBookId: book.id),
-        )
-      ,
-      child: bookGridTile(book, textTheme),
+      onTap: pushNavigation(
+        context,
+        destinationPage: DetailPage(selectedBookId: book.id),
+      ),
+      child: bookGridTile(book: book, textTheme: textTheme),
     );
   }
 }

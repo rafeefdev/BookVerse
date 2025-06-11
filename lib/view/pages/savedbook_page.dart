@@ -122,7 +122,7 @@ class SavedbookPage extends ConsumerWidget {
           ),
         );
       },
-      child: bookGridTile(book, Theme.of(context).textTheme),
+      child: bookGridTile(book: book, textTheme: Theme.of(context).textTheme),
     );
   }
 }

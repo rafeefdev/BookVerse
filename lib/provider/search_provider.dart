@@ -7,11 +7,16 @@ part 'search_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class SearchNotifier extends _$SearchNotifier {
-  PlaybookServices playbookService = PlaybookServices();
+  final _playbookService = PlaybookServices();
   
   @override
   SearchState build() {
     return SearchState(query: '', result: [], isLoading: false, error: null);
+  }
+
+  void resetQuery() {
+    SearchState newState = SearchState(query: '', result: []);
+    state = newState;
   }
 
   Future<void> onQueryChanged(String query) async {
@@ -28,7 +33,7 @@ class SearchNotifier extends _$SearchNotifier {
     );
 
     try {
-      final books = await playbookService.searchBooks(query);
+      final books = await _playbookService.searchBooks(query);
       state = SearchState(
         query: query,
         result: books ?? [],
