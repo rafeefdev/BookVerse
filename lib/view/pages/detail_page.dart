@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:BookVerse/model/book_model.dart';
@@ -35,22 +37,16 @@ class DetailPage extends ConsumerWidget {
       );
     }
     
+    log('selectedBookId : $selectedBookId');
+
     Book selectedBook = books[index];
-    bool isBookmarked = ref.watch(bookmarkNotifierProvider.notifier).isBookmarked(selectedBookId);
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Detail'),
         actionsPadding: EdgeInsets.only(right: 16),
         actions: [
-          IconButton(
-            onPressed: () {
-              ref.read(bookmarkNotifierProvider.notifier).toggleBookmark(selectedBook);
-            },
-            icon: Icon(
-              isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
-            ),
-          ),
+          BookmarkButton(selectedBook: selectedBook),
         ],
       ),
       body: SingleChildScrollView(
@@ -167,5 +163,32 @@ class DetailPage extends ConsumerWidget {
       result = '${selectedBook.categories!.join(', ')}, etc';
     }
     return result;
+  }
+}
+
+class BookmarkButton extends ConsumerWidget {
+  const BookmarkButton({
+    super.key,
+    required this.selectedBook,
+  });
+
+  final Book selectedBook;
+
+ 
+@override
+  Widget build(BuildContext context, WidgetRef ref) {
+    log('bookmark button pressed & rebuilded');
+
+    final bookMarkedBooks = ref.watch(bookmarkNotifierProvider);
+    final isBookmarked = bookMarkedBooks.any((book)=>book.id == selectedBook.id);
+
+    return IconButton(
+      onPressed: () {
+        ref.read(bookmarkNotifierProvider.notifier).toggleBookmark(selectedBook);
+      },
+      icon: Icon(
+        isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
+      ),
+    );
   }
 }
