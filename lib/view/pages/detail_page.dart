@@ -9,11 +9,9 @@ import 'package:BookVerse/provider/bookmark_provider.dart';
 
 class DetailPage extends ConsumerWidget {
   final String selectedBookId;
-  final bool isFromSearch;
 
   const DetailPage({
     required this.selectedBookId,
-    this.isFromSearch = false,
     super.key,
   });
 
@@ -21,10 +19,7 @@ class DetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var textTheme = Theme.of(context).textTheme;
     
-    // Get book data from appropriate provider
-    List<Book> books = isFromSearch 
-        ? ref.watch(searchNotifierProvider).result
-        : ref.watch(bookNotifierProvider).data;
+    List<Book> books = ref.watch(searchNotifierProvider).result;
         
     int index = books.indexWhere((book) => book.id == selectedBookId);
     
