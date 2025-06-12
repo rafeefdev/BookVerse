@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:BookVerse/model/book_model.dart';
 import 'package:BookVerse/provider/bookmark_provider.dart';
-import 'package:BookVerse/provider/playbook_services_provider.dart';
 import 'package:BookVerse/view/components.dart';
 import 'package:BookVerse/view/pages/detail_page.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:BookVerse/provider/bookmark_provider.dart';
 
 enum ViewMode { grid, list }
 

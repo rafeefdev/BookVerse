@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:BookVerse/shared/app_theme.dart';
 import 'package:BookVerse/view/pages/chatbot_page.dart';
-import 'package:BookVerse/view/pages/homepage.dart';
 import 'package:BookVerse/view/pages/savedbook_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
