@@ -1,8 +1,7 @@
+
 import 'package:BookVerse/helper/book_authors.dart';
-import 'package:BookVerse/helper/push_navigation.dart';
-import 'package:BookVerse/view/pages/detail_page.dart';
-import 'package:flutter/material.dart';
 import 'package:BookVerse/model/book_model.dart';
+import 'package:flutter/material.dart';
 
 Widget bookGridTile({
   required Book book,
@@ -109,102 +108,4 @@ Widget bookGridTile({
       ),
     ),
   );
-}
-
-Container dotIndicator(bool isIndexed) {
-  return Container(
-    height: 8,
-    width: 8,
-    margin: const EdgeInsets.symmetric(horizontal: 2),
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      color: isIndexed ? Colors.deepPurple : Colors.purple,
-    ),
-  );
-}
-
-Widget nextButton(BuildContext context, {required Widget nextScreen}) {
-  return Container(
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      color: Colors.white,
-      border: Border.all(color: Colors.black, width: 0.1),
-    ),
-    child: IconButton(
-      icon: const Icon(Icons.arrow_forward_ios_rounded),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => nextScreen),
-        );
-      },
-    ),
-  );
-}
-
-Widget simpleSearcBar(
-  BuildContext context, {
-  required VoidCallback onTap,
-  bool isExpanded = false,
-}) {
-  Widget searchBar = SearchBar(
-    padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 16)),
-    elevation: const WidgetStatePropertyAll(4),
-    leading: const Icon(Icons.search),
-    hintText: 'Search',
-    onTap: onTap,
-  );
-  return isExpanded ? Expanded(child: searchBar) : searchBar;
-}
-
-Widget bookListTile(
-  BuildContext context,
-  Book book, {
-  bool isWrappedByCard = false,
-  bool isFromSearch = false,
-}) {
-  Widget lisTile = InkWell(
-    onTap: pushNavigation(
-      context,
-      destinationPage: DetailPage(selectedBookId: book.id),
-    ),
-    child: ListTile(
-      contentPadding: const EdgeInsets.all(16),
-      leading:
-          book.thumbnail.isNotEmpty
-              ? ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  book.thumbnail,
-                  width: 50,
-                  height: 70,
-                  fit: BoxFit.cover,
-                  errorBuilder:
-                      (context, error, stackTrace) => const Icon(Icons.book),
-                ),
-              )
-              : Container(
-                width: 50,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Center(child: Icon(Icons.book, color: Colors.grey[600])),
-              ),
-      title: Text(
-        book.title,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      subtitle: Text(bookAuthors(book)),
-    ),
-  );
-
-  return isWrappedByCard
-      ? Card(
-        elevation: 2.6,
-        margin: const EdgeInsets.only(bottom: 12),
-        child: lisTile,
-      )
-      : lisTile;
 }

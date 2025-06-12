@@ -1,4 +1,5 @@
-import 'package:BookVerse/view/components.dart';
+import 'package:BookVerse/view/components/dotindicator_component.dart';
+import 'package:BookVerse/view/components/nextbutton_components.dart';
 import 'package:BookVerse/view/pages/splash_screens/fourth_page.dart';
 import 'package:flutter/material.dart';
 
