@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:BookVerse/model/book_model.dart';
 import 'package:BookVerse/provider/search_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,7 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'bookmark_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class BookmarkNotifier extends _$BookmarkNotifier {
   @override
   List<Book> build() {
@@ -13,10 +15,9 @@ class BookmarkNotifier extends _$BookmarkNotifier {
   }
 
   void toggleBookmark(Book book) {
-    final searchResult = ref.watch(searchNotifierProvider).result; 
     final currentBooks = state;
-    final index = searchResult.indexWhere((b) => b.id == book.id);
-    
+    final index = currentBooks.indexWhere((b) => b.id == book.id);
+
     if (index == -1) {
       // Book not in list, add it
       final updatedBook = Book(
@@ -32,9 +33,11 @@ class BookmarkNotifier extends _$BookmarkNotifier {
         subTitle: book.subTitle,
         isFavorite: true,
       );
+      log('book "${book.title}" added to favorite list');
       state = [...currentBooks, updatedBook];
     } else {
       // Book in list, remove it
+      log('book "${book.title}" removed from favorite list');
       state = currentBooks.where((b) => b.id != book.id).toList();
     }
   }
