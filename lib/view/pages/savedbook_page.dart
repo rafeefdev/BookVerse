@@ -107,7 +107,7 @@ class SavedbookPage extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       itemCount: books.length,
       itemBuilder: (context, index) {
-        return bookListTile(context, books[index], isWrappedByCard: true);
+        return bookListTile(context, books[index], isWrappedByCard: true, isFromSearch: true);
       },
     );
   }
