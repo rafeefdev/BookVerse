@@ -2,6 +2,7 @@ import 'package:BookVerse/helper/book_authors.dart';
 import 'package:BookVerse/helper/push_navigation.dart';
 import 'package:BookVerse/model/book_model.dart';
 import 'package:BookVerse/view/pages/detail_page.dart';
+import 'package:BookVerse/view/pages/new_detailpage.dart';
 import 'package:flutter/material.dart';
 
 Widget bookListTile(
@@ -13,10 +14,10 @@ Widget bookListTile(
   Widget lisTile = InkWell(
     onTap: pushNavigation(
       context,
-      destinationPage: DetailPage(
+      destinationPage: NewDetailpage(
         selectedBookId: book.id,
         isTemporarySource: isTemporarySource,
-      ),
+      )
     ),
     child: ListTile(
       contentPadding: const EdgeInsets.all(16),
