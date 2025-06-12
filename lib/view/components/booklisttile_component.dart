@@ -1,4 +1,3 @@
-
 import 'package:BookVerse/helper/book_authors.dart';
 import 'package:BookVerse/helper/push_navigation.dart';
 import 'package:BookVerse/model/book_model.dart';
@@ -9,12 +8,15 @@ Widget bookListTile(
   BuildContext context,
   Book book, {
   bool isWrappedByCard = false,
-  bool isFromSearch = false,
+  bool isTemporarySource = false,
 }) {
   Widget lisTile = InkWell(
     onTap: pushNavigation(
       context,
-      destinationPage: DetailPage(selectedBookId: book.id),
+      destinationPage: DetailPage(
+        selectedBookId: book.id,
+        isTemporarySource: isTemporarySource,
+      ),
     ),
     child: ListTile(
       contentPadding: const EdgeInsets.all(16),

@@ -9,29 +9,33 @@ import 'package:BookVerse/provider/bookmark_provider.dart';
 
 class DetailPage extends ConsumerWidget {
   final String selectedBookId;
+  final bool isTemporarySource;
 
   const DetailPage({
     required this.selectedBookId,
     super.key,
+    required this.isTemporarySource,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var textTheme = Theme.of(context).textTheme;
-    
-    List<Book> books = ref.watch(searchNotifierProvider).result;
-        
+
+    //if temporary source, indexing file from search provider
+    //and from bookmark provider when its from bookmark provider
+    var searchBookResult = ref.watch(searchNotifierProvider).result;
+    var bookmarkedItems = ref.watch(bookmarkNotifierProvider);
+    List<Book> books = isTemporarySource ? searchBookResult : bookmarkedItems;
+
     int index = books.indexWhere((book) => book.id == selectedBookId);
-    
+
     if (index == -1) {
       return Scaffold(
         appBar: AppBar(title: Text('Detail')),
-        body: Center(
-          child: Text('Book not found'),
-        ),
+        body: Center(child: Text('Book not found')),
       );
     }
-    
+
     log('selectedBookId : $selectedBookId');
 
     Book selectedBook = books[index];
@@ -40,9 +44,7 @@ class DetailPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text('Detail'),
         actionsPadding: EdgeInsets.only(right: 16),
-        actions: [
-          BookmarkButton(selectedBook: selectedBook),
-        ],
+        actions: [BookmarkButton(selectedBook: selectedBook)],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -162,28 +164,26 @@ class DetailPage extends ConsumerWidget {
 }
 
 class BookmarkButton extends ConsumerWidget {
-  const BookmarkButton({
-    super.key,
-    required this.selectedBook,
-  });
+  const BookmarkButton({super.key, required this.selectedBook});
 
   final Book selectedBook;
 
- 
-@override
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     log('bookmark button pressed & rebuilded');
 
     final bookMarkedBooks = ref.watch(bookmarkNotifierProvider);
-    final isBookmarked = bookMarkedBooks.any((book)=>book.id == selectedBook.id);
+    final isBookmarked = bookMarkedBooks.any(
+      (book) => book.id == selectedBook.id,
+    );
 
     return IconButton(
       onPressed: () {
-        ref.read(bookmarkNotifierProvider.notifier).toggleBookmark(selectedBook);
+        ref
+            .read(bookmarkNotifierProvider.notifier)
+            .toggleBookmark(selectedBook);
       },
-      icon: Icon(
-        isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
-      ),
+      icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded),
     );
   }
 }

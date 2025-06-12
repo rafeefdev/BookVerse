@@ -68,7 +68,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 itemBuilder: (context, index) {
                   List<Book> result = ref.watch(searchNotifierProvider).result;
                   Book book = result[index];
-                return bookListTile(context, book, isFromSearch: true);
+                return bookListTile(context, book, isTemporarySource: true);
                 },
               ),
     );
