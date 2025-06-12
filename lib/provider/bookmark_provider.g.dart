@@ -6,12 +6,12 @@ part of 'bookmark_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bookmarkNotifierHash() => r'dbfe329f7084b01c8931595383a8d87d4c8fa942';
+String _$bookmarkNotifierHash() => r'29c73ccedbf1aa004a2e0b7f2d9a0cc6d12f6685';
 
 /// See also [BookmarkNotifier].
 @ProviderFor(BookmarkNotifier)
 final bookmarkNotifierProvider =
-    AutoDisposeNotifierProvider<BookmarkNotifier, List<Book>>.internal(
+    NotifierProvider<BookmarkNotifier, List<Book>>.internal(
       BookmarkNotifier.new,
       name: r'bookmarkNotifierProvider',
       debugGetCreateSourceHash:
@@ -22,6 +22,6 @@ final bookmarkNotifierProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$BookmarkNotifier = AutoDisposeNotifier<List<Book>>;
+typedef _$BookmarkNotifier = Notifier<List<Book>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
