@@ -1,19 +1,17 @@
 import 'dart:developer';
 
+import 'package:BookVerse/helper/book_authors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:BookVerse/model/book_model.dart';
-import 'package:BookVerse/provider/playbook_services_provider.dart';
 import 'package:BookVerse/provider/search_provider.dart';
 import 'package:BookVerse/provider/bookmark_provider.dart';
 
 class DetailPage extends ConsumerWidget {
   final String selectedBookId;
-  final bool isFromSearch;
 
   const DetailPage({
     required this.selectedBookId,
-    this.isFromSearch = false,
     super.key,
   });
 
@@ -21,10 +19,7 @@ class DetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var textTheme = Theme.of(context).textTheme;
     
-    // Get book data from appropriate provider
-    List<Book> books = isFromSearch 
-        ? ref.watch(searchNotifierProvider).result
-        : ref.watch(bookNotifierProvider).data;
+    List<Book> books = ref.watch(searchNotifierProvider).result;
         
     int index = books.indexWhere((book) => book.id == selectedBookId);
     

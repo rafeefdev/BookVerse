@@ -1,10 +1,14 @@
+import 'package:BookVerse/helper/book_authors.dart';
 import 'package:BookVerse/helper/push_navigation.dart';
 import 'package:BookVerse/view/pages/detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:BookVerse/model/book_model.dart';
-import 'package:BookVerse/provider/playbook_services_provider.dart';
 
-Widget bookGridTile({required Book book, required TextTheme textTheme, double? aspectRatio}) {
+Widget bookGridTile({
+  required Book book,
+  required TextTheme textTheme,
+  double? aspectRatio,
+}) {
   return AspectRatio(
     aspectRatio: aspectRatio ?? 3 / 4,
     child: Card(
@@ -153,14 +157,16 @@ Widget simpleSearcBar(
   return isExpanded ? Expanded(child: searchBar) : searchBar;
 }
 
-Widget bookListTile(BuildContext context, Book book, {bool isWrappedByCard = false, bool isFromSearch = false}) {
+Widget bookListTile(
+  BuildContext context,
+  Book book, {
+  bool isWrappedByCard = false,
+  bool isFromSearch = false,
+}) {
   Widget lisTile = InkWell(
     onTap: pushNavigation(
-      context, 
-      destinationPage: DetailPage(
-        selectedBookId: book.id,
-        isFromSearch: isFromSearch,
-      )
+      context,
+      destinationPage: DetailPage(selectedBookId: book.id),
     ),
     child: ListTile(
       contentPadding: const EdgeInsets.all(16),
