@@ -1,6 +1,5 @@
-import 'package:BookVerse/model/book_model.dart';
 import 'package:BookVerse/model/searchstate_model.dart';
-import 'package:BookVerse/source/playbook_services.dart';
+import 'package:BookVerse/services/playbook_services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'search_provider.g.dart';

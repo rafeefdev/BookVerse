@@ -1,3 +1,4 @@
+import 'package:BookVerse/services/useronboarding_service.dart';
 import 'package:BookVerse/view/pages/splash_screens/second_page.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +21,7 @@ class FirstScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(builder: (context) => SecondScreen()),
                 );
+                UserOnBoardingService().setUserHasOpenedApp();
               },
               style: ButtonStyle(
                 fixedSize: WidgetStatePropertyAll(
