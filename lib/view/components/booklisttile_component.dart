@@ -1,7 +1,7 @@
 import 'package:BookVerse/helper/book_authors.dart';
 import 'package:BookVerse/helper/push_navigation.dart';
 import 'package:BookVerse/model/book_model.dart';
-import 'package:BookVerse/view/pages/new_detailpage.dart';
+import 'package:BookVerse/view/pages/detailpage.dart';
 import 'package:flutter/material.dart';
 
 Widget bookListTile(

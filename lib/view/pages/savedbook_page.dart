@@ -1,6 +1,6 @@
 import 'package:BookVerse/view/components/bookgridtile_component.dart';
 import 'package:BookVerse/view/components/booklisttile_component.dart';
-import 'package:BookVerse/view/pages/new_detailpage.dart';
+import 'package:BookVerse/view/pages/detailpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:BookVerse/model/book_model.dart';
