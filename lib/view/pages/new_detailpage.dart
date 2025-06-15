@@ -49,108 +49,105 @@ class NewDetailpage extends ConsumerWidget {
         actions: [BookmarkButton(selectedBook: selectedBook)],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              selectedBook.thumbnail.isEmpty
-                  ? Center(
-                    child: AspectRatio(
-                      aspectRatio: 3 / 4,
-                      child: Container(
-                        height: 200,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.black, width: 0.05),
-                        ),
-                        child: Icon(Icons.print, size: 35),
-                      ),
-                    ),
-                  )
-                  : AspectRatio(
+        padding: EdgeInsets.only(left: 28, right: 28, top: 12, bottom: 28),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            selectedBook.thumbnail.isEmpty
+                ? Center(
+                  child: AspectRatio(
                     aspectRatio: 3 / 4,
                     child: Container(
                       height: 200,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        border: Border.all(color: Colors.black, width: 0.2),
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(selectedBook.thumbnail),
-                        ),
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.black, width: 0.05),
+                      ),
+                      child: Icon(Icons.print, size: 35),
+                    ),
+                  ),
+                )
+                : AspectRatio(
+                  aspectRatio: 3 / 4,
+                  child: Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      border: Border.all(color: Colors.black, width: 0.2),
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(selectedBook.thumbnail),
                       ),
                     ),
                   ),
-              SizedBox(height: 24),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    selectedBook.title,
-                    style: TextStyle(
-                      height: 1.2,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                ),
+            SizedBox(height: 24),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  selectedBook.title,
+                  style: TextStyle(
+                    height: 1.2,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                  selectedBook.subTitle != null
-                      ? Text(
-                        selectedBook.subTitle!,
-                        style: TextStyle(height: 1.3),
-                      )
-                      : SizedBox(),
-                  Text(
-                    bookAuthors(selectedBook),
-                    style: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  bookDetailInfoTile(
-                    title: 'Published Date',
-                    data: selectedBook.publishedDate,
-                    icon: Icons.calendar_month_rounded,
-                  ),
-                  const SizedBox(width: 12),
-                  bookDetailInfoTile(
-                    title: 'Page Count',
-                    data: selectedBook.pageCount.toString(),
-                    icon: Icons.menu_book_rounded,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  bookDetailInfoTile(
-                    data: bookCategories(selectedBook),
-                    icon: Icons.file_copy,
-                    title: 'Categories',
-                  ),
-                  const SizedBox(width: 8),
-                  bookDetailInfoTile(
-                    data: selectedBook.publisher,
-                    icon: Icons.print_rounded,
-                    title: 'Publisher',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Text(
-                selectedBook.description,
-                style: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                textAlign: TextAlign.justify,
-              ),
-            ],
-          ),
+                ),
+                Text(selectedBook.subTitle ?? 'Description not available', style: TextStyle(height: 1.3)),
+              ],
+            ),
+            Row(
+              children: [
+                bookDetailInfoTile(
+                  title: 'Authors',
+                  data: bookAuthors(selectedBook),
+                  icon: Icons.person_2_rounded,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                bookDetailInfoTile(
+                  title: 'Published Date',
+                  data: selectedBook.publishedDate,
+                  icon: Icons.calendar_month_rounded,
+                ),
+                const SizedBox(width: 12),
+                bookDetailInfoTile(
+                  title: 'Page Count',
+                  data: selectedBook.pageCount.toString(),
+                  icon: Icons.menu_book_rounded,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                bookDetailInfoTile(
+                  data: bookCategories(selectedBook),
+                  icon: Icons.file_copy,
+                  title: 'Categories',
+                ),
+                const SizedBox(width: 8),
+                bookDetailInfoTile(
+                  data: selectedBook.publisher,
+                  icon: Icons.print_rounded,
+                  title: 'Publisher',
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Text(
+              selectedBook.description,
+              style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+              textAlign: TextAlign.justify,
+            ),
+          ],
         ),
       ),
     );
