@@ -5,6 +5,7 @@ Widget bookDetailInfoTile({
   required String data,
   required IconData icon,
   bool isFullWidth = false,
+  int dataMaxLines = 2
 }) {
   var mainComponent = SizedBox(
     height: 156,
@@ -23,6 +24,8 @@ Widget bookDetailInfoTile({
           Text(
             data,
             textAlign: TextAlign.center,
+            maxLines: dataMaxLines,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
           Text(title, style: TextStyle(fontSize: 16, color: Colors.grey)),
