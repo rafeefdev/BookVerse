@@ -38,9 +38,10 @@ class NewDetailpage extends ConsumerWidget {
       );
     }
 
-    log('selectedBookId : $selectedBookId');
-
     Book selectedBook = books[index];
+    log(
+      'selectedBookId : $selectedBookId\nauthors count : ${selectedBook.authors.length}',
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -95,9 +96,15 @@ class NewDetailpage extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(selectedBook.subTitle ?? 'Description not available', style: TextStyle(height: 1.3)),
+                Text(
+                  selectedBook.subTitle!.isEmpty
+                      ? 'Description is not avalable'
+                      : selectedBook.subTitle!,
+                  style: TextStyle(height: 1.3),
+                ),
               ],
             ),
+            const SizedBox(height: 24),
             Row(
               children: [
                 bookDetailInfoTile(
@@ -137,6 +144,7 @@ class NewDetailpage extends ConsumerWidget {
                 bookDetailInfoTile(
                   data: selectedBook.publisher,
                   icon: Icons.print_rounded,
+                  dataMaxLines: 1,
                   title: 'Publisher',
                 ),
               ],
