@@ -52,41 +52,35 @@ class DetailPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              title:
-                  selectedBook.thumbnail.isEmpty
-                      ? Center(
-                        child: AspectRatio(
-                          aspectRatio: 3 / 4,
-                          child: Container(
-                            height: 200,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 0.05,
-                              ),
-                            ),
-                            child: Icon(Icons.print, size: 35),
-                          ),
-                        ),
-                      )
-                      : AspectRatio(
-                        aspectRatio: 3 / 4,
-                        child: Container(
-                          height: 200,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                            border: Border.all(color: Colors.black, width: 0.2),
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(selectedBook.thumbnail),
-                            ),
-                          ),
-                        ),
+            selectedBook.thumbnail.isEmpty
+                ? Center(
+                  child: AspectRatio(
+                    aspectRatio: 3 / 4,
+                    child: Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.black, width: 0.05),
                       ),
-            ),
+                      child: Icon(Icons.print, size: 35),
+                    ),
+                  ),
+                )
+                : AspectRatio(
+                  aspectRatio: 3 / 4,
+                  child: Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      border: Border.all(color: Colors.black, width: 0.2),
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(selectedBook.thumbnail),
+                      ),
+                    ),
+                  ),
+                ),
             SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
