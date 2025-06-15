@@ -92,7 +92,7 @@ Widget bookGridTile({
                         SizedBox(width: 6),
                         Expanded(
                           child: Text(
-                            bookAuthors(book),
+                            bookAuthors(book, maxAuthorsDisplayed: 1),
                             maxLines: 1,
                             style: textTheme.bodySmall,
                           ),
