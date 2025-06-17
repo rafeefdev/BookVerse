@@ -1,7 +1,7 @@
-
 import 'dart:async';
 import 'package:BookVerse/model/book_model.dart';
 import 'package:BookVerse/provider/search_provider.dart';
+import 'package:BookVerse/shared/themes_extension.dart';
 import 'package:BookVerse/view/components/booklisttile_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,6 +34,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(searchNotifierProvider);
+    bool isDarkMode = context.theme.brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +45,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.grey.shade200,
+                color: isDarkMode ? Colors.grey[800] : Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(30),
               ),
               child: TextField(
@@ -56,7 +57,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             ),
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? Colors.grey[600] : Colors.grey.shade200,
         elevation: 0,
       ),
       body:
@@ -68,7 +69,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 itemBuilder: (context, index) {
                   List<Book> result = ref.watch(searchNotifierProvider).result;
                   Book book = result[index];
-                return bookListTile(context, book, isTemporarySource: true);
+                  return bookListTile(context, book, isTemporarySource: true);
                 },
               ),
     );

@@ -41,7 +41,7 @@ class SavedbookPage extends ConsumerWidget {
                       'Favorite Book List',
                       style: TextStyle(
                         fontSize: 24, // Material Design headline4 size
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
 
