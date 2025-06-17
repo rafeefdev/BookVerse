@@ -5,6 +5,17 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Definisikan fungsi untuk membaca versi dari Flutter
+fun flutterVersionCode(): String {
+    val flutterVersionCode = project.findProperty("flutter.versionCode")
+    return flutterVersionCode?.toString() ?: "1"
+}
+
+fun flutterVersionName(): String {
+    val flutterVersionName = project.findProperty("flutter.versionName")
+    return flutterVersionName?.toString() ?: "1.0.0"
+}
+
 android {
     namespace = "com.bookverse.app"
     compileSdk = flutter.compileSdkVersion
@@ -27,8 +38,8 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutterVersionCode.toInteger()
-        versionName = flutterVersionName
+        versionCode = flutterVersionCode().toInt()
+        versionName = flutterVersionName()
     }
 
     buildTypes {
