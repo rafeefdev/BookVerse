@@ -32,39 +32,39 @@ class SavedbookPage extends ConsumerWidget {
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 8,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Title on the left
-                    const Text(
-                      'Favorite Book List',
-                      style: TextStyle(
-                        fontSize: 24, // Material Design headline4 size
-                        fontWeight: FontWeight.w500,
+                // Title on the left
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(
+                    'Favorite Book List',
+                    style: TextStyle(
+                      fontSize: 24, // Material Design headline4 size
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SegmentedButton<ViewMode>(
+                    segments: const [
+                      ButtonSegment<ViewMode>(
+                        value: ViewMode.grid,
+                        icon: Icon(Icons.grid_view),
+                        label: Text('Grid'),
                       ),
-                    ),
-
-                    // Segmented button on the right
-                    SegmentedButton<ViewMode>(
-                      segments: const [
-                        ButtonSegment<ViewMode>(
-                          value: ViewMode.grid,
-                          icon: Icon(Icons.grid_view),
-                          label: Text('Grid'),
-                        ),
-                        ButtonSegment<ViewMode>(
-                          value: ViewMode.list,
-                          icon: Icon(Icons.view_list),
-                          label: Text('List'),
-                        ),
-                      ],
-                      selected: {viewMode},
-                      onSelectionChanged: (Set<ViewMode> value) {
-                        ref.read(viewModeProvider.notifier).state = value.first;
-                      },
-                    ),
-                  ],
+                      ButtonSegment<ViewMode>(
+                        value: ViewMode.list,
+                        icon: Icon(Icons.view_list),
+                        label: Text('List'),
+                      ),
+                    ],
+                    selected: {viewMode},
+                    onSelectionChanged: (Set<ViewMode> value) {
+                      ref.read(viewModeProvider.notifier).state = value.first;
+                    },
+                  ),
                 ),
               ],
             ),
@@ -105,7 +105,12 @@ class SavedbookPage extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       itemCount: books.length,
       itemBuilder: (context, index) {
-        return bookListTile(context, books[index], isWrappedByCard: true, isTemporarySource: false);
+        return bookListTile(
+          context,
+          books[index],
+          isWrappedByCard: true,
+          isTemporarySource: false,
+        );
       },
     );
   }
@@ -116,7 +121,11 @@ class SavedbookPage extends ConsumerWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NewDetailpage(selectedBookId: book.id, isTemporarySource: false),
+            builder:
+                (context) => NewDetailpage(
+                  selectedBookId: book.id,
+                  isTemporarySource: false,
+                ),
           ),
         );
       },
