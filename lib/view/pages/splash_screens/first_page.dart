@@ -8,30 +8,32 @@ class FirstScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(height: 320),
-            literaLifeLogo(150),
-            SizedBox(height: 320),
-            FilledButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SecondScreen()),
-                );
-                UserOnBoardingService().setUserHasOpenedApp();
-              },
-              style: ButtonStyle(
-                fixedSize: WidgetStatePropertyAll(
-                  Size(MediaQuery.of(context).size.width * 0.8, 45),
+      body: SafeArea(
+        child: SizedBox.expand(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Spacer(flex: 2),
+              literaLifeLogo(150),
+              const Spacer(flex: 3),
+              FilledButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SecondScreen()),
+                  );
+                  UserOnBoardingService().setUserHasOpenedApp();
+                },
+                style: ButtonStyle(
+                  fixedSize: WidgetStatePropertyAll(
+                    Size(MediaQuery.of(context).size.width * 0.8, 45),
+                  ),
                 ),
+                child: const Text('Start !'),
               ),
-              child: const Text('Start !'),
-            ),
-            SizedBox(height: 32),
-          ],
+              SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );
