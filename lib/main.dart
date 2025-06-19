@@ -20,7 +20,7 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       title: 'BookVerse',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(),
+      theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: appThemeMode,
       home: const OnboardingRouter(),
