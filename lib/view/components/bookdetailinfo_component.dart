@@ -9,13 +9,7 @@ Widget bookDetailInfoTile({
 }) {
   var mainComponent = SizedBox(
     height: 156,
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black, width: 0.2),
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white54,
-      ),
+    child: Card(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
