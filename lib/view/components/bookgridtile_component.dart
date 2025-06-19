@@ -1,6 +1,6 @@
 
-import 'package:BookVerse/helper/book_authors.dart';
-import 'package:BookVerse/model/book_model.dart';
+import 'package:book_verse/helper/book_authors.dart';
+import 'package:book_verse/model/book_model.dart';
 import 'package:flutter/material.dart';
 
 Widget bookGridTile({

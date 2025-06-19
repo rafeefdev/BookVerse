@@ -1,5 +1,5 @@
-import 'package:BookVerse/services/useronboarding_service.dart';
-import 'package:BookVerse/view/pages/splash_screens/second_page.dart';
+import 'package:book_verse/services/useronboarding_service.dart';
+import 'package:book_verse/view/pages/splash_screens/second_page.dart';
 import 'package:flutter/material.dart';
 
 class FirstScreen extends StatelessWidget {

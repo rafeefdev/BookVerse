@@ -1,7 +1,6 @@
-import 'package:BookVerse/helper/push_navigation.dart';
-import 'package:BookVerse/view/pages/new_homepage.dart';
-import 'package:BookVerse/view/pages/savedbook_page.dart';
-import 'package:BookVerse/view/pages/settings_page.dart';
+import 'package:book_verse/view/pages/new_homepage.dart';
+import 'package:book_verse/view/pages/savedbook_page.dart';
+import 'package:book_verse/view/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

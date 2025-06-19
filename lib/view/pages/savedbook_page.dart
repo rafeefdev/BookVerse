@@ -1,10 +1,11 @@
-import 'package:BookVerse/view/components/bookgridtile_component.dart';
-import 'package:BookVerse/view/components/booklisttile_component.dart';
-import 'package:BookVerse/view/pages/detailpage.dart';
+import 'package:book_verse/shared/themes_extension.dart';
+import 'package:book_verse/view/components/bookgridtile_component.dart';
+import 'package:book_verse/view/components/booklisttile_component.dart';
+import 'package:book_verse/view/pages/detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:BookVerse/model/book_model.dart';
-import 'package:BookVerse/provider/bookmark_provider.dart';
+import 'package:book_verse/model/book_model.dart';
+import 'package:book_verse/provider/bookmark_provider.dart';
 
 enum ViewMode { grid, list }
 
@@ -25,28 +26,37 @@ class SavedbookPage extends ConsumerWidget {
         children: [
           // Top section - 20% of screen height
           Container(
-            height: screenHeight * 0.1,
+            height: screenHeight * 0.15,
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
               vertical: 8.0,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 8,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Title on the left
-                    const Text(
-                      'Favorite Book List',
-                      style: TextStyle(
-                        fontSize: 24, // Material Design headline4 size
-                        fontWeight: FontWeight.w500,
+                // Title on the left
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Favorite Book List',
+                        style: context.textTheme.titleLarge,
                       ),
-                    ),
-
-                    // Segmented button on the right
-                    SegmentedButton<ViewMode>(
+                      Text(
+                        'Your favorite book will displayed below',
+                        style: context.textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SizedBox(
+                    width: 180,
+                    child: SegmentedButton<ViewMode>(
                       segments: const [
                         ButtonSegment<ViewMode>(
                           value: ViewMode.grid,
@@ -64,7 +74,7 @@ class SavedbookPage extends ConsumerWidget {
                         ref.read(viewModeProvider.notifier).state = value.first;
                       },
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -105,7 +115,12 @@ class SavedbookPage extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       itemCount: books.length,
       itemBuilder: (context, index) {
-        return bookListTile(context, books[index], isWrappedByCard: true, isTemporarySource: false);
+        return bookListTile(
+          context,
+          books[index],
+          isWrappedByCard: true,
+          isTemporarySource: false,
+        );
       },
     );
   }
@@ -116,7 +131,11 @@ class SavedbookPage extends ConsumerWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NewDetailpage(selectedBookId: book.id, isTemporarySource: false),
+            builder:
+                (context) => DetailPage(
+                  selectedBookId: book.id,
+                  isTemporarySource: false,
+                ),
           ),
         );
       },

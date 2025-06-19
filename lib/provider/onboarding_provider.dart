@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:BookVerse/services/useronboarding_service.dart';
+import 'package:book_verse/services/useronboarding_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final onBoardingServiceProvider = FutureProvider<bool>((ref) async {
