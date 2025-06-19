@@ -1,6 +1,6 @@
-import 'package:BookVerse/provider/onboarding_provider.dart';
-import 'package:BookVerse/view/pages/mainpage.dart';
-import 'package:BookVerse/view/pages/splash_screens/first_page.dart';
+import 'package:book_verse/provider/onboarding_provider.dart';
+import 'package:book_verse/view/pages/mainpage.dart';
+import 'package:book_verse/view/pages/splash_screens/first_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,4 +1,4 @@
-import 'package:BookVerse/shared/typography_theme.dart';
+import 'package:book_verse/shared/typography_theme.dart';
 import 'package:flutter/material.dart';
 
 ThemeData lightTheme = ThemeData(

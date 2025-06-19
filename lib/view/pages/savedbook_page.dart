@@ -1,10 +1,11 @@
-import 'package:BookVerse/view/components/bookgridtile_component.dart';
-import 'package:BookVerse/view/components/booklisttile_component.dart';
-import 'package:BookVerse/view/pages/detailpage.dart';
+import 'package:book_verse/shared/themes_extension.dart';
+import 'package:book_verse/view/components/bookgridtile_component.dart';
+import 'package:book_verse/view/components/booklisttile_component.dart';
+import 'package:book_verse/view/pages/detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:BookVerse/model/book_model.dart';
-import 'package:BookVerse/provider/bookmark_provider.dart';
+import 'package:book_verse/model/book_model.dart';
+import 'package:book_verse/provider/bookmark_provider.dart';
 
 enum ViewMode { grid, list }
 
@@ -25,7 +26,7 @@ class SavedbookPage extends ConsumerWidget {
         children: [
           // Top section - 20% of screen height
           Container(
-            height: screenHeight * 0.1,
+            height: screenHeight * 0.15,
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
               vertical: 8.0,
@@ -37,33 +38,42 @@ class SavedbookPage extends ConsumerWidget {
                 // Title on the left
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text(
-                    'Favorite Book List',
-                    style: TextStyle(
-                      fontSize: 24, // Material Design headline4 size
-                      fontWeight: FontWeight.w500,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Favorite Book List',
+                        style: context.textTheme.titleLarge,
+                      ),
+                      Text(
+                        'Your favorite book will displayed below',
+                        style: context.textTheme.bodyMedium,
+                      ),
+                    ],
                   ),
                 ),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: SegmentedButton<ViewMode>(
-                    segments: const [
-                      ButtonSegment<ViewMode>(
-                        value: ViewMode.grid,
-                        icon: Icon(Icons.grid_view),
-                        label: Text('Grid'),
-                      ),
-                      ButtonSegment<ViewMode>(
-                        value: ViewMode.list,
-                        icon: Icon(Icons.view_list),
-                        label: Text('List'),
-                      ),
-                    ],
-                    selected: {viewMode},
-                    onSelectionChanged: (Set<ViewMode> value) {
-                      ref.read(viewModeProvider.notifier).state = value.first;
-                    },
+                  child: SizedBox(
+                    width: 180,
+                    child: SegmentedButton<ViewMode>(
+                      segments: const [
+                        ButtonSegment<ViewMode>(
+                          value: ViewMode.grid,
+                          icon: Icon(Icons.grid_view),
+                          label: Text('Grid'),
+                        ),
+                        ButtonSegment<ViewMode>(
+                          value: ViewMode.list,
+                          icon: Icon(Icons.view_list),
+                          label: Text('List'),
+                        ),
+                      ],
+                      selected: {viewMode},
+                      onSelectionChanged: (Set<ViewMode> value) {
+                        ref.read(viewModeProvider.notifier).state = value.first;
+                      },
+                    ),
                   ),
                 ),
               ],
@@ -122,7 +132,7 @@ class SavedbookPage extends ConsumerWidget {
           context,
           MaterialPageRoute(
             builder:
-                (context) => NewDetailpage(
+                (context) => DetailPage(
                   selectedBookId: book.id,
                   isTemporarySource: false,
                 ),

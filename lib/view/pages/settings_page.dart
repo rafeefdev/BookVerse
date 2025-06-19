@@ -1,7 +1,5 @@
-import 'dart:developer';
-
-import 'package:BookVerse/provider/thememode_provider.dart';
-import 'package:BookVerse/view/components/settingsswitch_component.dart';
+import 'package:book_verse/provider/thememode_provider.dart';
+import 'package:book_verse/view/components/settingsswitch_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

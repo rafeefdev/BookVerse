@@ -1,5 +1,5 @@
 
-  import 'package:BookVerse/model/book_model.dart';
+  import 'package:book_verse/model/book_model.dart';
 
 String bookCategories(Book selectedBook) {
     List? bookCategories = selectedBook.categories;

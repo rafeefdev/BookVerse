@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:BookVerse/model/book_model.dart';
-import 'package:BookVerse/provider/search_provider.dart';
-import 'package:BookVerse/shared/themes_extension.dart';
-import 'package:BookVerse/view/components/booklisttile_component.dart';
+import 'package:book_verse/model/book_model.dart';
+import 'package:book_verse/provider/search_provider.dart';
+import 'package:book_verse/shared/themes_extension.dart';
+import 'package:book_verse/view/components/booklisttile_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

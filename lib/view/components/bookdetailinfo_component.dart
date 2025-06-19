@@ -1,11 +1,13 @@
+import 'package:book_verse/shared/themes_extension.dart';
 import 'package:flutter/material.dart';
 
-Widget bookDetailInfoTile({
+Widget bookDetailInfoTile(
+  BuildContext context, {
   required String title,
   required String data,
   required IconData icon,
   bool isFullWidth = false,
-  int dataMaxLines = 2
+  int dataMaxLines = 2,
 }) {
   var mainComponent = SizedBox(
     height: 156,
@@ -15,14 +17,15 @@ Widget bookDetailInfoTile({
         mainAxisSize: MainAxisSize.max,
         children: [
           CircleAvatar(radius: 25, child: Icon(icon, size: 25)),
+          SizedBox(height: 8),
           Text(
             data,
             textAlign: TextAlign.center,
             maxLines: dataMaxLines,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: context.textTheme.titleMedium,
           ),
-          Text(title, style: TextStyle(fontSize: 16, color: Colors.grey)),
+          Text(title, style: context.textTheme.bodyMedium),
         ],
       ),
     ),

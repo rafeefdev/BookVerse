@@ -1,7 +1,6 @@
-import 'package:BookVerse/main.dart';
-import 'package:BookVerse/view/components/dotindicator_component.dart';
-import 'package:BookVerse/view/components/nextbutton_components.dart';
-import 'package:BookVerse/view/pages/mainpage.dart';
+import 'package:book_verse/view/components/dotindicator_component.dart';
+import 'package:book_verse/view/components/nextbutton_components.dart';
+import 'package:book_verse/view/pages/mainpage.dart';
 import 'package:flutter/material.dart';
 
 class FourthScreen extends StatelessWidget {
