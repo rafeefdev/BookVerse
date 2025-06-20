@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:book_verse/helper/book_authors.dart';
 import 'package:book_verse/helper/book_categories.dart';
+import 'package:book_verse/helper/book_publishdate.dart';
 import 'package:book_verse/helper/book_title.dart';
 import 'package:book_verse/shared/themes_extension.dart';
 import 'package:book_verse/view/components/bookdetailinfo_component.dart';
@@ -56,76 +57,40 @@ class DetailPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              height: 240,
-              child: Row(
-                spacing: 24,
-                children: [
-                  selectedBook.thumbnail.isEmpty
-                      ? Center(
-                        child: AspectRatio(
-                          aspectRatio: 3 / 4,
-                          child: Container(
-                            // height: 120,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 0.05,
-                              ),
-                            ),
-                            child: Icon(Icons.print, size: 35),
-                          ),
-                        ),
-                      )
-                      : AspectRatio(
-                        aspectRatio: 3 / 4,
-                        child: Container(
-                          // height: 120,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                            border: Border.all(color: Colors.black, width: 0.2),
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(selectedBook.thumbnail),
-                            ),
-                          ),
-                        ),
-                      ),
-                  Flexible(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 8,
-                      children: [
-                        Text(
-                          bookTitle(selectedBook.title, 50),
-                          softWrap: true,
-                          style: context.textTheme.titleLarge,
-                        ),
-                        Text(
-                          selectedBook.subTitle!.isEmpty
-                              ? 'Description is not avalable'
-                              : selectedBook.subTitle!,
-                          style: context.textTheme.titleSmall,
-                        ),
-                        iconWithTextHorizontal(
-                          context,
-                          selectedBook,
-                          icon: Icons.person_2,
-                          text: bookAuthors(selectedBook),
-                        ),
-                        iconWithTextHorizontal(
-                          context,
-                          selectedBook,
-                          icon: Icons.file_copy_rounded,
-                          text: bookCategories(selectedBook),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            Align(
+              alignment: Alignment.center,
+              child: SizedBox(width: 216, child: bookThumbnail(selectedBook)),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.start,
+              verticalDirection: VerticalDirection.down,
+              runSpacing: 8,
+              children: [
+                Text(
+                  bookTitle(selectedBook.title, 60),
+                  softWrap: true,
+                  style: context.textTheme.titleLarge,
+                ),
+                Text(
+                  selectedBook.subTitle!.isEmpty
+                      ? 'Description is not avalable'
+                      : selectedBook.subTitle!,
+                  style: context.textTheme.titleSmall,
+                ),
+                iconWithTextHorizontal(
+                  context,
+                  selectedBook,
+                  icon: Icons.person_2,
+                  text: bookAuthors(selectedBook),
+                ),
+                iconWithTextHorizontal(
+                  context,
+                  selectedBook,
+                  icon: Icons.file_copy_rounded,
+                  text: bookCategories(selectedBook),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
             Row(
@@ -135,7 +100,7 @@ class DetailPage extends ConsumerWidget {
                 bookDetailInfoTile(
                   context,
                   title: 'Published Date',
-                  data: selectedBook.publishedDate,
+                  data: bookPublishDate(selectedBook.publishedDate),
                   icon: Icons.calendar_month_rounded,
                 ),
                 bookDetailInfoTile(
@@ -210,4 +175,33 @@ class BookmarkButton extends ConsumerWidget {
       icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded),
     );
   }
+}
+
+Widget bookThumbnail(Book selectedBook) {
+  return selectedBook.thumbnail.isEmpty
+      ? AspectRatio(
+        aspectRatio: 3 / 4,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(20),
+
+            border: Border.all(color: Colors.black, width: 0.05),
+          ),
+          child: Icon(Icons.print, size: 35),
+        ),
+      )
+      : AspectRatio(
+        aspectRatio: 3 / 4,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            border: Border.all(color: Colors.black, width: 0.2),
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: NetworkImage(selectedBook.thumbnail),
+            ),
+          ),
+        ),
+      );
 }
