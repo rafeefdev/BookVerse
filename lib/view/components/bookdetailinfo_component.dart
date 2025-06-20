@@ -10,23 +10,30 @@ Widget bookDetailInfoTile(
   int dataMaxLines = 2,
 }) {
   var mainComponent = SizedBox(
-    height: 156,
+    height: 180,
     child: Card(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          CircleAvatar(radius: 25, child: Icon(icon, size: 25)),
-          SizedBox(height: 8),
-          Text(
-            data,
-            textAlign: TextAlign.center,
-            maxLines: dataMaxLines,
-            overflow: TextOverflow.ellipsis,
-            style: context.textTheme.titleMedium,
-          ),
-          Text(title, style: context.textTheme.bodyMedium),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.only(top: 24, left: 8, right: 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircleAvatar(radius: 25, child: Icon(icon, size: 25)),
+            SizedBox(height: 8),
+            Text(
+              data,
+              textAlign: TextAlign.center,
+              maxLines: dataMaxLines,
+              overflow: TextOverflow.ellipsis,
+              style: context.textTheme.bodyMedium,
+            ),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: context.textTheme.labelMedium,
+            ),
+          ],
+        ),
       ),
     ),
   );
