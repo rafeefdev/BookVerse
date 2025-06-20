@@ -12,6 +12,11 @@ class SettingsPage extends ConsumerWidget {
         ref.watch(thememodeProviderProvider).value ?? ThemeMode.system;
     bool isDarkMode = themeMode == ThemeMode.dark;
 
+    darkThemeonChange(value) {
+      final newMode = value ? ThemeMode.dark : ThemeMode.light;
+      ref.read(thememodeProviderProvider.notifier).changeTheme(newMode);
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Settings Page')),
       body: Column(
@@ -22,10 +27,7 @@ class SettingsPage extends ConsumerWidget {
             leading: CircleAvatar(child: Icon(Icons.format_paint_rounded)),
             trailing: SettingsSwitch(
               settingsItem: isDarkMode,
-              onChanged: (value) {
-                final newMode = value ? ThemeMode.dark : ThemeMode.light;
-                ref.read(thememodeProviderProvider.notifier).changeTheme(newMode);
-              },
+              onChanged: darkThemeonChange,
             ),
           ),
         ],
