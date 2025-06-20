@@ -31,7 +31,7 @@ class FirstScreen extends StatelessWidget {
                 ),
                 child: const Text('Start !'),
               ),
-              SizedBox(height: 32),
+              SizedBox(height: 48),
             ],
           ),
         ),

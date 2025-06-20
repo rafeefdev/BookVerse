@@ -5,6 +5,7 @@ import 'package:book_verse/helper/book_publishdate.dart';
 import 'package:book_verse/helper/book_title.dart';
 import 'package:book_verse/shared/themes_extension.dart';
 import 'package:book_verse/view/components/bookdetailinfo_component.dart';
+import 'package:book_verse/view/components/icontext_horizontal_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:book_verse/model/book_model.dart';
@@ -129,27 +130,6 @@ class DetailPage extends ConsumerWidget {
       ),
     );
   }
-}
-
-Widget iconWithTextHorizontal(
-  BuildContext context,
-  Book selectedBook, {
-  required IconData icon,
-  required String text,
-}) {
-  return Row(
-    spacing: 8,
-    children: [
-      CircleAvatar(radius: 15, child: Icon(icon, size: 17.5)),
-      Flexible(
-        child: Text(
-          text,
-          overflow: TextOverflow.ellipsis,
-          style: context.textTheme.bodyMedium,
-        ),
-      ),
-    ],
-  );
 }
 
 class BookmarkButton extends ConsumerWidget {
