@@ -3,7 +3,8 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services")
+    // disabling google service temporary
+    // id("com.google.gms.google-services")
 }
 
 android {
@@ -23,7 +24,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.bookverse"
+        applicationId = "com.learn.bookverse"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 21
@@ -48,8 +49,6 @@ dependencies {
     implementation("com.google.android.material:material:1.14.0-alpha01")
     implementation("androidx.credentials:credentials:1.6.0-alpha03")
     implementation("androidx.credentials:credentials-play-services-auth:1.6.0-alpha03")
-    implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
-    implementation("com.google.firebase:firebase-analytics")
     // ...
 }
 
