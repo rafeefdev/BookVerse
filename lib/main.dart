@@ -1,6 +1,8 @@
 import 'package:book_verse/core/providers/thememode_provider.dart';
+import 'package:book_verse/core/services/useronboarding_service.dart';
 import 'package:book_verse/core/shared/app_theme.dart';
-import 'package:book_verse/features/auth/view/pages/authentication_page.dart';
+import 'package:book_verse/core/shared/initialerror_page.dart';
+import 'package:book_verse/features/onboarding/view/onboarding_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,16 +13,20 @@ Future<void> main() async {
   //load .env file
   await dotenv.load();
 
-  //initialize supabase
-  await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
-    authOptions: const FlutterAuthClientOptions(
-      authFlowType: AuthFlowType.pkce,
-    ),
-  );
+  try {
+    //initialize supabase
+    await Supabase.initialize(
+      url: dotenv.env['SUPABASE_URL']!,
+      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+      authOptions: const FlutterAuthClientOptions(
+        authFlowType: AuthFlowType.pkce,
+      ),
+    );
 
-  runApp(ProviderScope(child: MyApp()));
+    runApp(ProviderScope(child: MyApp()));
+  } catch (e) {
+    runApp(ProviderScope(child: InitialerrorPage(errorMessage: e.toString())));
+  }
 }
 
 class MyApp extends ConsumerWidget {
@@ -31,14 +37,15 @@ class MyApp extends ConsumerWidget {
     final ThemeMode appThemeMode =
         ref.watch(thememodeProviderProvider).value ?? ThemeMode.system;
 
+    UserOnBoardingService.setCustomCondition(false);
+
     return MaterialApp(
       title: 'book_verse',
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: appThemeMode,
-      home: AuthenticationPage(),
-      //home: const OnboardingRouter(),
+      home: const OnboardingRouter(),
     );
   }
 }

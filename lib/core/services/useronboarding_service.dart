@@ -7,12 +7,19 @@ class UserOnBoardingService {
     //get shared preferences instance with await keyword
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_hasOpenedAppKey) ?? false;
-  } 
+  }
 
   Future<void> setUserHasOpenedApp() async {
     //get shared preferences instance with await keyword
     final prefs = await SharedPreferences.getInstance();
     //run setBool method with await keyword
     await prefs.setBool(_hasOpenedAppKey, true);
+  }
+
+  static Future<void> setCustomCondition(bool customCondition) async {
+    //get shared preferences instance with await keyword
+    final prefs = await SharedPreferences.getInstance();
+    //run setBool method with await keyword
+    await prefs.setBool(_hasOpenedAppKey, customCondition);
   }
 }

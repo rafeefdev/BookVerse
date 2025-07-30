@@ -1,3 +1,4 @@
+import 'package:book_verse/features/auth/viewmodel/auth_provider.dart';
 import 'package:book_verse/features/bookmarks/view/pages/savedbook_page.dart';
 import 'package:book_verse/features/home/view/pages/new_homepage.dart';
 import 'package:book_verse/features/settings/view/pages/settings_page.dart';
@@ -12,6 +13,9 @@ class MainPage extends ConsumerWidget {
   const MainPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authNotifierProvider);
+    final user = authState.user;
+
     int index = ref.watch(bottomNavIndexProvider);
     return Scaffold(
       appBar: AppBar(

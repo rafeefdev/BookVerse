@@ -1,5 +1,5 @@
 import 'package:book_verse/features/home/view/pages/mainpage.dart';
-import 'package:book_verse/features/onboarding/view/pages/splash_screens/first_page.dart';
+import 'package:book_verse/features/onboarding/view/pages/first_page.dart';
 import 'package:book_verse/features/onboarding/viewmodel/onboarding_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +10,6 @@ class OnboardingRouter extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final onBoardingStatus = ref.watch(onBoardingServiceProvider);
-
     return onBoardingStatus.when(
       data: (hasOpened) => hasOpened ? MainPage() : FirstScreen(),
       loading: () => const Scaffold(body: CircularProgressIndicator()),
