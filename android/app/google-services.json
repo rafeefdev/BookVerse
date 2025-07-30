@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "317597867390",
+    "project_id": "bookverse-54c2d",
+    "storage_bucket": "bookverse-54c2d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317597867390:android:5a0b06f496aa94a2b9e72f",
+        "android_client_info": {
+          "package_name": "com.example.bookverse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317597867390-0rf823c0nc14r5ovbkdk6i9r6ei3pnn0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bookverse",
+            "certificate_hash": "b47557cda7f39f85414967f2b7d56101b14fbcd5"
+          }
+        },
+        {
+          "client_id": "317597867390-spni5lfnceahskoe65nj6tv17rhgbgvd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArVDl6Ao-JNFZ8mqeUnUc5JlcrX3cVbGY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317597867390-spni5lfnceahskoe65nj6tv17rhgbgvd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
