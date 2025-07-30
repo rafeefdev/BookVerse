@@ -106,15 +106,22 @@ BookVerse is designed with user experience at its core:
 
 ```
 lib/
-├── helper/                 # Utility functions and helpers
-├── model/                  # Data models and entities
-├── provider/               # Riverpod providers and state management
-├── services/               # API services and business logic
-├── shared/                 # Shared resources (themes, constants)
-└── view/                   # UI components and pages
-    ├── components/         # Reusable UI components
-    └── pages/              # Application screens
-        └── splash_screens/ # Onboarding flow
+├── core/
+│   ├── constants/          # Application constants
+│   ├── models/             # Data models for the application
+│   ├── providers/          # Riverpod providers for state management
+│   ├── repositories/       # Data layer handling data sources
+│   ├── services/           # Business logic and services
+│   └── shared/             # Shared widgets and utilities
+├── features/               # Feature-based modules
+│   ├── auth/               # Authentication feature
+│   ├── bookmarks/          # Bookmarks feature
+│   ├── chatbot/            # AI chatbot feature
+│   ├── home/               # Home screen feature
+│   ├── onboarding/         # Onboarding screens
+│   ├── search/             # Search feature
+│   └── settings/           # Settings feature
+└── main.dart               # Main application entry point
 ```
 
 ## 🤝 Contributing
