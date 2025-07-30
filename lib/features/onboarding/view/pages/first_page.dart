@@ -9,62 +9,67 @@ class FirstScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GradientBackground(
-        child: SafeArea(
-          child: SizedBox.expand(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Spacer(flex: 2),
-                bookVerseLogo(150),
-                const Spacer(flex: 3),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SecondScreen(),
+      body: Stack(
+        children: [
+          Container(decoration: BoxDecoration(gradient: gradientBackground)),
+          SafeArea(
+            child: SizedBox.expand(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Spacer(flex: 2),
+                  bookVerseLogo(150),
+                  const Spacer(flex: 3),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SecondScreen(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons
+                              .login, // Bisa diganti dengan Google logo jika ada asset
+                          size: 24,
+                        ),
+                        label: Text(
+                          'Start',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
-                        );
-                      },
-                      icon: const Icon(
-                        Icons
-                            .login, // Bisa diganti dengan Google logo jika ada asset
-                        size: 24,
-                      ),
-                      label: Text(
-                        'Start',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
                         ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black87,
-                        elevation: 8,
-                        shadowColor: Colors.black.withOpacity(0.3),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black87,
+                          elevation: 8,
+                          shadowColor: Colors.black.withOpacity(0.3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          // Disable button ketika loading
+                          disabledBackgroundColor: Colors.white.withOpacity(
+                            0.7,
+                          ),
+                          disabledForegroundColor: Colors.grey,
                         ),
-                        // Disable button ketika loading
-                        disabledBackgroundColor: Colors.white.withOpacity(0.7),
-                        disabledForegroundColor: Colors.grey,
                       ),
                     ),
                   ),
-                ),
 
-                SizedBox(height: 48),
-              ],
+                  SizedBox(height: 48),
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
