@@ -1,4 +1,4 @@
-import 'package:book_verse/core/providers/thememode_provider.dart';
+import 'package:book_verse/core/theme/providers/thememode_provider.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
