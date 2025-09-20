@@ -1,4 +1,4 @@
-import 'package:book_verse/core/services/useronboarding_service.dart';
+import 'package:book_verse/features/onboarding/service/useronboarding_service.dart';
 import 'package:book_verse/features/onboarding/view/pages/splash_screens/second_page.dart';
 import 'package:flutter/material.dart';
 

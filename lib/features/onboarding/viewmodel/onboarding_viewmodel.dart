@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'package:book_verse/core/services/useronboarding_service.dart';
+import 'package:book_verse/features/onboarding/service/useronboarding_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
