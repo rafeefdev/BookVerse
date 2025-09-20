@@ -1,7 +1,5 @@
 import 'package:book_verse/core/shared/components/dotindicator_component.dart';
 import 'package:book_verse/core/shared/components/nextbutton_components.dart';
-import 'package:book_verse/features/auth/view/pages/authentication_page.dart';
-import 'package:book_verse/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:book_verse/features/home/view/pages/mainpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,8 +9,6 @@ class FourthScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider);
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -60,13 +56,7 @@ class FourthScreen extends ConsumerWidget {
                   ],
                 ),
                 // Tombol Next
-                nextButton(
-                  context,
-                  nextScreen:
-                      user == null
-                          ? const AuthenticationPage()
-                          : const MainPage(),
-                ),
+                nextButton(context, nextScreen: const MainPage()),
               ],
             ),
           ],
