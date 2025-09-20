@@ -1,6 +1,5 @@
 import 'package:uuid/uuid.dart';
 
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Book {
   final String id;
   final String title;
@@ -28,7 +27,7 @@ class Book {
     this.categories,
   });
 
-  static String _generateInternalId(String googleBooksId) {
+  static String generateInternalId(String googleBooksId) {
     return Uuid().v5(Namespace.url.value, 'google-books-$googleBooksId');
   }
 

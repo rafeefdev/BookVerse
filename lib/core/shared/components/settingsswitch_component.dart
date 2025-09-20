@@ -1,12 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SettingsSwitch extends ConsumerStatefulWidget {
-  bool settingsItem;
-  ValueChanged<bool> onChanged;
+  final bool settingsItem;
+  final ValueChanged<bool> onChanged;
 
-  SettingsSwitch({
+  const SettingsSwitch({
     super.key,
     this.settingsItem = false,
     required this.onChanged,
@@ -19,9 +18,6 @@ class SettingsSwitch extends ConsumerStatefulWidget {
 class _SettingsSwitchState extends ConsumerState<SettingsSwitch> {
   @override
   Widget build(BuildContext context) {
-    return Switch(
-      value: widget.settingsItem,
-      onChanged: widget.onChanged
-    );
+    return Switch(value: widget.settingsItem, onChanged: widget.onChanged);
   }
 }

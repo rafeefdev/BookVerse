@@ -1,5 +1,5 @@
-import 'package:book_verse/core/models/searchstate_model.dart';
-import 'package:book_verse/core/services/playbook_services.dart';
+import 'package:book_verse/features/search/model/entities/searchstate_model.dart';
+import 'package:book_verse/features/search/model/playbook_services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'search_viewmodel.g.dart';
