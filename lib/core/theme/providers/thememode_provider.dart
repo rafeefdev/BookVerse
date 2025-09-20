@@ -1,4 +1,4 @@
-import 'package:book_verse/core/repositories/theme_repository.dart';
+import 'package:book_verse/core/theme/repositories/theme_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
