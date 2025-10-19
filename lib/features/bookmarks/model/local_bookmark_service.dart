@@ -3,6 +3,7 @@ import 'package:sqflite/sqflite.dart';
 
 class LocalBookmarkService {
   static final bookMarkTableName = 'bookmarks';
+
   Future<void> createBookmarkTable() async {
     final db = await SqfliteService.instance.database;
     db.execute('''
@@ -19,6 +20,14 @@ class LocalBookmarkService {
         thumbnail TEXT
     );
     ''');
+  }
+
+  Future<List<Map<String, dynamic>>> getBookmarkedBooks() async {
+    final db = await SqfliteService.instance.database;
+    bool isTableDefined = await SqfliteService.instance.isTableExists(
+      bookMarkTableName,
+    );
+    return isTableDefined ? db.query(bookMarkTableName) : [];
   }
 
   Future<void> addToBookmark(Map<String, dynamic> book) async {

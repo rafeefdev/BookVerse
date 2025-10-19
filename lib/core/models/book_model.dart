@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import 'dart:convert';
 
 class Book {
   final String id;
@@ -48,6 +49,23 @@ class Book {
       description: json['volumeInfo']['description'] ?? "No Description",
       thumbnail: json['volumeInfo']['imageLinks']?['thumbnail'] ?? "",
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'subTitle': subTitle,
+      'authors': jsonEncode(authors), // simpan sebagai string JSON
+      'pageCount': pageCount,
+      'publisher': publisher,
+      'categories': jsonEncode(categories ?? []), // simpan sebagai string JSON
+      'publishedDate': publishedDate,
+      'description': description,
+      'thumbnail': thumbnail,
+      'isFavorite':
+          isFavorite ? 1 : 0, // simpan sebagai int (SQLite tidak punya bool)
+    };
   }
 
   Book copyWith({
