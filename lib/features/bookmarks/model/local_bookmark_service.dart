@@ -43,4 +43,15 @@ class LocalBookmarkService {
     final db = await SqfliteService.instance.database;
     db.delete(bookMarkTableName, where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<bool> isBookmarked(String id) async {
+    final db = await SqfliteService.instance.database;
+    final result = await db.rawQuery(
+      '''SELECT EXISTS(
+        SELECT 1 FROM $bookMarkTableName WHERE id = ?) AS is_exist''',
+      [id],
+    );
+    // result[0]['is_exist'] akan 1 jika ada, 0 jika tidak
+    return result.isNotEmpty && result.first['is_exist'] == 1;
+  }
 }

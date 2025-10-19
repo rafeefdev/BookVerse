@@ -6,12 +6,12 @@ part of 'bookmark_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bookmarkNotifierHash() => r'29c73ccedbf1aa004a2e0b7f2d9a0cc6d12f6685';
+String _$bookmarkNotifierHash() => r'0ee75cee17e201cf2cec41d2882bb0c43918c91d';
 
 /// See also [BookmarkNotifier].
 @ProviderFor(BookmarkNotifier)
 final bookmarkNotifierProvider =
-    NotifierProvider<BookmarkNotifier, List<Book>>.internal(
+    AsyncNotifierProvider<BookmarkNotifier, List<Book>>.internal(
       BookmarkNotifier.new,
       name: r'bookmarkNotifierProvider',
       debugGetCreateSourceHash:
@@ -22,6 +22,6 @@ final bookmarkNotifierProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$BookmarkNotifier = Notifier<List<Book>>;
+typedef _$BookmarkNotifier = AsyncNotifier<List<Book>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
