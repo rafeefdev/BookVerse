@@ -19,8 +19,49 @@ class SavedbookPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final screenHeight = MediaQuery.of(context).size.height;
     final viewMode = ref.watch(viewModeProvider);
-    final List<Book> bookmarkedBooks = ref.watch(bookmarkNotifierProvider);
+    final bookmarkedBooks = ref.watch(bookmarkNotifierProvider);
 
+    return bookmarkedBooks.when(
+      data: (data) {
+        return _buildSavedBooksPage(screenHeight, context, viewMode, ref, data);
+      },
+      loading: () => _buildLoadingIndicatorPage(),
+      error: (error, stack) {
+        return _buildErrorInfo(error, stack);
+      },
+    );
+  }
+
+  Widget _buildLoadingIndicatorPage() {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Saved Books Page')),
+      body: const Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _buildErrorInfo(Object error, StackTrace stack) {
+    debugPrintStack(label: error.toString(), stackTrace: stack);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Saved Books Page')),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const Icon(Icons.error_outline_rounded),
+            Text('Error Occured'),
+            Text('$error : $stack'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSavedBooksPage(
+    double screenHeight,
+    BuildContext context,
+    ViewMode viewMode,
+    WidgetRef ref,
+    List<Book> data,
+  ) {
     return Scaffold(
       body: Column(
         children: [
@@ -79,15 +120,15 @@ class SavedbookPage extends ConsumerWidget {
               ],
             ),
           ),
-          bookmarkedBooks.isEmpty
+          data.isEmpty
               ? Expanded(child: Center(child: Text('Data is empty')))
               :
               // Book list/grid view - remaining screen space
               Expanded(
                 child:
                     viewMode == ViewMode.grid
-                        ? _buildGridView(bookmarkedBooks)
-                        : _buildListView(bookmarkedBooks),
+                        ? _buildGridView(data)
+                        : _buildListView(data),
               ),
         ],
       ),

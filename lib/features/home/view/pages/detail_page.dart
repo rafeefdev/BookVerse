@@ -26,12 +26,56 @@ class DetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     //if temporary source, indexing file from search provider
     //and from bookmark provider when its from bookmark provider
-    var searchBookResult = ref.watch(searchNotifierProvider).result;
-    var bookmarkedItems = ref.watch(bookmarkNotifierProvider);
-    List<Book> books = isTemporarySource ? searchBookResult : bookmarkedItems;
+    final searchBookResult = ref.watch(searchNotifierProvider).result;
+    final bookmarkedItems = ref.watch(bookmarkNotifierProvider);
+    // dynamic books =
+    // isTemporarySource
+    // ? searchBookResult
+    // : // List<Book>
+    // bookmarkedItems; // AsyncValue<List<Book>>
 
+    if (isTemporarySource) {
+      return _buildDetailPage(
+        context,
+        books: searchBookResult,
+        selectedBookId: selectedBookId,
+      );
+    } else {
+      return bookmarkedItems.when(
+        data: (bookList) {
+          return _buildDetailPage(
+            context,
+            books: bookList,
+            selectedBookId: selectedBookId,
+          );
+        },
+        // TODO : unify error and loading widget
+        error:
+            (err, stack) => Scaffold(
+              appBar: AppBar(
+                title: Text('Detail', style: context.textTheme.titleLarge),
+              ),
+              body: Center(child: Text('Error Occured : $err\n$stack')),
+            ),
+        loading:
+            () => Scaffold(
+              appBar: AppBar(
+                title: Text('Detail', style: context.textTheme.titleLarge),
+              ),
+              body: const Center(child: CircularProgressIndicator()),
+            ),
+      );
+    }
+  }
+
+  Widget _buildDetailPage(
+    BuildContext context, {
+    required List<Book> books,
+    required String selectedBookId,
+  }) {
     int index = books.indexWhere((book) => book.id == selectedBookId);
 
+    // when selectedbook is not found
     if (index == -1) {
       return Scaffold(
         appBar: AppBar(title: Text('Detail')),
@@ -45,7 +89,6 @@ class DetailPage extends ConsumerWidget {
       \ntitle count : ${selectedBook.title.characters.length},''',
       level: 2,
     );
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Detail', style: context.textTheme.titleLarge),
@@ -142,17 +185,31 @@ class BookmarkButton extends ConsumerWidget {
     log('bookmark button pressed & rebuilded');
 
     final bookMarkedBooks = ref.watch(bookmarkNotifierProvider);
-    final isBookmarked = bookMarkedBooks.any(
-      (book) => book.id == selectedBook.id,
-    );
 
-    return IconButton(
-      onPressed: () {
-        ref
-            .read(bookmarkNotifierProvider.notifier)
-            .toggleBookmark(selectedBook);
+    return bookMarkedBooks.when(
+      data: (data) {
+        final isBookmarked = data.any((book) => book.id == selectedBook.id);
+        return IconButton(
+          onPressed: () {
+            ref
+                .read(bookmarkNotifierProvider.notifier)
+                .toggleBookmark(selectedBook);
+          },
+          icon: Icon(
+            isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
+          ),
+        );
       },
-      icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded),
+      error:
+          (error, stack) => IconButton(
+            onPressed: null,
+            icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
+          ),
+      loading:
+          () => IconButton(
+            onPressed: null,
+            icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
+          ),
     );
   }
 }
