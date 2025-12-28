@@ -33,21 +33,43 @@ class Book {
   }
 
   factory Book.fromJson(Map<String, dynamic> json) {
+    // Handles both nested data from Google API ('volumeInfo') and flat data from local DB.
+    final info = json['volumeInfo'] as Map<String, dynamic>? ?? json;
+
+    // Handles fields that might be Lists or JSON-encoded Strings (from local DB).
+    List<String> parseList(dynamic value) {
+      if (value is String) {
+        try {
+          // Try to decode the string as a JSON list.
+          final decoded = jsonDecode(value);
+          if (decoded is List) {
+            return decoded.map((e) => e.toString()).toList();
+          }
+        } catch (e) {
+          // If decoding fails, return an empty list.
+          return [];
+        }
+      }
+      if (value is List) {
+        // If it's already a list, use it directly.
+        return value.map((e) => e.toString()).toList();
+      }
+      // Default to an empty list if it's null or an unexpected type.
+      return [];
+    }
+
     return Book(
       id: json['id'],
-      title: json['volumeInfo']['title'] ?? "No Title",
-      subTitle: json['volumeInfo']['subtitle'] ?? '',
-      authors:
-          (json['volumeInfo']['authors'] as List?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
-      pageCount: json['volumeInfo']['pageCount'] ?? 0,
-      publisher: json['volumeInfo']['publisher'] ?? "Unknown Publisher",
-      categories: json['volumeInfo']['categories'] ?? <String>[],
-      publishedDate: json['volumeInfo']['publishedDate'] ?? "Unknown Date",
-      description: json['volumeInfo']['description'] ?? "No Description",
-      thumbnail: json['volumeInfo']['imageLinks']?['thumbnail'] ?? "",
+      title: info['title'] ?? "No Title",
+      subTitle: info['subtitle'] ?? info['subTitle'] ?? '',
+      authors: parseList(info['authors']),
+      pageCount: info['pageCount'] ?? 0,
+      publisher: info['publisher'] ?? "Unknown Publisher",
+      categories: parseList(info['categories']),
+      publishedDate: info['publishedDate'] ?? "Unknown Date",
+      description: info['description'] ?? "No Description",
+      thumbnail: info['imageLinks']?['thumbnail'] ?? info['thumbnail'] ?? "",
+      isFavorite: (info['isFavorite'] == 1 || info['isFavorite'] == true),
     );
   }
 
