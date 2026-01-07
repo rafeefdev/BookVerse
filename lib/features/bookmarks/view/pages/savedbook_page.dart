@@ -123,13 +123,12 @@ class SavedbookPage extends ConsumerWidget {
           data.isEmpty
               ? Expanded(child: Center(child: Text('Data is empty')))
               :
-              // Book list/grid view - remaining screen space
-              Expanded(
-                child:
-                    viewMode == ViewMode.grid
-                        ? _buildGridView(data)
-                        : _buildListView(data),
-              ),
+                // Book list/grid view - remaining screen space
+                Expanded(
+                  child: viewMode == ViewMode.grid
+                      ? _buildGridView(data)
+                      : _buildListView(data),
+                ),
         ],
       ),
     );
@@ -172,11 +171,8 @@ class SavedbookPage extends ConsumerWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (context) => DetailPage(
-                  selectedBookId: book.id,
-                  isTemporarySource: false,
-                ),
+            builder: (context) =>
+                DetailPage(selectedBookId: book.id, isTemporarySource: false),
           ),
         );
       },

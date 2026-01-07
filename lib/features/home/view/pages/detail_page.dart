@@ -50,20 +50,18 @@ class DetailPage extends ConsumerWidget {
           );
         },
         // TODO : unify error and loading widget
-        error:
-            (err, stack) => Scaffold(
-              appBar: AppBar(
-                title: Text('Detail', style: context.textTheme.titleLarge),
-              ),
-              body: Center(child: Text('Error Occured : $err\n$stack')),
-            ),
-        loading:
-            () => Scaffold(
-              appBar: AppBar(
-                title: Text('Detail', style: context.textTheme.titleLarge),
-              ),
-              body: const Center(child: CircularProgressIndicator()),
-            ),
+        error: (err, stack) => Scaffold(
+          appBar: AppBar(
+            title: Text('Detail', style: context.textTheme.titleLarge),
+          ),
+          body: Center(child: Text('Error Occured : $err\n$stack')),
+        ),
+        loading: () => Scaffold(
+          appBar: AppBar(
+            title: Text('Detail', style: context.textTheme.titleLarge),
+          ),
+          body: const Center(child: CircularProgressIndicator()),
+        ),
       );
     }
   }
@@ -191,25 +189,63 @@ class BookmarkButton extends ConsumerWidget {
         final isBookmarked = data.any((book) => book.id == selectedBook.id);
         return IconButton(
           onPressed: () {
-            ref
-                .read(bookmarkNotifierProvider.notifier)
-                .toggleBookmark(selectedBook);
+            // apabila sudah dibookmark dan hendak dihapus, munculkan alert
+            if (isBookmarked) {
+              _showRemoveBookmarkAlert(context, ref);
+            } else {
+              _toggleBookmark(ref);
+            }
           },
           icon: Icon(
             isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
           ),
         );
       },
-      error:
-          (error, stack) => IconButton(
-            onPressed: null,
-            icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
+      error: (error, stack) => IconButton(
+        onPressed: null,
+        icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
+      ),
+      loading: () => IconButton(
+        onPressed: null,
+        icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
+      ),
+    );
+  }
+
+  Future<void> _toggleBookmark(WidgetRef ref) {
+    return ref
+        .read(bookmarkNotifierProvider.notifier)
+        .toggleBookmark(selectedBook);
+  }
+
+  Future<dynamic> _showRemoveBookmarkAlert(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Are You Sure Want to Delete ?'),
+        content: Text(
+          'Book "${selectedBook.title}" will removed from bookmarked items',
+          style: TextStyle(fontWeight: FontWeight.w300),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
           ),
-      loading:
-          () => IconButton(
-            onPressed: null,
-            icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
+          FilledButton(
+            onPressed: () {
+              // remove book from bookmark list
+              _toggleBookmark(ref);
+              // close pop-up
+              Navigator.pop(context);
+            },
+            child: Text('Remove Book'),
           ),
+        ],
+      ),
     );
   }
 }
@@ -217,28 +253,28 @@ class BookmarkButton extends ConsumerWidget {
 Widget bookThumbnail(Book selectedBook) {
   return selectedBook.thumbnail.isEmpty
       ? AspectRatio(
-        aspectRatio: 3 / 4,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(20),
+          aspectRatio: 3 / 4,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(20),
 
-            border: Border.all(color: Colors.black, width: 0.05),
+              border: Border.all(color: Colors.black, width: 0.05),
+            ),
+            child: Icon(Icons.print, size: 35),
           ),
-          child: Icon(Icons.print, size: 35),
-        ),
-      )
+        )
       : AspectRatio(
-        aspectRatio: 3 / 4,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            border: Border.all(color: Colors.black, width: 0.2),
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: NetworkImage(selectedBook.thumbnail),
+          aspectRatio: 3 / 4,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              border: Border.all(color: Colors.black, width: 0.2),
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: NetworkImage(selectedBook.thumbnail),
+              ),
             ),
           ),
-        ),
-      );
+        );
 }
