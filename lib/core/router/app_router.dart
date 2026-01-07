@@ -97,14 +97,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/search',
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) {
-          return CustomTransitionPage(
-            child: const SearchPage(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-          );
-        },
+        builder: (context, state) => const SearchPage(),
       ),
       GoRoute(
         path: '/detail/:id',
