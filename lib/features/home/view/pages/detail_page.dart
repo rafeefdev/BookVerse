@@ -50,20 +50,18 @@ class DetailPage extends ConsumerWidget {
           );
         },
         // TODO : unify error and loading widget
-        error:
-            (err, stack) => Scaffold(
-              appBar: AppBar(
-                title: Text('Detail', style: context.textTheme.titleLarge),
-              ),
-              body: Center(child: Text('Error Occured : $err\n$stack')),
-            ),
-        loading:
-            () => Scaffold(
-              appBar: AppBar(
-                title: Text('Detail', style: context.textTheme.titleLarge),
-              ),
-              body: const Center(child: CircularProgressIndicator()),
-            ),
+        error: (err, stack) => Scaffold(
+          appBar: AppBar(
+            title: Text('Detail', style: context.textTheme.titleLarge),
+          ),
+          body: Center(child: Text('Error Occured : $err\n$stack')),
+        ),
+        loading: () => Scaffold(
+          appBar: AppBar(
+            title: Text('Detail', style: context.textTheme.titleLarge),
+          ),
+          body: const Center(child: CircularProgressIndicator()),
+        ),
       );
     }
   }
@@ -191,6 +189,8 @@ class BookmarkButton extends ConsumerWidget {
         final isBookmarked = data.any((book) => book.id == selectedBook.id);
         return IconButton(
           onPressed: () {
+            // apabila sudah dibookmark dan hendak dihapus, munculkan alert
+
             ref
                 .read(bookmarkNotifierProvider.notifier)
                 .toggleBookmark(selectedBook);
@@ -200,16 +200,14 @@ class BookmarkButton extends ConsumerWidget {
           ),
         );
       },
-      error:
-          (error, stack) => IconButton(
-            onPressed: null,
-            icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
-          ),
-      loading:
-          () => IconButton(
-            onPressed: null,
-            icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
-          ),
+      error: (error, stack) => IconButton(
+        onPressed: null,
+        icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
+      ),
+      loading: () => IconButton(
+        onPressed: null,
+        icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
+      ),
     );
   }
 }
@@ -217,28 +215,28 @@ class BookmarkButton extends ConsumerWidget {
 Widget bookThumbnail(Book selectedBook) {
   return selectedBook.thumbnail.isEmpty
       ? AspectRatio(
-        aspectRatio: 3 / 4,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(20),
+          aspectRatio: 3 / 4,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(20),
 
-            border: Border.all(color: Colors.black, width: 0.05),
+              border: Border.all(color: Colors.black, width: 0.05),
+            ),
+            child: Icon(Icons.print, size: 35),
           ),
-          child: Icon(Icons.print, size: 35),
-        ),
-      )
+        )
       : AspectRatio(
-        aspectRatio: 3 / 4,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            border: Border.all(color: Colors.black, width: 0.2),
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: NetworkImage(selectedBook.thumbnail),
+          aspectRatio: 3 / 4,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              border: Border.all(color: Colors.black, width: 0.2),
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: NetworkImage(selectedBook.thumbnail),
+              ),
             ),
           ),
-        ),
-      );
+        );
 }
