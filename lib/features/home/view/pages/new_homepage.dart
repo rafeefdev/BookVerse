@@ -1,7 +1,7 @@
 import 'package:book_verse/core/shared/themes_extension.dart';
-import 'package:book_verse/features/search/view/pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class NewHomePage extends ConsumerStatefulWidget {
   const NewHomePage({super.key});
@@ -27,12 +27,7 @@ class _HomeState extends ConsumerState<NewHomePage> {
             const SizedBox(height: 30),
             GestureDetector(
               onTap: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    transitionDuration: const Duration(milliseconds: 600),
-                    pageBuilder: (_, __, ___) => const SearchPage(),
-                  ),
-                );
+                context.push('/search');
               },
               child: Hero(
                 tag: 'searchBar',

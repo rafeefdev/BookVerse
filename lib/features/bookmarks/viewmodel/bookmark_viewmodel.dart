@@ -13,7 +13,7 @@ class BookmarkNotifier extends _$BookmarkNotifier {
     final bookmarkRepo = ref.watch(bookmarkRepoProvider);
     // return bookmarkrepo
     final bookmarkList = await bookmarkRepo.getBookmarkedBooks();
-    return bookmarkList.where((book) => book != null).map((book) => Book.fromJson(book!)).toList();
+    return bookmarkList.map((book) => Book.fromJson(book)).toList();
   }
 
   Future<void> toggleBookmark(Book book) async {

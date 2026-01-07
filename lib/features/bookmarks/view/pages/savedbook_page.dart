@@ -3,9 +3,9 @@ import 'package:book_verse/core/shared/components/bookgridtile_component.dart';
 import 'package:book_verse/core/shared/components/booklisttile_component.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
-import 'package:book_verse/features/home/view/pages/detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 enum ViewMode { grid, list }
 
@@ -168,13 +168,7 @@ class SavedbookPage extends ConsumerWidget {
   Widget _buildBookCard(BuildContext context, Book book) {
     return InkWell(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                DetailPage(selectedBookId: book.id, isTemporarySource: false),
-          ),
-        );
+        context.push('/detail/${book.id}?isTemporarySource=false');
       },
       child: bookGridTile(book: book, textTheme: Theme.of(context).textTheme),
     );

@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:book_verse/core/router/app_router.dart';
 import 'package:book_verse/core/services/sqflite_service.dart';
 import 'package:book_verse/core/theme/providers/thememode_provider.dart';
 import 'package:book_verse/core/shared/app_theme.dart';
-import 'package:book_verse/features/onboarding/view/onboarding_router.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -52,8 +52,9 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ThemeMode appThemeMode =
         ref.watch(thememodeProviderProvider).value ?? ThemeMode.system;
+    final router = ref.watch(routerProvider);
 
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'book_verse',
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
@@ -63,7 +64,7 @@ class MyApp extends ConsumerWidget {
       // ignore: deprecated_member_use
       useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
-      home: const OnboardingRouter(),
+      routerConfig: router,
     );
   }
 }

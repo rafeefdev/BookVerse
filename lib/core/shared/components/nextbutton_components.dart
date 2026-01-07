@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-Widget nextButton(BuildContext context, {required Widget nextScreen}) {
+Widget nextButton(BuildContext context, {required String path}) {
   return Container(
     decoration: BoxDecoration(
       shape: BoxShape.circle,
@@ -10,10 +11,7 @@ Widget nextButton(BuildContext context, {required Widget nextScreen}) {
     child: IconButton(
       icon: const Icon(Icons.arrow_forward_ios_rounded),
       onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => nextScreen),
-        );
+        context.go(path);
       },
     ),
   );

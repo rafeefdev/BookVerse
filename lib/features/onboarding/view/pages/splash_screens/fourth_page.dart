@@ -1,6 +1,6 @@
 import 'package:book_verse/core/shared/components/dotindicator_component.dart';
-import 'package:book_verse/core/shared/components/nextbutton_components.dart';
-import 'package:book_verse/features/home/view/pages/mainpage.dart';
+import 'package:book_verse/features/onboarding/service/useronboarding_service.dart';
+import 'package:book_verse/features/onboarding/viewmodel/onboarding_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -56,7 +56,21 @@ class FourthScreen extends ConsumerWidget {
                   ],
                 ),
                 // Tombol Next
-                nextButton(context, nextScreen: const MainPage()),
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black, width: 0.1),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_forward_ios_rounded),
+                    onPressed: () async {
+                      await UserOnBoardingService().setUserHasOpenedApp();
+                      ref.invalidate(onBoardingServiceProvider);
+                      // The router's redirect will handle the navigation
+                    },
+                  ),
+                ),
               ],
             ),
           ],

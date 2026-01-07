@@ -1,6 +1,5 @@
-import 'package:book_verse/features/onboarding/service/useronboarding_service.dart';
-import 'package:book_verse/features/onboarding/view/pages/splash_screens/second_page.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class FirstScreen extends StatelessWidget {
   const FirstScreen({super.key});
@@ -18,13 +17,7 @@ class FirstScreen extends StatelessWidget {
               const Spacer(flex: 3),
               FilledButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SecondScreen(),
-                    ),
-                  );
-                  UserOnBoardingService().setUserHasOpenedApp();
+                  context.go('/onboarding/2');
                 },
                 style: ButtonStyle(
                   fixedSize: WidgetStatePropertyAll(
