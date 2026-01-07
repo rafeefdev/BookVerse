@@ -1,8 +1,7 @@
 import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
-import 'package:book_verse/core/shared/helpers/helper/push_navigation.dart';
-import 'package:book_verse/features/home/view/pages/detail_page.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 Widget bookListTile(
   BuildContext context,
@@ -11,13 +10,9 @@ Widget bookListTile(
   bool isTemporarySource = false,
 }) {
   Widget lisTile = InkWell(
-    onTap: pushNavigation(
-      context,
-      destinationPage: DetailPage(
-        selectedBookId: book.id,
-        isTemporarySource: isTemporarySource,
-      ),
-    ),
+    onTap: () {
+      context.push('/home/detail/${book.id}?isTemporarySource=$isTemporarySource');
+    },
     child: ListTile(
       contentPadding: const EdgeInsets.all(16),
       leading: book.thumbnail.isNotEmpty

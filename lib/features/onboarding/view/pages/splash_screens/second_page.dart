@@ -1,6 +1,5 @@
 import 'package:book_verse/core/shared/components/dotindicator_component.dart';
 import 'package:book_verse/core/shared/components/nextbutton_components.dart';
-import 'package:book_verse/features/onboarding/view/pages/splash_screens/third_page.dart';
 import 'package:flutter/material.dart';
 
 class SecondScreen extends StatelessWidget {
@@ -55,7 +54,7 @@ class SecondScreen extends StatelessWidget {
                   ],
                 ),
                 // Tombol Next
-                nextButton(context, nextScreen: ThirdScreen()),
+                nextButton(context, path: '/onboarding/3'),
               ],
             ),
           ],
