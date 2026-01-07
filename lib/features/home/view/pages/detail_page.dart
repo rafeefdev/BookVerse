@@ -190,10 +190,11 @@ class BookmarkButton extends ConsumerWidget {
         return IconButton(
           onPressed: () {
             // apabila sudah dibookmark dan hendak dihapus, munculkan alert
-
-            ref
-                .read(bookmarkNotifierProvider.notifier)
-                .toggleBookmark(selectedBook);
+            if (isBookmarked) {
+              _showRemoveBookmarkAlert(context, ref);
+            } else {
+              _toggleBookmark(ref);
+            }
           },
           icon: Icon(
             isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
@@ -207,6 +208,43 @@ class BookmarkButton extends ConsumerWidget {
       loading: () => IconButton(
         onPressed: null,
         icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
+      ),
+    );
+  }
+
+  Future<void> _toggleBookmark(WidgetRef ref) {
+    return ref
+        .read(bookmarkNotifierProvider.notifier)
+        .toggleBookmark(selectedBook);
+  }
+
+  Future<dynamic> _showRemoveBookmarkAlert(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Are You Sure Want to Delete ?'),
+        content: Text(
+          'Book "${selectedBook.title}" will removed from bookmarked items',
+          style: TextStyle(fontWeight: FontWeight.w300),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              // remove book from bookmark list
+              _toggleBookmark(ref);
+              // close pop-up
+              Navigator.pop(context);
+            },
+            child: Text('Remove Book'),
+          ),
+        ],
       ),
     );
   }
