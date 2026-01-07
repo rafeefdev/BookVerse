@@ -11,7 +11,7 @@ Widget bookListTile(
 }) {
   Widget lisTile = InkWell(
     onTap: () {
-      context.push('/home/detail/${book.id}?isTemporarySource=$isTemporarySource');
+      context.push('/detail/${book.id}?isTemporarySource=$isTemporarySource');
     },
     child: ListTile(
       contentPadding: const EdgeInsets.all(16),

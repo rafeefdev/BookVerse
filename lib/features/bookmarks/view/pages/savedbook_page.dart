@@ -168,7 +168,7 @@ class SavedbookPage extends ConsumerWidget {
   Widget _buildBookCard(BuildContext context, Book book) {
     return InkWell(
       onTap: () {
-        context.push('/home/detail/${book.id}?isTemporarySource=false');
+        context.push('/detail/${book.id}?isTemporarySource=false');
       },
       child: bookGridTile(book: book, textTheme: Theme.of(context).textTheme),
     );

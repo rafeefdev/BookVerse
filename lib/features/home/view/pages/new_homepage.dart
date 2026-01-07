@@ -27,7 +27,7 @@ class _HomeState extends ConsumerState<NewHomePage> {
             const SizedBox(height: 30),
             GestureDetector(
               onTap: () {
-                context.go('/search');
+                context.push('/search');
               },
               child: Hero(
                 tag: 'searchBar',

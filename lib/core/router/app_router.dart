@@ -76,28 +76,6 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/home',
                 builder: (context, state) => const NewHomePage(),
-                routes: [
-                  GoRoute(
-                    path: 'detail/:id',
-                    builder: (context, state) {
-                      final id = state.pathParameters['id']!;
-                      final isTemporarySource =
-                          state.uri.queryParameters['isTemporarySource'] == 'true';
-                      return DetailPage(
-                        selectedBookId: id,
-                        isTemporarySource: isTemporarySource,
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/search',
-                builder: (context, state) => const SearchPage(),
               ),
             ],
           ),
@@ -113,7 +91,33 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/settings',
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: '/search',
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            child: const SearchPage(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: '/detail/:id',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          final isTemporarySource =
+              state.uri.queryParameters['isTemporarySource'] == 'true';
+          return DetailPage(
+            selectedBookId: id,
+            isTemporarySource: isTemporarySource,
+          );
+        },
       ),
     ],
   );
