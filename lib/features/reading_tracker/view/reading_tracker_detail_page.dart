@@ -1,7 +1,5 @@
-import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
-import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,13 +20,13 @@ class ReadingTrackerDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final readingProgressAsync = ref.watch(readingTrackerNotifierProvider(bookId));
+    final readingProgressAsync = ref.watch(
+      readingTrackerNotifierProvider(bookId),
+    );
     final readingSessionsAsync = ref.watch(bookReadingSessionsProvider(bookId));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reading Progress'),
-      ),
+      appBar: AppBar(title: const Text('Reading Progress')),
       body: readingProgressAsync.when(
         data: (progress) {
           if (progress == null || progress.book == null) {
@@ -70,8 +68,12 @@ class ReadingTrackerDetailPage extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Center(
-                                child: Icon(Icons.book,
-                                    size: 50, color: Colors.grey[600])),
+                              child: Icon(
+                                Icons.book,
+                                size: 50,
+                                color: Colors.grey[600],
+                              ),
+                            ),
                           ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -102,10 +104,7 @@ class ReadingTrackerDetailPage extends ConsumerWidget {
                 const SizedBox(height: 24),
 
                 // Reading Progress
-                Text(
-                  'Current Progress',
-                  style: context.textTheme.titleLarge,
-                ),
+                Text('Current Progress', style: context.textTheme.titleLarge),
                 const SizedBox(height: 8),
                 LinearProgressIndicator(
                   value: progressValue,
@@ -118,10 +117,7 @@ class ReadingTrackerDetailPage extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      progressText,
-                      style: context.textTheme.bodyLarge,
-                    ),
+                    Text(progressText, style: context.textTheme.bodyLarge),
                     Text(
                       '${(progressValue * 100).toStringAsFixed(1)}%',
                       style: context.textTheme.bodyLarge,
@@ -168,7 +164,8 @@ class ReadingTrackerDetailPage extends ConsumerWidget {
                   data: (sessions) {
                     if (sessions.isEmpty) {
                       return const Center(
-                          child: Text('No reading sessions recorded yet.'));
+                        child: Text('No reading sessions recorded yet.'),
+                      );
                     }
                     return ListView.builder(
                       shrinkWrap: true,
@@ -181,15 +178,18 @@ class ReadingTrackerDetailPage extends ConsumerWidget {
                           child: ListTile(
                             leading: const Icon(Icons.history_toggle_off),
                             title: Text(
-                                'Session ${sessions.length - index} - Page ${session.endPage}'),
+                              'Session ${sessions.length - index} - Page ${session.endPage}',
+                            ),
                             subtitle: Text(
-                                '${_formatDuration(session.durationInSeconds)} - ${DateFormat('MMM dd, yyyy HH:mm').format(session.timestamp)}'),
+                              '${_formatDuration(session.durationInSeconds)} - ${DateFormat('MMM dd, yyyy HH:mm').format(session.timestamp)}',
+                            ),
                           ),
                         );
                       },
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (error, stack) =>
                       Center(child: Text('Error loading sessions: $error')),
                 ),

@@ -18,11 +18,9 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
     final progress = await _sqfliteService.getReadingProgress(bookId);
     if (progress != null) {
       // Also fetch the book details from bookmarks if available
-      final bookData = await _sqfliteService.database.then((db) => db.query(
-            'bookmarks',
-            where: 'id = ?',
-            whereArgs: [bookId],
-          ));
+      final bookData = await _sqfliteService.database.then(
+        (db) => db.query('bookmarks', where: 'id = ?', whereArgs: [bookId]),
+      );
       if (bookData.isNotEmpty) {
         final book = Book.fromJson(bookData.first);
         return progress.copyWith(book: book);
@@ -31,11 +29,15 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
     return progress;
   }
 
-  Future<void> updateReadingProgress(int newCurrentPage, {int? durationInSeconds}) async {
+  Future<void> updateReadingProgress(
+    int newCurrentPage, {
+    int? durationInSeconds,
+  }) async {
     final currentState = state.value;
     if (currentState == null) return;
 
-    int updatedTotalReadingTime = currentState.totalReadingTimeInSeconds + (durationInSeconds ?? 0);
+    int updatedTotalReadingTime =
+        currentState.totalReadingTimeInSeconds + (durationInSeconds ?? 0);
 
     final updatedProgress = currentState.copyWith(
       currentPage: newCurrentPage,
@@ -49,12 +51,16 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
 
   Future<void> addReadingSession(ReadingSessionModel session) async {
     await _sqfliteService.saveReadingSession(session);
-    log('Reading session saved for book ${session.bookId}: ${session.durationInSeconds} seconds, ended on page ${session.endPage}');
+    log(
+      'Reading session saved for book ${session.bookId}: ${session.durationInSeconds} seconds, ended on page ${session.endPage}',
+    );
   }
 }
 
 @Riverpod(keepAlive: true)
 Future<List<ReadingSessionModel>> bookReadingSessions(
-    BookReadingSessionsRef ref, String bookId) async {
+  Ref ref,
+  String bookId,
+) async {
   return SqfliteService.instance.getReadingSessions(bookId);
 }

@@ -2,7 +2,6 @@ import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:flutter/material.dart';
-import 'package:book_verse/core/shared/themes_extension.dart'; // Import themes_extension
 
 Widget bookGridTile({
   required Book book,
@@ -32,7 +31,9 @@ Widget bookGridTile({
             Padding(
               padding: const EdgeInsets.only(left: 6, top: 4),
               child: SizedBox(
-                height: readingProgress != null ? 90 : 72, // Adjust height if progress is shown
+                height: readingProgress != null
+                    ? 90
+                    : 72, // Adjust height if progress is shown
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -76,10 +77,7 @@ Widget bookGridTile({
                         color: textTheme.bodySmall?.color,
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        progressText,
-                        style: textTheme.bodySmall,
-                      ),
+                      Text(progressText, style: textTheme.bodySmall),
                     ],
                   ],
                 ),
@@ -95,35 +93,35 @@ Widget bookGridTile({
 Widget _thumbnail(Book book) {
   return book.thumbnail.isNotEmpty
       ? Expanded(
-        child: AspectRatio(
-          aspectRatio: 3 / 4,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black, width: 0.05),
-              image: DecorationImage(
-                fit: BoxFit.fill,
-                image: NetworkImage(book.thumbnail),
+          child: AspectRatio(
+            aspectRatio: 3 / 4,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.black, width: 0.05),
+                image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: NetworkImage(book.thumbnail),
+                ),
               ),
             ),
           ),
-        ),
-      )
+        )
       : Expanded(
-        child: AspectRatio(
-          aspectRatio: 3 / 4,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.black, width: 0.05),
-            ),
-            child: Center(
-              child: Icon(Icons.book, size: 48, color: Colors.grey[600]),
+          child: AspectRatio(
+            aspectRatio: 3 / 4,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.black, width: 0.05),
+              ),
+              child: Center(
+                child: Icon(Icons.book, size: 48, color: Colors.grey[600]),
+              ),
             ),
           ),
-        ),
-      );
+        );
 }

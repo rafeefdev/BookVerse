@@ -1,4 +1,3 @@
-import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/components/bookgridtile_component.dart';
 import 'package:book_verse/core/shared/components/booklisttile_component.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';

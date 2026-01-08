@@ -1,22 +1,20 @@
 import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
-import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/session_recording_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:intl/intl.dart';
-
 
 class SessionRecordingPage extends ConsumerStatefulWidget {
   final String bookId;
   const SessionRecordingPage({super.key, required this.bookId});
 
   @override
-  ConsumerState<SessionRecordingPage> createState() => _SessionRecordingPageState();
+  ConsumerState<SessionRecordingPage> createState() =>
+      _SessionRecordingPageState();
 }
 
 class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
@@ -31,7 +29,9 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
 
   Future<void> _initializeSession() async {
     final sessionNotifier = ref.read(sessionRecordingNotifierProvider.notifier);
-    final initialProgress = await ref.read(readingTrackerNotifierProvider(widget.bookId).future);
+    final initialProgress = await ref.read(
+      readingTrackerNotifierProvider(widget.bookId).future,
+    );
     sessionNotifier.initializeSession(widget.bookId, initialProgress);
   }
 
@@ -47,11 +47,14 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    return "${twoDigits(duration.inHours)}:${twoDigitMinutes}:${twoDigitSeconds}";
+    return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
   Future<void> _showSaveSessionDialog(
-      BuildContext context, int previousCurrentPage, int totalPages) async {
+    BuildContext context,
+    int previousCurrentPage,
+    int totalPages,
+  ) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // User must tap button!
@@ -64,7 +67,8 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
               child: ListBody(
                 children: <Widget>[
                   Text(
-                      'Your previous progress: $previousCurrentPage / $totalPages pages'),
+                    'Your previous progress: $previousCurrentPage / $totalPages pages',
+                  ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _pageController,
@@ -112,7 +116,8 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
                       .saveSession(lastPage);
                   if (mounted) {
                     Navigator.of(dialogContext).pop();
-                    if (mounted) { // Check mounted again before another pop
+                    if (mounted) {
+                      // Check mounted again before another pop
                       context.pop(); // Pop this recording page
                     }
                   }
@@ -127,9 +132,12 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final sessionNotifier = ref.watch(sessionRecordingNotifierProvider.notifier);
-    final StopWatchTimer stopWatchTimer =
-        ref.watch(sessionRecordingNotifierProvider);
+    final sessionNotifier = ref.watch(
+      sessionRecordingNotifierProvider.notifier,
+    );
+    final StopWatchTimer stopWatchTimer = ref.watch(
+      sessionRecordingNotifierProvider,
+    );
     final readingProgress = sessionNotifier.initialProgress;
     final Book? book = readingProgress?.book;
 
@@ -143,9 +151,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Record Session'),
-      ),
+      appBar: AppBar(title: const Text('Record Session')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -182,19 +188,21 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                StreamBuilder<bool>(
-                  stream: stopWatchTimer.isRunning,
-                  initialData: stopWatchTimer.isRunning.value, // Corrected
+                StreamBuilder<int>(
+                  stream: stopWatchTimer.rawTime,
+                  initialData: stopWatchTimer.rawTime.value,
                   builder: (context, snap) {
-                    final isRunning = snap.data!;
+                    final isRunning = stopWatchTimer.isRunning;
                     return ElevatedButton.icon(
                       onPressed: () {
                         if (isRunning) {
                           sessionNotifier.pauseTimer();
-                        }
-                        else {
+                        } else {
                           sessionNotifier.startTimer();
                         }
+                        setState(
+                          () {},
+                        ); // Trigger rebuild to update button state
                       },
                       icon: Icon(isRunning ? Icons.pause : Icons.play_arrow),
                       label: Text(isRunning ? 'Pause' : 'Resume'),
@@ -217,9 +225,13 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () {
-                  sessionNotifier.pauseTimer(); // Pause timer before showing dialog
-                  _showSaveSessionDialog(context, readingProgress!.currentPage,
-                      book.pageCount);
+                  sessionNotifier
+                      .pauseTimer(); // Pause timer before showing dialog
+                  _showSaveSessionDialog(
+                    context,
+                    readingProgress!.currentPage,
+                    book.pageCount,
+                  );
                 },
                 icon: const Icon(Icons.check),
                 label: const Text('Finish Session'),

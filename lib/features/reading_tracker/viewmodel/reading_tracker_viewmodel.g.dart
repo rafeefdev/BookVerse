@@ -7,7 +7,7 @@ part of 'reading_tracker_viewmodel.dart';
 // **************************************************************************
 
 String _$bookReadingSessionsHash() =>
-    r'ff7dd454904ba06afa596c9b223879f6f8c0e226';
+    r'c2adc39c5c3ec9e4583487f353371568bce5bead';
 
 /// Copied from Dart SDK
 class _SystemHash {

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -17,9 +16,7 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
 
   @override
   StopWatchTimer build() {
-    _stopWatchTimer = StopWatchTimer(
-      mode: StopWatchMode.countUp,
-    );
+    _stopWatchTimer = StopWatchTimer(mode: StopWatchMode.countUp);
     return _stopWatchTimer;
   }
 
@@ -43,10 +40,7 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     // Update reading progress
     await ref
         .read(readingTrackerNotifierProvider(_bookId).notifier)
-        .updateReadingProgress(
-          endPage,
-          durationInSeconds: totalElapsedSeconds,
-        );
+        .updateReadingProgress(endPage, durationInSeconds: totalElapsedSeconds);
 
     // Add reading session
     final session = ReadingSessionModel(

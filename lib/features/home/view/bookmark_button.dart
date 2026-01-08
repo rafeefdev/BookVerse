@@ -18,7 +18,9 @@ class BookmarkButton extends ConsumerWidget {
 
     return bookMarkedBooks.when(
       data: (data) {
-        final isBookmarked = data.any((book) => book.id == selectedBook.id);
+        final isBookmarked = data.any(
+          (progress) => progress.bookId == selectedBook.id,
+        );
         return IconButton(
           onPressed: () {
             // apabila sudah disimpan di savedbook dan hendak dihapus, munculkan alert
