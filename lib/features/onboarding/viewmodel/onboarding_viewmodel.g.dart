@@ -13,10 +13,9 @@ String _$onBoardingServiceHash() => r'ce714809f1a1c6463da116290ce5c0817f37e3e5';
 final onBoardingServiceProvider = AutoDisposeFutureProvider<bool>.internal(
   onBoardingService,
   name: r'onBoardingServiceProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$onBoardingServiceHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$onBoardingServiceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );

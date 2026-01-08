@@ -8,9 +8,23 @@ import 'package:book_verse/core/shared/helpers/helper/book_publishdate.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_title.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
+import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/search/viewmodel/search_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+// Extension to provide firstWhereOrNull functionality
+extension IterableExtension<T> on Iterable<T> {
+  T? firstWhereOrNull(bool Function(T element) test) {
+    for (var element in this) {
+      if (test(element)) {
+        return element;
+      }
+    }
+    return null;
+  }
+}
 
 class DetailPage extends ConsumerWidget {
   final String selectedBookId;
@@ -24,32 +38,40 @@ class DetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //if temporary source, indexing file from search provider
-    //and from bookmark provider when its from bookmark provider
     final searchBookResult = ref.watch(searchNotifierProvider).result;
     final bookmarkedItems = ref.watch(bookmarkNotifierProvider);
-    // dynamic books =
-    // isTemporarySource
-    // ? searchBookResult
-    // : // List<Book>
-    // bookmarkedItems; // AsyncValue<List<Book>>
 
     if (isTemporarySource) {
+      // For temporary source, we don't have reading progress, just display book details
       return _buildDetailPage(
         context,
         books: searchBookResult,
         selectedBookId: selectedBookId,
+        ref: ref,
       );
     } else {
+      // For bookmarked items, we have reading progress
       return bookmarkedItems.when(
-        data: (bookList) {
+        data: (bookProgressList) {
+          final ReadingProgressModel? progress = bookProgressList
+              .firstWhereOrNull((p) => p.bookId == selectedBookId);
+          final Book? book = progress?.book;
+
+          if (book == null) {
+            return Scaffold(
+              appBar: AppBar(title: Text('Detail', style: context.textTheme.titleLarge)),
+              body: const Center(child: Text('Book not found')),
+            );
+          }
+
           return _buildDetailPage(
             context,
-            books: bookList,
+            book: book,
             selectedBookId: selectedBookId,
+            ref: ref,
+            readingProgress: progress,
           );
         },
-        // TODO : unify error and loading widget
         error: (err, stack) => Scaffold(
           appBar: AppBar(
             title: Text('Detail', style: context.textTheme.titleLarge),
@@ -68,20 +90,27 @@ class DetailPage extends ConsumerWidget {
 
   Widget _buildDetailPage(
     BuildContext context, {
-    required List<Book> books,
+    List<Book>? books, // Only used for isTemporarySource
+    Book? book, // Directly passed for non-temporary sources
     required String selectedBookId,
+    required WidgetRef ref,
+    ReadingProgressModel? readingProgress, // Passed for non-temporary sources
   }) {
-    int index = books.indexWhere((book) => book.id == selectedBookId);
-
-    // when selectedbook is not found
-    if (index == -1) {
-      return Scaffold(
-        appBar: AppBar(title: Text('Detail')),
-        body: Center(child: Text('Book not found')),
-      );
+    Book selectedBook;
+    if (book != null) {
+      selectedBook = book;
+    } else {
+      // Logic for isTemporarySource
+      int index = books!.indexWhere((book) => book.id == selectedBookId);
+      if (index == -1) {
+        return Scaffold(
+          appBar: AppBar(title: const Text('Detail')),
+          body: const Center(child: Text('Book not found')),
+        );
+      }
+      selectedBook = books[index];
     }
 
-    Book selectedBook = books[index];
     log(
       '''selectedBookId : $selectedBookId\nauthors count : ${selectedBook.authors.length}
       \ntitle count : ${selectedBook.title.characters.length},''',
@@ -90,11 +119,13 @@ class DetailPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Detail', style: context.textTheme.titleLarge),
-        actionsPadding: EdgeInsets.only(right: 16),
-        actions: [BookmarkButton(selectedBook: selectedBook)],
+        actions: [
+          BookmarkButton(selectedBook: selectedBook),
+          const SizedBox(width: 16), // Adjust padding
+        ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(left: 28, right: 28, top: 12, bottom: 28),
+        padding: const EdgeInsets.only(left: 28, right: 28, top: 12, bottom: 28),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -137,7 +168,6 @@ class DetailPage extends ConsumerWidget {
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              spacing: 8,
               children: [
                 bookDetailInfoTile(
                   context,
@@ -161,6 +191,49 @@ class DetailPage extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 24),
+            if (readingProgress != null && !isTemporarySource) ...[
+              Text(
+                'Your Reading Progress',
+                style: context.textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              LinearProgressIndicator(
+                value: selectedBook.pageCount > 0 ? readingProgress.currentPage / selectedBook.pageCount : 0.0,
+                backgroundColor: Colors.grey[300],
+                color: context.colorScheme.primary,
+                minHeight: 10,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${readingProgress.currentPage} / ${selectedBook.pageCount} pages',
+                    style: context.textTheme.bodyLarge,
+                  ),
+                  Text(
+                    '${((selectedBook.pageCount > 0 ? readingProgress.currentPage / selectedBook.pageCount : 0.0) * 100).toStringAsFixed(1)}%',
+                    style: context.textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.push('/record-session/${selectedBook.id}');
+                  },
+                  icon: const Icon(Icons.timer),
+                  label: const Text('Record New Session'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
             Text(
               selectedBook.description,
               style: context.textTheme.bodyMedium,
@@ -182,14 +255,14 @@ class BookmarkButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     log('bookmark button pressed & rebuilded');
 
-    final bookMarkedBooks = ref.watch(bookmarkNotifierProvider);
+    final bookmarkedItems = ref.watch(bookmarkNotifierProvider);
 
-    return bookMarkedBooks.when(
+    return bookmarkedItems.when(
       data: (data) {
-        final isBookmarked = data.any((book) => book.id == selectedBook.id);
+        // data is now List<ReadingProgressModel>
+        final isBookmarked = data.any((progress) => progress.bookId == selectedBook.id);
         return IconButton(
           onPressed: () {
-            // apabila sudah dibookmark dan hendak dihapus, munculkan alert
             if (isBookmarked) {
               _showRemoveBookmarkAlert(context, ref);
             } else {
@@ -203,11 +276,11 @@ class BookmarkButton extends ConsumerWidget {
       },
       error: (error, stack) => IconButton(
         onPressed: null,
-        icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
+        icon: const Icon(Icons.bookmark_border_rounded, color: Colors.grey),
       ),
       loading: () => IconButton(
         onPressed: null,
-        icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
+        icon: const Icon(Icons.bookmark_border_rounded, color: Colors.grey),
       ),
     );
   }
@@ -225,24 +298,22 @@ class BookmarkButton extends ConsumerWidget {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Are You Sure Want to Delete ?'),
+        title: const Text('Are You Sure Want to Delete ?'),
         content: Text(
           'Book "${selectedBook.title}" will removed from bookmarked items',
-          style: TextStyle(fontWeight: FontWeight.w300),
+          style: const TextStyle(fontWeight: FontWeight.w300),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () {
-              // remove book from bookmark list
               _toggleBookmark(ref);
-              // close pop-up
               Navigator.pop(context);
             },
-            child: Text('Remove Book'),
+            child: const Text('Remove Book'),
           ),
         ],
       ),
@@ -258,17 +329,16 @@ Widget bookThumbnail(Book selectedBook) {
             decoration: BoxDecoration(
               color: Colors.grey[300],
               borderRadius: BorderRadius.circular(20),
-
               border: Border.all(color: Colors.black, width: 0.05),
             ),
-            child: Icon(Icons.print, size: 35),
+            child: const Icon(Icons.print, size: 35),
           ),
         )
       : AspectRatio(
           aspectRatio: 3 / 4,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
               border: Border.all(color: Colors.black, width: 0.2),
               image: DecorationImage(
                 fit: BoxFit.cover,

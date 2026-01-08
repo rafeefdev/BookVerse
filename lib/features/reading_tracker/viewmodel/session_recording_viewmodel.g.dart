@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'thememode_provider.dart';
+part of 'session_recording_viewmodel.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$thememodeProviderHash() => r'e4a02642f6c29f6da56a24a61839ed11de0c7f1d';
+String _$sessionRecordingNotifierHash() =>
+    r'7d35aed900e2b7b7c97a42524a96365a2841f424';
 
-/// See also [ThememodeProvider].
-@ProviderFor(ThememodeProvider)
-final thememodeProviderProvider =
-    AutoDisposeAsyncNotifierProvider<ThememodeProvider, ThemeMode>.internal(
-      ThememodeProvider.new,
-      name: r'thememodeProviderProvider',
+/// See also [SessionRecordingNotifier].
+@ProviderFor(SessionRecordingNotifier)
+final sessionRecordingNotifierProvider =
+    NotifierProvider<SessionRecordingNotifier, StopWatchTimer>.internal(
+      SessionRecordingNotifier.new,
+      name: r'sessionRecordingNotifierProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$thememodeProviderHash,
+          : _$sessionRecordingNotifierHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$ThememodeProvider = AutoDisposeAsyncNotifier<ThemeMode>;
+typedef _$SessionRecordingNotifier = Notifier<StopWatchTimer>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
