@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
+import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -19,23 +20,21 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     _stopWatchTimer = StopWatchTimer(
       mode: StopWatchMode.countUp,
     );
-    // Auto-start when the provider is first accessed
-    //_stopWatchTimer.onExecute.add(StopWatchExecute.start);
     return _stopWatchTimer;
   }
 
-  void initializeSession(String bookId, ReadingProgressModel initialProgress) {
+  void initializeSession(String bookId, ReadingProgressModel? initialProgress) {
     _bookId = bookId;
     _initialProgress = initialProgress;
-    _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+    _stopWatchTimer.onStartTimer();
   }
 
   String get bookId => _bookId;
   ReadingProgressModel? get initialProgress => _initialProgress;
 
-  void startTimer() => _stopWatchTimer.onExecute.add(StopWatchExecute.start);
-  void pauseTimer() => _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
-  void resetTimer() => _stopWatchTimer.onExecute.add(StopWatchExecute.reset);
+  void startTimer() => _stopWatchTimer.onStartTimer();
+  void pauseTimer() => _stopWatchTimer.onStopTimer();
+  void resetTimer() => _stopWatchTimer.onResetTimer();
   void disposeTimer() => _stopWatchTimer.dispose();
 
   Future<void> saveSession(int endPage) async {

@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:intl/intl.dart';
+
 
 class SessionRecordingPage extends ConsumerStatefulWidget {
   final String bookId;
@@ -110,7 +112,9 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
                       .saveSession(lastPage);
                   if (mounted) {
                     Navigator.of(dialogContext).pop();
-                    context.pop(); // Pop this recording page
+                    if (mounted) { // Check mounted again before another pop
+                      context.pop(); // Pop this recording page
+                    }
                   }
                 }
               },
@@ -180,14 +184,15 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
               children: [
                 StreamBuilder<bool>(
                   stream: stopWatchTimer.isRunning,
-                  initialData: stopWatchTimer.isRunning.value,
+                  initialData: stopWatchTimer.isRunning.value, // Corrected
                   builder: (context, snap) {
                     final isRunning = snap.data!;
                     return ElevatedButton.icon(
                       onPressed: () {
                         if (isRunning) {
                           sessionNotifier.pauseTimer();
-                        } else {
+                        }
+                        else {
                           sessionNotifier.startTimer();
                         }
                       },

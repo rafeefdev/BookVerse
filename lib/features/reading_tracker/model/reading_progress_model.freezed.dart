@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ReadingProgressModel {
 
- String get bookId; int get currentPage; int get totalReadingTimeInSeconds; DateTime? get lastRead; BookModel? get book;
+ String get bookId; int get currentPage; int get totalReadingTimeInSeconds; DateTime? get lastRead; Book? get book;
 /// Create a copy of ReadingProgressModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,12 +28,12 @@ $ReadingProgressModelCopyWith<ReadingProgressModel> get copyWith => _$ReadingPro
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReadingProgressModel&&(identical(other.bookId, bookId) || other.bookId == bookId)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.totalReadingTimeInSeconds, totalReadingTimeInSeconds) || other.totalReadingTimeInSeconds == totalReadingTimeInSeconds)&&(identical(other.lastRead, lastRead) || other.lastRead == lastRead)&&const DeepCollectionEquality().equals(other.book, book));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReadingProgressModel&&(identical(other.bookId, bookId) || other.bookId == bookId)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.totalReadingTimeInSeconds, totalReadingTimeInSeconds) || other.totalReadingTimeInSeconds == totalReadingTimeInSeconds)&&(identical(other.lastRead, lastRead) || other.lastRead == lastRead)&&(identical(other.book, book) || other.book == book));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,bookId,currentPage,totalReadingTimeInSeconds,lastRead,const DeepCollectionEquality().hash(book));
+int get hashCode => Object.hash(runtimeType,bookId,currentPage,totalReadingTimeInSeconds,lastRead,book);
 
 @override
 String toString() {
@@ -48,7 +48,7 @@ abstract mixin class $ReadingProgressModelCopyWith<$Res>  {
   factory $ReadingProgressModelCopyWith(ReadingProgressModel value, $Res Function(ReadingProgressModel) _then) = _$ReadingProgressModelCopyWithImpl;
 @useResult
 $Res call({
- String bookId, int currentPage, int totalReadingTimeInSeconds, DateTime? lastRead, BookModel? book
+ String bookId, int currentPage, int totalReadingTimeInSeconds, DateTime? lastRead, Book? book
 });
 
 
@@ -72,7 +72,7 @@ as String,currentPage: null == currentPage ? _self.currentPage : currentPage // 
 as int,totalReadingTimeInSeconds: null == totalReadingTimeInSeconds ? _self.totalReadingTimeInSeconds : totalReadingTimeInSeconds // ignore: cast_nullable_to_non_nullable
 as int,lastRead: freezed == lastRead ? _self.lastRead : lastRead // ignore: cast_nullable_to_non_nullable
 as DateTime?,book: freezed == book ? _self.book : book // ignore: cast_nullable_to_non_nullable
-as BookModel?,
+as Book?,
   ));
 }
 
@@ -157,7 +157,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String bookId,  int currentPage,  int totalReadingTimeInSeconds,  DateTime? lastRead,  BookModel? book)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String bookId,  int currentPage,  int totalReadingTimeInSeconds,  DateTime? lastRead,  Book? book)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReadingProgressModel() when $default != null:
 return $default(_that.bookId,_that.currentPage,_that.totalReadingTimeInSeconds,_that.lastRead,_that.book);case _:
@@ -178,7 +178,7 @@ return $default(_that.bookId,_that.currentPage,_that.totalReadingTimeInSeconds,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String bookId,  int currentPage,  int totalReadingTimeInSeconds,  DateTime? lastRead,  BookModel? book)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String bookId,  int currentPage,  int totalReadingTimeInSeconds,  DateTime? lastRead,  Book? book)  $default,) {final _that = this;
 switch (_that) {
 case _ReadingProgressModel():
 return $default(_that.bookId,_that.currentPage,_that.totalReadingTimeInSeconds,_that.lastRead,_that.book);case _:
@@ -198,7 +198,7 @@ return $default(_that.bookId,_that.currentPage,_that.totalReadingTimeInSeconds,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String bookId,  int currentPage,  int totalReadingTimeInSeconds,  DateTime? lastRead,  BookModel? book)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String bookId,  int currentPage,  int totalReadingTimeInSeconds,  DateTime? lastRead,  Book? book)?  $default,) {final _that = this;
 switch (_that) {
 case _ReadingProgressModel() when $default != null:
 return $default(_that.bookId,_that.currentPage,_that.totalReadingTimeInSeconds,_that.lastRead,_that.book);case _:
@@ -220,7 +220,7 @@ class _ReadingProgressModel implements ReadingProgressModel {
 @override final  int currentPage;
 @override@JsonKey() final  int totalReadingTimeInSeconds;
 @override final  DateTime? lastRead;
-@override final  BookModel? book;
+@override final  Book? book;
 
 /// Create a copy of ReadingProgressModel
 /// with the given fields replaced by the non-null parameter values.
@@ -235,12 +235,12 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReadingProgressModel&&(identical(other.bookId, bookId) || other.bookId == bookId)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.totalReadingTimeInSeconds, totalReadingTimeInSeconds) || other.totalReadingTimeInSeconds == totalReadingTimeInSeconds)&&(identical(other.lastRead, lastRead) || other.lastRead == lastRead)&&const DeepCollectionEquality().equals(other.book, book));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReadingProgressModel&&(identical(other.bookId, bookId) || other.bookId == bookId)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.totalReadingTimeInSeconds, totalReadingTimeInSeconds) || other.totalReadingTimeInSeconds == totalReadingTimeInSeconds)&&(identical(other.lastRead, lastRead) || other.lastRead == lastRead)&&(identical(other.book, book) || other.book == book));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,bookId,currentPage,totalReadingTimeInSeconds,lastRead,const DeepCollectionEquality().hash(book));
+int get hashCode => Object.hash(runtimeType,bookId,currentPage,totalReadingTimeInSeconds,lastRead,book);
 
 @override
 String toString() {
@@ -255,7 +255,7 @@ abstract mixin class _$ReadingProgressModelCopyWith<$Res> implements $ReadingPro
   factory _$ReadingProgressModelCopyWith(_ReadingProgressModel value, $Res Function(_ReadingProgressModel) _then) = __$ReadingProgressModelCopyWithImpl;
 @override @useResult
 $Res call({
- String bookId, int currentPage, int totalReadingTimeInSeconds, DateTime? lastRead, BookModel? book
+ String bookId, int currentPage, int totalReadingTimeInSeconds, DateTime? lastRead, Book? book
 });
 
 
@@ -279,7 +279,7 @@ as String,currentPage: null == currentPage ? _self.currentPage : currentPage // 
 as int,totalReadingTimeInSeconds: null == totalReadingTimeInSeconds ? _self.totalReadingTimeInSeconds : totalReadingTimeInSeconds // ignore: cast_nullable_to_non_nullable
 as int,lastRead: freezed == lastRead ? _self.lastRead : lastRead // ignore: cast_nullable_to_non_nullable
 as DateTime?,book: freezed == book ? _self.book : book // ignore: cast_nullable_to_non_nullable
-as BookModel?,
+as Book?,
   ));
 }
 

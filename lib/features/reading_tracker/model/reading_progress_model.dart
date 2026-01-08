@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:book_verse/core/models/book_model.dart';
+import 'package:book_verse/core/models/book_model.dart'; // Corrected import
 
 part 'reading_progress_model.freezed.dart';
 part 'reading_progress_model.g.dart';
@@ -11,7 +11,7 @@ class ReadingProgressModel with _$ReadingProgressModel {
     required int currentPage,
     @Default(0) int totalReadingTimeInSeconds,
     DateTime? lastRead,
-    BookModel? book,
+    Book? book, // Changed BookModel to Book
   }) = _ReadingProgressModel;
 
   factory ReadingProgressModel.fromJson(Map<String, dynamic> json) =>
