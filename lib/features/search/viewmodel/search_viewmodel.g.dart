@@ -14,10 +14,9 @@ final searchNotifierProvider =
     NotifierProvider<SearchNotifier, SearchState>.internal(
       SearchNotifier.new,
       name: r'searchNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$searchNotifierHash,
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$searchNotifierHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );

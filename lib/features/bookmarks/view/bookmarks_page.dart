@@ -1,8 +1,8 @@
-import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/components/bookgridtile_component.dart';
 import 'package:book_verse/core/shared/components/booklisttile_component.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
+import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,8 +12,8 @@ enum ViewMode { grid, list }
 // Provider using Riverpod code generation
 final viewModeProvider = StateProvider<ViewMode>((ref) => ViewMode.list);
 
-class SavedbookPage extends ConsumerWidget {
-  const SavedbookPage({super.key});
+class BookmarksPage extends ConsumerWidget {
+  const BookmarksPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,7 +60,7 @@ class SavedbookPage extends ConsumerWidget {
     BuildContext context,
     ViewMode viewMode,
     WidgetRef ref,
-    List<Book> data,
+    List<ReadingProgressModel> data,
   ) {
     return Scaffold(
       body: Column(
@@ -134,43 +134,52 @@ class SavedbookPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildGridView(List<Book> books) {
+  Widget _buildGridView(List<ReadingProgressModel> booksProgress) {
     return GridView.builder(
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.7,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
-      itemCount: books.length,
+      itemCount: booksProgress.length,
       itemBuilder: (context, index) {
-        return _buildBookCard(context, books[index]);
+        return _buildBookCard(context, booksProgress[index]);
       },
     );
   }
 
-  Widget _buildListView(List<Book> books) {
+  Widget _buildListView(List<ReadingProgressModel> booksProgress) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: books.length,
+      itemCount: booksProgress.length,
       itemBuilder: (context, index) {
+        final progress = booksProgress[index];
         return bookListTile(
           context,
-          books[index],
+          progress.book!,
           isWrappedByCard: true,
           isTemporarySource: false,
+          readingProgress: progress,
+          onTap: () {
+            context.push('/tracked-book-detail/${progress.bookId}');
+          },
         );
       },
     );
   }
 
-  Widget _buildBookCard(BuildContext context, Book book) {
+  Widget _buildBookCard(BuildContext context, ReadingProgressModel progress) {
     return InkWell(
       onTap: () {
-        context.push('/detail/${book.id}?isTemporarySource=false');
+        context.push('/tracked-book-detail/${progress.bookId}');
       },
-      child: bookGridTile(book: book, textTheme: Theme.of(context).textTheme),
+      child: bookGridTile(
+        book: progress.book!,
+        textTheme: Theme.of(context).textTheme,
+        readingProgress: progress,
+      ),
     );
   }
 }

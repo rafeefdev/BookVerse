@@ -13,8 +13,9 @@ String _$bookmarkRepoHash() => r'a5afe23485096072215f78a53cfe7e0e6d82f79f';
 final bookmarkRepoProvider = AutoDisposeProvider<BookmarkRepo>.internal(
   bookmarkRepo,
   name: r'bookmarkRepoProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$bookmarkRepoHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$bookmarkRepoHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );

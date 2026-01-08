@@ -1,12 +1,22 @@
 import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
+import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:flutter/material.dart';
 
 Widget bookGridTile({
   required Book book,
   required TextTheme textTheme,
   double? aspectRatio,
+  ReadingProgressModel? readingProgress,
 }) {
+  double progressValue = 0.0;
+  String progressText = 'Not started';
+
+  if (readingProgress != null && book.pageCount > 0) {
+    progressValue = readingProgress.currentPage / book.pageCount;
+    progressText = '${readingProgress.currentPage} / ${book.pageCount} pages';
+  }
+
   return AspectRatio(
     aspectRatio: aspectRatio ?? 3 / 4,
     child: Card(
@@ -21,7 +31,9 @@ Widget bookGridTile({
             Padding(
               padding: const EdgeInsets.only(left: 6, top: 4),
               child: SizedBox(
-                height: 72,
+                height: readingProgress != null
+                    ? 90
+                    : 72, // Adjust height if progress is shown
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -30,7 +42,7 @@ Widget bookGridTile({
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Icon(Icons.book, color: Colors.grey[600]),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             book.title.length < 25
@@ -47,7 +59,7 @@ Widget bookGridTile({
                     Row(
                       children: [
                         Icon(Icons.person, color: Colors.grey[600]),
-                        SizedBox(width: 6),
+                        const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             bookAuthors(book, maxAuthorsDisplayed: 1),
@@ -57,6 +69,16 @@ Widget bookGridTile({
                         ),
                       ],
                     ),
+                    if (readingProgress != null) ...[
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                        value: progressValue,
+                        backgroundColor: Colors.grey[300],
+                        color: textTheme.bodySmall?.color,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(progressText, style: textTheme.bodySmall),
+                    ],
                   ],
                 ),
               ),
@@ -71,35 +93,35 @@ Widget bookGridTile({
 Widget _thumbnail(Book book) {
   return book.thumbnail.isNotEmpty
       ? Expanded(
-        child: AspectRatio(
-          aspectRatio: 3 / 4,
-          child: Container(
-            margin: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black, width: 0.05),
-              image: DecorationImage(
-                fit: BoxFit.fill,
-                image: NetworkImage(book.thumbnail),
+          child: AspectRatio(
+            aspectRatio: 3 / 4,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.black, width: 0.05),
+                image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: NetworkImage(book.thumbnail),
+                ),
               ),
             ),
           ),
-        ),
-      )
+        )
       : Expanded(
-        child: AspectRatio(
-          aspectRatio: 3 / 4,
-          child: Container(
-            margin: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.black, width: 0.05),
-            ),
-            child: Center(
-              child: Icon(Icons.book, size: 48, color: Colors.grey[600]),
+          child: AspectRatio(
+            aspectRatio: 3 / 4,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.black, width: 0.05),
+              ),
+              child: Center(
+                child: Icon(Icons.book, size: 48, color: Colors.grey[600]),
+              ),
             ),
           ),
-        ),
-      );
+        );
 }

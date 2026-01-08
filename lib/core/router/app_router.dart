@@ -1,5 +1,5 @@
 import 'package:book_verse/core/router/shell_scaffold.dart';
-import 'package:book_verse/features/bookmarks/view/pages/savedbook_page.dart';
+import 'package:book_verse/features/bookmarks/view/bookmarks_page.dart';
 import 'package:book_verse/features/home/view/pages/detail_page.dart';
 import 'package:book_verse/features/home/view/pages/new_homepage.dart';
 import 'package:book_verse/features/onboarding/view/pages/splash_screens/first_page.dart';
@@ -7,6 +7,8 @@ import 'package:book_verse/features/onboarding/view/pages/splash_screens/fourth_
 import 'package:book_verse/features/onboarding/view/pages/splash_screens/second_page.dart';
 import 'package:book_verse/features/onboarding/view/pages/splash_screens/third_page.dart';
 import 'package:book_verse/features/onboarding/viewmodel/onboarding_viewmodel.dart';
+import 'package:book_verse/features/reading_tracker/view/reading_tracker_detail_page.dart';
+import 'package:book_verse/features/reading_tracker/view/session_recording_page.dart';
 import 'package:book_verse/features/search/view/pages/search_page.dart';
 import 'package:book_verse/features/settings/view/pages/settings_page.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +85,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/bookmarks',
-                builder: (context, state) => const SavedbookPage(),
+                builder: (context, state) => const BookmarksPage(),
               ),
             ],
           ),
@@ -110,6 +112,22 @@ final routerProvider = Provider<GoRouter>((ref) {
             selectedBookId: id,
             isTemporarySource: isTemporarySource,
           );
+        },
+      ),
+      GoRoute(
+        path: '/tracked-book-detail/:id',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ReadingTrackerDetailPage(bookId: id);
+        },
+      ),
+      GoRoute(
+        path: '/record-session/:id',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return SessionRecordingPage(bookId: id);
         },
       ),
     ],
