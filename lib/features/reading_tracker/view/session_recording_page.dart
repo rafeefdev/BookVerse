@@ -5,7 +5,6 @@ import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_vi
 import 'package:book_verse/features/reading_tracker/viewmodel/session_recording_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class SessionRecordingPage extends ConsumerStatefulWidget {
@@ -57,7 +56,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
   ) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // User must tap button!
+      barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Finish Reading Session'),
@@ -103,7 +102,6 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
               child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
-                // Optionally resume timer or handle cancellation
               },
             ),
             FilledButton(
@@ -111,16 +109,20 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   final lastPage = int.parse(_pageController.text);
+
+                  // Simpan context sebelum operasi async
+                  final navigator = Navigator.of(dialogContext);
+                  final rootNavigator = Navigator.of(context);
+
                   await ref
                       .read(sessionRecordingNotifierProvider.notifier)
                       .saveSession(lastPage);
-                  if (mounted) {
-                    Navigator.of(dialogContext).pop();
-                    if (mounted) {
-                      // Check mounted again before another pop
-                      context.pop(); // Pop this recording page
-                    }
-                  }
+
+                  // Tutup dialog
+                  navigator.pop();
+
+                  // Tutup halaman session recording
+                  rootNavigator.pop();
                 }
               },
             ),
@@ -200,9 +202,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
                         } else {
                           sessionNotifier.startTimer();
                         }
-                        setState(
-                          () {},
-                        ); // Trigger rebuild to update button state
+                        setState(() {});
                       },
                       icon: Icon(isRunning ? Icons.pause : Icons.play_arrow),
                       label: Text(isRunning ? 'Pause' : 'Resume'),
@@ -225,8 +225,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () {
-                  sessionNotifier
-                      .pauseTimer(); // Pause timer before showing dialog
+                  sessionNotifier.pauseTimer();
                   _showSaveSessionDialog(
                     context,
                     readingProgress!.currentPage,
