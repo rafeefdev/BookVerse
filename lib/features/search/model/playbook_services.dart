@@ -14,7 +14,7 @@ class PlaybookServices {
     String? title,
     String? publisher,
   }) {
-    String apiKey = dotenv.env['API_KEY'] ?? 'default_value';
+    String apiKey = dotenv.env['GOOGLE_BOOKS_API_KEY'] ?? 'default_value';
     const String baseUrl = "https://www.googleapis.com/books/v1/volumes";
 
     String baseQuery = query ?? '';
@@ -56,15 +56,16 @@ class PlaybookServices {
       if (response.statusCode == 200) {
         final bookList = jsonDecode(response.body);
         if (bookList['items'] != null) {
-          result =
-              (bookList['items'] as List)
-                  .map((item) => Book.fromJson(item))
-                  .toList();
+          result = (bookList['items'] as List)
+              .map((item) => Book.fromJson(item))
+              .toList();
           return result;
         }
         return [];
       } else {
-        throw Exception('Failed to load books: ${response.statusCode}');
+        throw Exception(
+          'Failed to load books: ${response.statusCode}, \n Complete Message : \n${response.body}',
+        );
       }
     } catch (e) {
       log('Error fetching books: $e');
