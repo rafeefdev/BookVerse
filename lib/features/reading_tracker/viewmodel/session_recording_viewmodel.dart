@@ -17,6 +17,9 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
   @override
   StopWatchTimer build() {
     _stopWatchTimer = StopWatchTimer(mode: StopWatchMode.countUp);
+
+    ref.onDispose(disposeTimer);
+
     return _stopWatchTimer;
   }
 

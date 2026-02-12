@@ -37,7 +37,6 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
   @override
   void dispose() {
     _pageController.dispose();
-    ref.read(sessionRecordingNotifierProvider.notifier).disposeTimer();
     super.dispose();
   }
 
