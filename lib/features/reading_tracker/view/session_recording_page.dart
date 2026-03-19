@@ -1,7 +1,7 @@
 import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
-import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
+import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/session_recording_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,10 +28,20 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
 
   Future<void> _initializeSession() async {
     final sessionNotifier = ref.read(sessionRecordingNotifierProvider.notifier);
-    final initialProgress = await ref.read(
-      readingTrackerNotifierProvider(widget.bookId).future,
-    );
-    sessionNotifier.initializeSession(widget.bookId, initialProgress);
+    final success = await sessionNotifier.initializeSession(widget.bookId);
+
+    if (mounted) {
+      setState(() {});
+    }
+
+    if (!success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(sessionNotifier.errorMessage ?? 'Unknown error'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -108,20 +118,29 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   final lastPage = int.parse(_pageController.text);
-
-                  // Simpan context sebelum operasi async
                   final navigator = Navigator.of(dialogContext);
                   final rootNavigator = Navigator.of(context);
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-                  await ref
-                      .read(sessionRecordingNotifierProvider.notifier)
-                      .saveSession(lastPage);
+                  final sessionNotifier = ref.read(
+                    sessionRecordingNotifierProvider.notifier,
+                  );
+                  final success = await sessionNotifier.saveSession(lastPage);
 
-                  // Tutup dialog
-                  navigator.pop();
-
-                  // Tutup halaman session recording
-                  rootNavigator.pop();
+                  if (success) {
+                    navigator.pop();
+                    rootNavigator.pop();
+                  } else {
+                    scaffoldMessenger.showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          sessionNotifier.errorMessage ??
+                              'Failed to save session',
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 }
               },
             ),
@@ -141,16 +160,74 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
     );
     final readingProgress = sessionNotifier.initialProgress;
     final Book? book = readingProgress?.book;
+    final bool isInitialized = sessionNotifier.isInitialized;
+    final bool hasError = sessionNotifier.hasError;
 
-    if (book == null) {
+    if (!isInitialized) {
       return Scaffold(
         appBar: AppBar(title: const Text('Record Session')),
         body: const Center(
-          child: Text('Error: Book data not found for session recording.'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Loading book data...'),
+            ],
+          ),
         ),
       );
     }
 
+    if (hasError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Record Session')),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  sessionNotifier.errorMessage ?? 'An error occurred',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.arrow_back),
+                  label: const Text('Go Back'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return _buildSessionUI(
+      context,
+      sessionNotifier,
+      stopWatchTimer,
+      book!,
+      readingProgress!,
+    );
+  }
+
+  Widget _buildSessionUI(
+    BuildContext context,
+    SessionRecordingNotifier sessionNotifier,
+    StopWatchTimer stopWatchTimer,
+    Book book,
+    ReadingProgressModel readingProgress,
+  ) {
     return Scaffold(
       appBar: AppBar(title: const Text('Record Session')),
       body: Padding(
@@ -158,7 +235,6 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Book Info
             Text(
               book.title,
               style: context.textTheme.headlineMedium,
@@ -170,8 +246,6 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-
-            // Stopwatch Display
             StreamBuilder<int>(
               stream: stopWatchTimer.rawTime,
               initialData: stopWatchTimer.rawTime.value,
@@ -184,8 +258,6 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
               },
             ),
             const SizedBox(height: 32),
-
-            // Control Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -218,8 +290,6 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
               ],
             ),
             const SizedBox(height: 32),
-
-            // Finish Session Button
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
@@ -227,7 +297,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
                   sessionNotifier.pauseTimer();
                   _showSaveSessionDialog(
                     context,
-                    readingProgress!.currentPage,
+                    readingProgress.currentPage,
                     book.pageCount,
                   );
                 },

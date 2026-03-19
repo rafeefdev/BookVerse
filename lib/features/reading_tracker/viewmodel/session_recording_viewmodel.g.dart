@@ -7,7 +7,7 @@ part of 'session_recording_viewmodel.dart';
 // **************************************************************************
 
 String _$sessionRecordingNotifierHash() =>
-    r'61c52bcba93bf9daa699b7eef58d5babe0b84d59';
+    r'8c9d1a4908e882feb422b4090bfab996cd50bf10';
 
 /// See also [SessionRecordingNotifier].
 @ProviderFor(SessionRecordingNotifier)
