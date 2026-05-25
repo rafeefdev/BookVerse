@@ -2,7 +2,6 @@ import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class FloatingTracker extends ConsumerWidget {
   const FloatingTracker({super.key});
@@ -22,14 +21,10 @@ class FloatingTracker extends ConsumerWidget {
 
     if (!isActivelyReading || isDismissed) return const SizedBox.shrink();
 
-    final location = GoRouterState.of(context).uri.toString();
-    final isShellRoute = location == '/home' || location == '/bookmarks';
+    final isBlocked = ref.watch(isTrackerBlockedProvider);
+    if (isBlocked) return const SizedBox.shrink();
 
-    if (location.startsWith('/onboarding') ||
-        location.startsWith('/error') ||
-        location.startsWith('/record-session')) {
-      return const SizedBox.shrink();
-    }
+    final isShellRoute = ref.watch(isShellRouteProvider);
 
     final viewPadding = MediaQuery.of(context).viewPadding.bottom;
     final bottomNavHeight = isShellRoute ? kBottomNavigationBarHeight : 0.0;

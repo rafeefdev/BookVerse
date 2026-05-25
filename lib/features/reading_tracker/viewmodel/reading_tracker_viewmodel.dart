@@ -90,6 +90,10 @@ final isActivelyReadingProvider = Provider<bool>((ref) {
 
 final trackerDismissedProvider = StateProvider<bool>((ref) => false);
 
+final isShellRouteProvider = StateProvider<bool>((ref) => false);
+
+final isTrackerBlockedProvider = StateProvider<bool>((ref) => false);
+
 final activeReadingProgressProvider = FutureProvider<ReadingProgressModel?>((
   ref,
 ) async {

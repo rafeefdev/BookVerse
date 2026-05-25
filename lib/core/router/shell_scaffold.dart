@@ -1,13 +1,17 @@
+import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ShellScaffold extends StatelessWidget {
+class ShellScaffold extends ConsumerWidget {
   const ShellScaffold({required this.navigationShell, super.key});
 
   final StatefulNavigationShell navigationShell;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(isShellRouteProvider.notifier).state = true;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -19,7 +23,6 @@ class ShellScaffold extends StatelessWidget {
         actions: [
           IconButton.filledTonal(
             onPressed: () {
-              // Navigate to settings page
               context.push('/settings');
             },
             icon: const Icon(Icons.settings),
