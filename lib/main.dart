@@ -4,6 +4,7 @@ import 'package:book_verse/core/router/app_router.dart';
 import 'package:book_verse/core/services/sqflite_service.dart';
 import 'package:book_verse/core/theme/providers/thememode_provider.dart';
 import 'package:book_verse/core/shared/app_theme.dart';
+import 'package:book_verse/features/reading_tracker/view/floating_tracker.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,23 @@ class MyApp extends ConsumerWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: appThemeMode,
-      builder: DevicePreview.appBuilder,
+      builder: (context, child) {
+        return DevicePreview.appBuilder(
+          context,
+          Stack(
+            children: [
+              child!,
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 12),
+                  child: FloatingTracker(),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
       // ignore: deprecated_member_use
       useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),

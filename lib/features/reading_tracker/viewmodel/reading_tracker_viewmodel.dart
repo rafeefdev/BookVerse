@@ -64,3 +64,31 @@ Future<List<ReadingSessionModel>> bookReadingSessions(
 ) async {
   return SqfliteService.instance.getReadingSessions(bookId);
 }
+
+final activeReadingProgressProvider = FutureProvider<ReadingProgressModel?>((
+  ref,
+) async {
+  final sqfliteService = SqfliteService.instance;
+  final allProgress = await sqfliteService.getAllReadingProgress();
+  if (allProgress.isEmpty) return null;
+
+  allProgress.sort((a, b) {
+    if (a.lastRead == null && b.lastRead == null) return 0;
+    if (a.lastRead == null) return 1;
+    if (b.lastRead == null) return -1;
+    return b.lastRead!.compareTo(a.lastRead!);
+  });
+
+  final latest = allProgress.first;
+  final db = await sqfliteService.database;
+  final bookData = await db.query(
+    'bookmarks',
+    where: 'id = ?',
+    whereArgs: [latest.bookId],
+  );
+  if (bookData.isNotEmpty) {
+    final book = Book.fromJson(bookData.first);
+    return latest.copyWith(book: book);
+  }
+  return latest;
+});
