@@ -60,12 +60,11 @@ class MyApp extends ConsumerWidget {
           Stack(
             children: [
               child!,
-              const Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 12),
-                  child: FloatingTracker(),
-                ),
+              const Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: FloatingTracker(),
               ),
             ],
           ),

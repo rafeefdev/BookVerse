@@ -33,8 +33,19 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
     int newCurrentPage, {
     int? durationInSeconds,
   }) async {
-    final currentState = state.value;
-    if (currentState == null) return;
+    var currentState = state.value;
+
+    if (currentState == null) {
+      currentState = ReadingProgressModel(
+        bookId: bookId,
+        currentPage: newCurrentPage,
+        totalReadingTimeInSeconds: durationInSeconds ?? 0,
+        lastRead: DateTime.now(),
+      );
+      await _sqfliteService.saveReadingProgress(currentState);
+      state = AsyncData(currentState);
+      return;
+    }
 
     int updatedTotalReadingTime =
         currentState.totalReadingTimeInSeconds + (durationInSeconds ?? 0);
@@ -64,6 +75,20 @@ Future<List<ReadingSessionModel>> bookReadingSessions(
 ) async {
   return SqfliteService.instance.getReadingSessions(bookId);
 }
+
+final isActivelyReadingProvider = Provider<bool>((ref) {
+  final progressAsync = ref.watch(activeReadingProgressProvider);
+  return progressAsync.when(
+    data: (progress) {
+      if (progress?.lastRead == null) return false;
+      return DateTime.now().difference(progress!.lastRead!).inHours < 24;
+    },
+    loading: () => false,
+    error: (_, __) => false,
+  );
+});
+
+final trackerDismissedProvider = StateProvider<bool>((ref) => false);
 
 final activeReadingProgressProvider = FutureProvider<ReadingProgressModel?>((
   ref,

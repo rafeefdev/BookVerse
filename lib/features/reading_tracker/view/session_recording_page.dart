@@ -9,7 +9,12 @@ import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class SessionRecordingPage extends ConsumerStatefulWidget {
   final String bookId;
-  const SessionRecordingPage({super.key, required this.bookId});
+  final Book? initialBook;
+  const SessionRecordingPage({
+    super.key,
+    required this.bookId,
+    this.initialBook,
+  });
 
   @override
   ConsumerState<SessionRecordingPage> createState() =>
@@ -28,7 +33,10 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
 
   Future<void> _initializeSession() async {
     final sessionNotifier = ref.read(sessionRecordingNotifierProvider.notifier);
-    final success = await sessionNotifier.initializeSession(widget.bookId);
+    final success = await sessionNotifier.initializeSession(
+      widget.bookId,
+      initialBook: widget.initialBook,
+    );
 
     if (mounted) {
       setState(() {});

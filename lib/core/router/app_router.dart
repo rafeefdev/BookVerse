@@ -1,3 +1,4 @@
+import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/router/shell_scaffold.dart';
 import 'package:book_verse/features/bookmarks/view/bookmarks_page.dart';
 import 'package:book_verse/features/home/view/pages/detail_page.dart';
@@ -27,7 +28,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Using when to handle async value
       return onBoardingStatus.when(
         data: (hasOpened) {
-          final isGoingToOnboarding = state.matchedLocation.startsWith('/onboarding');
+          final isGoingToOnboarding = state.matchedLocation.startsWith(
+            '/onboarding',
+          );
 
           if (!hasOpened && !isGoingToOnboarding) {
             return '/onboarding';
@@ -48,25 +51,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/onboarding',
         builder: (context, state) => FirstScreen(),
         routes: [
-          GoRoute(
-            path: '2',
-            builder: (context, state) => SecondScreen(),
-          ),
-          GoRoute(
-            path: '3',
-            builder: (context, state) => ThirdScreen(),
-          ),
-          GoRoute(
-            path: '4',
-            builder: (context, state) => FourthScreen(),
-          ),
+          GoRoute(path: '2', builder: (context, state) => SecondScreen()),
+          GoRoute(path: '3', builder: (context, state) => ThirdScreen()),
+          GoRoute(path: '4', builder: (context, state) => FourthScreen()),
         ],
       ),
       GoRoute(
         path: '/error',
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Something went wrong')),
-        ),
+        builder: (context, state) =>
+            const Scaffold(body: Center(child: Text('Something went wrong'))),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -127,7 +120,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final id = state.pathParameters['id']!;
-          return SessionRecordingPage(bookId: id);
+          final book = state.extra as Book?;
+          return SessionRecordingPage(bookId: id, initialBook: book);
         },
       ),
     ],

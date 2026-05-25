@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:book_verse/core/models/book_model.dart';
+import 'package:book_verse/core/services/sqflite_service.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
@@ -33,7 +36,7 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     return _stopWatchTimer;
   }
 
-  Future<bool> initializeSession(String bookId) async {
+  Future<bool> initializeSession(String bookId, {Book? initialBook}) async {
     if (_isInitialized) {
       return !_hasError;
     }
@@ -41,13 +44,37 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     try {
       _bookId = bookId;
 
-      final progress = await ref.read(
+      var progress = await ref.read(
         readingTrackerNotifierProvider(bookId).future,
       );
 
-      _initialProgress = progress;
+      if (progress == null && initialBook != null) {
+        final db = await SqfliteService.instance.database;
+        await db.insert(
+          'bookmarks',
+          initialBook.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
 
-      if (progress?.book == null) {
+        _initialProgress = ReadingProgressModel(
+          bookId: bookId,
+          currentPage: 0,
+          totalReadingTimeInSeconds: 0,
+          lastRead: DateTime.now(),
+          book: initialBook,
+        );
+        await SqfliteService.instance.saveReadingProgress(_initialProgress!);
+        ref.invalidate(readingTrackerNotifierProvider(bookId));
+      } else if (progress == null) {
+        _hasError = true;
+        _errorMessage = 'Book data not found for session recording.';
+        _isInitialized = true;
+        return false;
+      } else {
+        _initialProgress = progress;
+      }
+
+      if (_initialProgress?.book == null) {
         _hasError = true;
         _errorMessage = 'Book data not found for session recording.';
         _isInitialized = true;
@@ -114,6 +141,8 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
 
       ref.invalidate(bookReadingSessionsProvider(_bookId));
       ref.invalidate(readingTrackerNotifierProvider(_bookId));
+      ref.invalidate(activeReadingProgressProvider);
+      ref.read(trackerDismissedProvider.notifier).state = false;
 
       return true;
     } catch (e) {
