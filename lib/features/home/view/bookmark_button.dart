@@ -23,16 +23,20 @@ class BookmarkButton extends ConsumerWidget {
         );
         return IconButton(
           onPressed: () {
-            // apabila sudah disimpan di savedbook dan hendak dihapus, munculkan alert
             if (isBookmarked) {
-              // tampilkan dialog
               showDialog(
                 context: context,
-                builder: (context) =>
-                    RemoveBookmarkDialog(bookTitle: selectedBook.title),
+                builder: (context) => _RemoveBookmarkDialog(
+                  bookTitle: selectedBook.title,
+                  onConfirm: () {
+                    ref
+                        .read(bookmarkNotifierProvider.notifier)
+                        .toggleBookmark(selectedBook);
+                    Navigator.of(context).pop();
+                  },
+                ),
               );
             } else {
-              // jika belum ada di saved book, langsung ditoggle
               ref
                   .read(bookmarkNotifierProvider.notifier)
                   .toggleBookmark(selectedBook);
@@ -55,18 +59,27 @@ class BookmarkButton extends ConsumerWidget {
   }
 }
 
-class RemoveBookmarkDialog extends StatelessWidget {
+class _RemoveBookmarkDialog extends StatelessWidget {
   final String bookTitle;
+  final VoidCallback onConfirm;
 
-  const RemoveBookmarkDialog({super.key, required this.bookTitle});
+  const _RemoveBookmarkDialog({
+    required this.bookTitle,
+    required this.onConfirm,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Are you sure to remove from saved book list?'),
+      title: const Text('Are you sure to remove from saved book list?'),
       content: Text('Book "$bookTitle" will removed from saved book list'),
-      // TODO : add action button to remove or cancel removing book
-      actions: [],
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(onPressed: onConfirm, child: const Text('Remove')),
+      ],
     );
   }
 }

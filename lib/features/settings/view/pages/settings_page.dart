@@ -45,9 +45,10 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ],
                 onChanged: (value) async {
+                  if (value == null) return;
                   await ref
                       .read(thememodeProviderProvider.notifier)
-                      .changeTheme(value!);
+                      .changeTheme(value);
                 },
               ),
             ),

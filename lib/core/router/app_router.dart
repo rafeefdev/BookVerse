@@ -27,7 +27,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Using when to handle async value
       return onBoardingStatus.when(
         data: (hasOpened) {
-          final isGoingToOnboarding = state.matchedLocation.startsWith('/onboarding');
+          final isGoingToOnboarding = state.matchedLocation.startsWith(
+            '/onboarding',
+          );
 
           if (!hasOpened && !isGoingToOnboarding) {
             return '/onboarding';
@@ -48,24 +50,30 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/onboarding',
         builder: (context, state) => FirstScreen(),
         routes: [
-          GoRoute(
-            path: '2',
-            builder: (context, state) => SecondScreen(),
-          ),
-          GoRoute(
-            path: '3',
-            builder: (context, state) => ThirdScreen(),
-          ),
-          GoRoute(
-            path: '4',
-            builder: (context, state) => FourthScreen(),
-          ),
+          GoRoute(path: '2', builder: (context, state) => SecondScreen()),
+          GoRoute(path: '3', builder: (context, state) => ThirdScreen()),
+          GoRoute(path: '4', builder: (context, state) => FourthScreen()),
         ],
       ),
       GoRoute(
         path: '/error',
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Something went wrong')),
+        builder: (context, state) => Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                const SizedBox(height: 16),
+                const Text('Something went wrong'),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () => context.go('/home'),
+                  icon: const Icon(Icons.home),
+                  label: const Text('Go to Home'),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       StatefulShellRoute.indexedStack(
@@ -105,9 +113,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/detail/:id',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
+          final id = state.pathParameters['id'] ?? '';
           final isTemporarySource =
               state.uri.queryParameters['isTemporarySource'] == 'true';
+          if (id.isEmpty) {
+            return const Scaffold(body: Center(child: Text('Invalid book ID')));
+          }
           return DetailPage(
             selectedBookId: id,
             isTemporarySource: isTemporarySource,
@@ -118,7 +129,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/tracked-book-detail/:id',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
+          final id = state.pathParameters['id'] ?? '';
+          if (id.isEmpty) {
+            return const Scaffold(body: Center(child: Text('Invalid book ID')));
+          }
           return ReadingTrackerDetailPage(bookId: id);
         },
       ),
@@ -126,7 +140,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/record-session/:id',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
+          final id = state.pathParameters['id'] ?? '';
+          if (id.isEmpty) {
+            return const Scaffold(body: Center(child: Text('Invalid book ID')));
+          }
           return SessionRecordingPage(bookId: id);
         },
       ),

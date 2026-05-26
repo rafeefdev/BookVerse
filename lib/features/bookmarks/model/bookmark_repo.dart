@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/services/sqflite_service.dart';
 import 'package:book_verse/features/bookmarks/model/local_bookmark_service.dart';
@@ -10,43 +11,66 @@ class BookmarkRepo {
   BookmarkRepo({required this.localBookmarkService});
 
   Future<List<ReadingProgressModel>> getReadingProgressWithBooks() async {
-    final booksMap = await localBookmarkService.getBookmarkedBooks();
-    final progressMap = await _sqfliteService.getAllReadingProgress();
+    try {
+      final booksMap = await localBookmarkService.getBookmarkedBooks();
+      final progressMap = await _sqfliteService.getAllReadingProgress();
 
-    final List<Book> books = booksMap.map((b) => Book.fromJson(b)).toList();
+      final List<Book> books = booksMap.map((b) => Book.fromJson(b)).toList();
 
-    return progressMap.map((progress) {
-      final book = books.firstWhere((b) => b.id == progress.bookId,
+      return progressMap.map((progress) {
+        final book = books.firstWhere(
+          (b) => b.id == progress.bookId,
           orElse: () => Book(
-              id: progress.bookId,
-              title: 'Unknown Book',
-              authors: [],
-              description: '',
-              thumbnail: '',
-              publishedDate: '',
-              pageCount: 0,
-              publisher: '',
-              subTitle: ''));
-      return progress.copyWith(book: book);
-    }).toList();
+            id: progress.bookId,
+            title: 'Unknown Book',
+            authors: [],
+            description: '',
+            thumbnail: '',
+            publishedDate: '',
+            pageCount: 0,
+            publisher: '',
+            subTitle: '',
+          ),
+        );
+        return progress.copyWith(book: book);
+      }).toList();
+    } catch (e, stack) {
+      log('getReadingProgressWithBooks error: $e\n$stack');
+      rethrow;
+    }
   }
 
   Future<void> addToBookmark(Book book) async {
-    await localBookmarkService.addToBookmark(book.toMap());
-    final initialProgress = ReadingProgressModel(
-      bookId: book.id,
-      currentPage: 0,
-    );
-    await _sqfliteService.saveReadingProgress(initialProgress);
+    try {
+      await localBookmarkService.addToBookmark(book.toMap());
+      final initialProgress = ReadingProgressModel(
+        bookId: book.id,
+        currentPage: 0,
+      );
+      await _sqfliteService.saveReadingProgress(initialProgress);
+    } catch (e, stack) {
+      log('addToBookmark error: $e\n$stack');
+      rethrow;
+    }
   }
 
   Future<void> removeBookmark(String bookId) async {
-    await localBookmarkService.removeBookmark(bookId);
-    await _sqfliteService.deleteReadingProgress(bookId);
+    try {
+      await localBookmarkService.removeBookmark(bookId);
+      await _sqfliteService.deleteReadingProgress(bookId);
+    } catch (e, stack) {
+      log('removeBookmark error: $e\n$stack');
+      rethrow;
+    }
   }
 
   Future<bool> isBookmarked(String id) async {
-    final progress = await _sqfliteService.getReadingProgress(id);
-    return progress != null;
+    try {
+      final progress = await _sqfliteService.getReadingProgress(id);
+      return progress != null;
+    } catch (e, stack) {
+      log('isBookmarked error: $e\n$stack');
+      return false;
+    }
   }
 }
