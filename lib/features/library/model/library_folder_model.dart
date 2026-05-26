@@ -61,8 +61,12 @@ class LibraryFolder {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is LibraryFolder && id == other.id && name == other.name;
+      other is LibraryFolder &&
+          id == other.id &&
+          name == other.name &&
+          bookCount == other.bookCount &&
+          sortOrder == other.sortOrder;
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, name, bookCount, sortOrder);
 }

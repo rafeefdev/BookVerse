@@ -183,7 +183,7 @@ class LibraryFolderService {
         'folder_id': folderId,
         'book_id': bookId,
         'added_at': DateTime.now().toIso8601String(),
-      });
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
     } catch (e, stack) {
       log('addBookToFolder error: $e\n$stack');
       rethrow;

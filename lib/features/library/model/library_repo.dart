@@ -94,6 +94,11 @@ class LibraryRepo {
   Future<void> saveBook(Book book) async {
     await _bookmarkService.addToBookmark(book.toMap());
     await _folderService.assignToDefaultFolder(book.id);
+    final initialProgress = ReadingProgressModel(
+      bookId: book.id,
+      currentPage: 0,
+    );
+    await _sqflite.saveReadingProgress(initialProgress);
   }
 
   Future<void> removeBookFromAllFolders(String bookId) async {
