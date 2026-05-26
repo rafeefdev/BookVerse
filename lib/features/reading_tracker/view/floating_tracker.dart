@@ -1,7 +1,9 @@
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
+import 'package:book_verse/features/reading_tracker/viewmodel/session_recording_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class FloatingTracker extends ConsumerWidget {
   const FloatingTracker({super.key});
@@ -16,11 +18,161 @@ class FloatingTracker extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final activeBookId = ref.watch(activeSessionProvider);
+    final isSessionRoute = ref.watch(isSessionRouteProvider);
     final isActivelyReading = ref.watch(isActivelyReadingProvider);
     final isDismissed = ref.watch(trackerDismissedProvider);
 
+    if (isSessionRoute) return const SizedBox.shrink();
+
+    if (activeBookId != null) {
+      return _buildModeA(context, ref, activeBookId);
+    }
+
     if (!isActivelyReading || isDismissed) return const SizedBox.shrink();
 
+    return _buildModeB(context, ref);
+  }
+
+  Widget _buildModeA(BuildContext context, WidgetRef ref, String bookId) {
+    final isShellRoute = ref.watch(isShellRouteProvider);
+    final viewPadding = MediaQuery.of(context).viewPadding.bottom;
+    final bottomNavHeight = isShellRoute ? kBottomNavigationBarHeight : 0.0;
+    final bottomOffset = bottomNavHeight + viewPadding + 12;
+
+    final stopWatchTimer = ref.watch(sessionRecordingNotifierProvider);
+    final notifier = ref.read(sessionRecordingNotifierProvider.notifier);
+    final progress = notifier.initialProgress;
+    final book = progress?.book;
+
+    return Padding(
+      padding: EdgeInsets.only(left: 12, right: 12, bottom: bottomOffset),
+      child: GestureDetector(
+        onTap: () => context.push('/record-session/$bookId'),
+        child: SizedBox(
+          height: 72,
+          child: Card(
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 12, right: 4),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      book?.thumbnail ?? '',
+                      width: 44,
+                      height: 52,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 44,
+                        height: 52,
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.book, size: 28),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          book?.title ?? 'Recording...',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Recording',
+                              style: context.textTheme.labelSmall?.copyWith(
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  StreamBuilder<int>(
+                    stream: stopWatchTimer.rawTime,
+                    initialData: stopWatchTimer.rawTime.value,
+                    builder: (context, snap) {
+                      return Text(
+                        _formatDuration((snap.data ?? 0) ~/ 1000),
+                        style: context.textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[600],
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close, size: 18, color: Colors.grey[500]),
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => _showCancelDialog(context, ref, bookId),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showCancelDialog(
+    BuildContext context,
+    WidgetRef ref,
+    String bookId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Hapus tracking?'),
+        content: const Text(
+          'Sesi tracking akan dihapus. Progress belum tersimpan.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Tidak'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Ya, hapus'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      await ref.read(sessionRecordingNotifierProvider.notifier).cancelSession();
+      if (context.mounted) context.pop();
+    }
+  }
+
+  Widget _buildModeB(BuildContext context, WidgetRef ref) {
     final isShellRoute = ref.watch(isShellRouteProvider);
 
     final viewPadding = MediaQuery.of(context).viewPadding.bottom;
@@ -41,93 +193,98 @@ class FloatingTracker extends ConsumerWidget {
 
         return Padding(
           padding: EdgeInsets.only(left: 12, right: 12, bottom: bottomOffset),
-          child: SizedBox(
-            height: 72,
-            child: Card(
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 12, right: 4),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: Image.network(
-                        book.thumbnail,
-                        width: 44,
-                        height: 52,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
+          child: GestureDetector(
+            onTap: () =>
+                context.push('/tracked-book-detail/${progress.bookId}'),
+            child: SizedBox(
+              height: 72,
+              child: Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 4),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: Image.network(
+                          book.thumbnail,
                           width: 44,
                           height: 52,
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.book, size: 28),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                                width: 44,
+                                height: 52,
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.book, size: 28),
+                              ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            book.title,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: context.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              Text(
-                                '${progress.currentPage}/${book.pageCount}',
-                                style: context.textTheme.bodySmall?.copyWith(
-                                  color: context.colorScheme.primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              book.title,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: context.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
                               ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(2),
-                                  child: LinearProgressIndicator(
-                                    value: percent,
-                                    minHeight: 4,
-                                    backgroundColor: Colors.grey[200],
+                            ),
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                Text(
+                                  '${progress.currentPage}/${book.pageCount}',
+                                  style: context.textTheme.bodySmall?.copyWith(
+                                    color: context.colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(2),
+                                    child: LinearProgressIndicator(
+                                      value: percent,
+                                      minHeight: 4,
+                                      backgroundColor: Colors.grey[200],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      _formatDuration(progress.totalReadingTimeInSeconds),
-                      style: context.textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[600],
+                      const SizedBox(width: 8),
+                      Text(
+                        _formatDuration(progress.totalReadingTimeInSeconds),
+                        style: context.textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[600],
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        size: 18,
-                        color: Colors.grey[500],
+                      IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          size: 18,
+                          color: Colors.grey[500],
+                        ),
+                        visualDensity: VisualDensity.compact,
+                        onPressed: () {
+                          ref.read(trackerDismissedProvider.notifier).state =
+                              true;
+                        },
                       ),
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () {
-                        ref.read(trackerDismissedProvider.notifier).state =
-                            true;
-                      },
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

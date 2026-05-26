@@ -2,6 +2,7 @@ import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
+import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/session_recording_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,6 +29,11 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
   @override
   void initState() {
     super.initState();
+    ref.listen(activeSessionProvider, (prev, next) {
+      if (prev != null && next == null && mounted) {
+        Navigator.of(context).pop();
+      }
+    });
     _initializeSession();
   }
 

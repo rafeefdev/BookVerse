@@ -43,6 +43,36 @@ class _ShellRouteMarkerState extends ConsumerState<_ShellRouteMarker> {
   Widget build(BuildContext context) => widget.child;
 }
 
+class _SessionRouteMarker extends ConsumerStatefulWidget {
+  final Widget child;
+  const _SessionRouteMarker({required this.child});
+
+  @override
+  ConsumerState<_SessionRouteMarker> createState() =>
+      _SessionRouteMarkerState();
+}
+
+class _SessionRouteMarkerState extends ConsumerState<_SessionRouteMarker> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(isSessionRouteProvider.notifier).state = true;
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(isSessionRouteProvider.notifier).state = false;
+    });
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   final onBoardingStatus = ref.watch(onBoardingServiceProvider);
 
@@ -154,7 +184,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           final book = state.extra as Book?;
-          return SessionRecordingPage(bookId: id, initialBook: book);
+          return _SessionRouteMarker(
+            child: SessionRecordingPage(bookId: id, initialBook: book),
+          );
         },
       ),
     ],

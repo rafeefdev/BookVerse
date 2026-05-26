@@ -91,6 +91,10 @@ final trackerDismissedProvider = StateProvider<bool>((ref) => false);
 
 final isShellRouteProvider = StateProvider<bool>((ref) => false);
 
+final activeSessionProvider = StateProvider<String?>((ref) => null);
+
+final isSessionRouteProvider = StateProvider<bool>((ref) => false);
+
 final activeReadingProgressProvider = FutureProvider<ReadingProgressModel?>((
   ref,
 ) async {
