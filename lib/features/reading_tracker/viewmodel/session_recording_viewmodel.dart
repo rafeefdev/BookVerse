@@ -60,7 +60,6 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
           bookId: bookId,
           currentPage: 0,
           totalReadingTimeInSeconds: 0,
-          lastRead: DateTime.now(),
           book: initialBook,
         );
         await SqfliteService.instance.saveReadingProgress(_initialProgress!);

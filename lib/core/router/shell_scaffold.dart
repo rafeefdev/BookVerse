@@ -3,15 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ShellScaffold extends ConsumerWidget {
+class ShellScaffold extends ConsumerStatefulWidget {
   const ShellScaffold({required this.navigationShell, super.key});
 
   final StatefulNavigationShell navigationShell;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(isShellRouteProvider.notifier).state = true;
+  ConsumerState<ShellScaffold> createState() => _ShellScaffoldState();
+}
 
+class _ShellScaffoldState extends ConsumerState<ShellScaffold> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(isShellRouteProvider.notifier).state = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -29,13 +40,13 @@ class ShellScaffold extends ConsumerWidget {
           ),
         ],
       ),
-      body: navigationShell,
+      body: widget.navigationShell,
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: navigationShell.currentIndex,
+        currentIndex: widget.navigationShell.currentIndex,
         onTap: (index) {
-          navigationShell.goBranch(
+          widget.navigationShell.goBranch(
             index,
-            initialLocation: index == navigationShell.currentIndex,
+            initialLocation: index == widget.navigationShell.currentIndex,
           );
         },
         items: const [

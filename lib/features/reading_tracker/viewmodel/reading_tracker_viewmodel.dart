@@ -40,7 +40,6 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
         bookId: bookId,
         currentPage: newCurrentPage,
         totalReadingTimeInSeconds: durationInSeconds ?? 0,
-        lastRead: DateTime.now(),
       );
       await _sqfliteService.saveReadingProgress(currentState);
       state = AsyncData(currentState);
@@ -91,8 +90,6 @@ final isActivelyReadingProvider = Provider<bool>((ref) {
 final trackerDismissedProvider = StateProvider<bool>((ref) => false);
 
 final isShellRouteProvider = StateProvider<bool>((ref) => false);
-
-final isTrackerBlockedProvider = StateProvider<bool>((ref) => false);
 
 final activeReadingProgressProvider = FutureProvider<ReadingProgressModel?>((
   ref,

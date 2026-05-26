@@ -21,9 +21,6 @@ class FloatingTracker extends ConsumerWidget {
 
     if (!isActivelyReading || isDismissed) return const SizedBox.shrink();
 
-    final isBlocked = ref.watch(isTrackerBlockedProvider);
-    if (isBlocked) return const SizedBox.shrink();
-
     final isShellRoute = ref.watch(isShellRouteProvider);
 
     final viewPadding = MediaQuery.of(context).viewPadding.bottom;

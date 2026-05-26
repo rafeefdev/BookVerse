@@ -19,6 +19,30 @@ import 'package:go_router/go_router.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+class _ShellRouteMarker extends ConsumerStatefulWidget {
+  final bool isShell;
+  final Widget child;
+  const _ShellRouteMarker({required this.isShell, required this.child});
+
+  @override
+  ConsumerState<_ShellRouteMarker> createState() => _ShellRouteMarkerState();
+}
+
+class _ShellRouteMarkerState extends ConsumerState<_ShellRouteMarker> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(isShellRouteProvider.notifier).state = widget.isShell;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   final onBoardingStatus = ref.watch(onBoardingServiceProvider);
 
@@ -88,22 +112,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => Consumer(
-          builder: (context, ref, _) {
-            ref.watch(isShellRouteProvider.notifier).state = false;
-            return const SettingsPage();
-          },
-        ),
+        builder: (context, state) =>
+            const _ShellRouteMarker(isShell: false, child: SettingsPage()),
       ),
       GoRoute(
         path: '/search',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => Consumer(
-          builder: (context, ref, _) {
-            ref.watch(isShellRouteProvider.notifier).state = false;
-            return const SearchPage();
-          },
-        ),
+        builder: (context, state) =>
+            const _ShellRouteMarker(isShell: false, child: SearchPage()),
       ),
       GoRoute(
         path: '/detail/:id',
@@ -112,14 +128,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           final id = state.pathParameters['id']!;
           final isTemporarySource =
               state.uri.queryParameters['isTemporarySource'] == 'true';
-          return Consumer(
-            builder: (context, ref, _) {
-              ref.watch(isShellRouteProvider.notifier).state = false;
-              return DetailPage(
-                selectedBookId: id,
-                isTemporarySource: isTemporarySource,
-              );
-            },
+          return _ShellRouteMarker(
+            isShell: false,
+            child: DetailPage(
+              selectedBookId: id,
+              isTemporarySource: isTemporarySource,
+            ),
           );
         },
       ),
@@ -128,11 +142,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final id = state.pathParameters['id']!;
-          return Consumer(
-            builder: (context, ref, _) {
-              ref.watch(isShellRouteProvider.notifier).state = false;
-              return ReadingTrackerDetailPage(bookId: id);
-            },
+          return _ShellRouteMarker(
+            isShell: false,
+            child: ReadingTrackerDetailPage(bookId: id),
           );
         },
       ),
