@@ -2,6 +2,7 @@ import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
+import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/session_recording_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +26,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
   final TextEditingController _pageController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _wasInitialized = false;
+  bool _sessionSaved = false;
 
   @override
   void initState() {
@@ -59,6 +61,9 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
 
   @override
   void dispose() {
+    ref
+        .read(sessionRecordingNotifierProvider.notifier)
+        .disposeSession(wasSaved: _sessionSaved);
     _pageController.dispose();
     super.dispose();
   }
@@ -141,6 +146,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
                   final success = await sessionNotifier.saveSession(lastPage);
 
                   if (success) {
+                    _sessionSaved = true;
                     navigator.pop();
                     rootNavigator.pop();
                   } else {
@@ -165,10 +171,11 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final activeSession = ref.watch(activeSessionProvider);
     final sessionNotifier = ref.watch(
       sessionRecordingNotifierProvider.notifier,
     );
-    if (_wasInitialized && !sessionNotifier.isInitialized) {
+    if (_wasInitialized && activeSession == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) Navigator.of(context).pop();
       });

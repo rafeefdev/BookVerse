@@ -43,40 +43,39 @@ class _ShellRouteMarkerState extends ConsumerState<_ShellRouteMarker> {
   Widget build(BuildContext context) => widget.child;
 }
 
-class _SessionRouteMarker extends ConsumerStatefulWidget {
-  final Widget child;
-  const _SessionRouteMarker({required this.child});
+class RouteTrackerObserver extends NavigatorObserver {
+  final void Function(String path) onRouteChanged;
+  RouteTrackerObserver(this.onRouteChanged);
 
-  @override
-  ConsumerState<_SessionRouteMarker> createState() =>
-      _SessionRouteMarkerState();
-}
-
-class _SessionRouteMarkerState extends ConsumerState<_SessionRouteMarker> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) ref.read(isSessionRouteProvider.notifier).state = true;
-    });
+  void _notify() {
+    final nav = navigator;
+    if (nav == null || !nav.context.mounted) return;
+    final router = GoRouter.maybeOf(nav.context);
+    if (router == null) return;
+    onRouteChanged(router.state.matchedLocation);
   }
 
   @override
-  void dispose() {
-    ref.read(isSessionRouteProvider.notifier).state = false;
-    super.dispose();
-  }
+  void didPush(Route route, Route? previousRoute) => _notify();
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  void didPop(Route route, Route? previousRoute) => _notify();
+
+  @override
+  void didReplace({Route? newRoute, Route? oldRoute}) => _notify();
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
   final onBoardingStatus = ref.watch(onBoardingServiceProvider);
 
-  return GoRouter(
+  final observer = RouteTrackerObserver((path) {
+    ref.read(currentRoutePathProvider.notifier).state = path;
+  });
+
+  final goRouter = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/home',
+    observers: [observer],
     redirect: (context, state) {
       // Using when to handle async value
       return onBoardingStatus.when(
@@ -182,11 +181,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           final book = state.extra as Book?;
-          return _SessionRouteMarker(
-            child: SessionRecordingPage(bookId: id, initialBook: book),
-          );
+          return SessionRecordingPage(bookId: id, initialBook: book);
         },
       ),
     ],
   );
+  return goRouter;
 });

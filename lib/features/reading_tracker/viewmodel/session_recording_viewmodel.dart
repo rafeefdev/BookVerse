@@ -115,6 +115,26 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     _stopWatchTimer.onResetTimer();
   }
 
+  void disposeSession({bool wasSaved = false}) {
+    _stopWatchTimer.onStopTimer();
+    _stopWatchTimer.onResetTimer();
+    final bookId = _bookId;
+    final initialized = _isInitialized;
+    if (!wasSaved && bookId.isNotEmpty && initialized) {
+      SqfliteService.instance.deleteReadingProgress(bookId).then((_) {
+        ref.invalidate(activeReadingProgressProvider);
+        ref.invalidate(readingTrackerNotifierProvider(bookId));
+        ref.invalidate(bookmarkNotifierProvider);
+      });
+    }
+    ref.read(activeSessionProvider.notifier).state = null;
+    _bookId = '';
+    _initialProgress = null;
+    _isInitialized = false;
+    _hasError = false;
+    _errorMessage = null;
+  }
+
   Future<void> cancelSession() async {
     if (!_isInitialized) return;
     _stopWatchTimer.onStopTimer();
@@ -157,8 +177,6 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
       ref.invalidate(readingTrackerNotifierProvider(_bookId));
       ref.invalidate(activeReadingProgressProvider);
       ref.invalidate(bookmarkNotifierProvider);
-      ref.read(activeSessionProvider.notifier).state = null;
-      ref.read(trackerDismissedProvider.notifier).state = false;
 
       return true;
     } catch (e) {

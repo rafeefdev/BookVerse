@@ -93,7 +93,7 @@ final isShellRouteProvider = StateProvider<bool>((ref) => false);
 
 final activeSessionProvider = StateProvider<String?>((ref) => null);
 
-final isSessionRouteProvider = StateProvider<bool>((ref) => false);
+final currentRoutePathProvider = StateProvider<String?>((ref) => null);
 
 final activeReadingProgressProvider = FutureProvider<ReadingProgressModel?>((
   ref,

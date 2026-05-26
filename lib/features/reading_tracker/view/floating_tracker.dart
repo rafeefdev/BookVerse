@@ -19,11 +19,13 @@ class FloatingTracker extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeBookId = ref.watch(activeSessionProvider);
-    final isSessionRoute = ref.watch(isSessionRouteProvider);
+    final currentRoute = ref.watch(currentRoutePathProvider);
     final isActivelyReading = ref.watch(isActivelyReadingProvider);
     final isDismissed = ref.watch(trackerDismissedProvider);
 
-    if (isSessionRoute) return const SizedBox.shrink();
+    if (currentRoute != null && currentRoute.startsWith('/record-session/')) {
+      return const SizedBox.shrink();
+    }
 
     if (activeBookId != null) {
       return _buildModeA(context, ref, activeBookId);
