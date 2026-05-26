@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/services/sqflite_service.dart';
+import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
@@ -115,11 +116,13 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
   }
 
   Future<void> cancelSession() async {
+    if (!_isInitialized) return;
     _stopWatchTimer.onStopTimer();
     if (_bookId.isNotEmpty) {
       await SqfliteService.instance.deleteReadingProgress(_bookId);
       ref.invalidate(activeReadingProgressProvider);
       ref.invalidate(readingTrackerNotifierProvider(_bookId));
+      ref.invalidate(bookmarkNotifierProvider);
     }
     ref.read(activeSessionProvider.notifier).state = null;
     resetState();
@@ -153,6 +156,7 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
       ref.invalidate(bookReadingSessionsProvider(_bookId));
       ref.invalidate(readingTrackerNotifierProvider(_bookId));
       ref.invalidate(activeReadingProgressProvider);
+      ref.invalidate(bookmarkNotifierProvider);
       ref.read(activeSessionProvider.notifier).state = null;
       ref.read(trackerDismissedProvider.notifier).state = false;
 

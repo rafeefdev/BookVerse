@@ -63,9 +63,7 @@ class _SessionRouteMarkerState extends ConsumerState<_SessionRouteMarker> {
 
   @override
   void dispose() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) ref.read(isSessionRouteProvider.notifier).state = false;
-    });
+    ref.read(isSessionRouteProvider.notifier).state = false;
     super.dispose();
   }
 

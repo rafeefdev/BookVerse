@@ -1,9 +1,9 @@
+import 'package:book_verse/core/router/app_router.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/session_recording_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class FloatingTracker extends ConsumerWidget {
   const FloatingTracker({super.key});
@@ -48,7 +48,7 @@ class FloatingTracker extends ConsumerWidget {
     return Padding(
       padding: EdgeInsets.only(left: 12, right: 12, bottom: bottomOffset),
       child: GestureDetector(
-        onTap: () => context.push('/record-session/$bookId'),
+        onTap: () => ref.read(routerProvider).push('/record-session/$bookId'),
         child: SizedBox(
           height: 72,
           child: Card(
@@ -166,9 +166,8 @@ class FloatingTracker extends ConsumerWidget {
       ),
     );
 
-    if (confirmed == true && context.mounted) {
+    if (confirmed == true) {
       await ref.read(sessionRecordingNotifierProvider.notifier).cancelSession();
-      if (context.mounted) context.pop();
     }
   }
 
@@ -194,8 +193,9 @@ class FloatingTracker extends ConsumerWidget {
         return Padding(
           padding: EdgeInsets.only(left: 12, right: 12, bottom: bottomOffset),
           child: GestureDetector(
-            onTap: () =>
-                context.push('/tracked-book-detail/${progress.bookId}'),
+            onTap: () => ref
+                .read(routerProvider)
+                .push('/tracked-book-detail/${progress.bookId}'),
             child: SizedBox(
               height: 72,
               child: Card(

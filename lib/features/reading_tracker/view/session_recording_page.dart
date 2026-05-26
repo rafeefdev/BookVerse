@@ -2,7 +2,6 @@ import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
-import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/session_recording_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,15 +24,11 @@ class SessionRecordingPage extends ConsumerStatefulWidget {
 class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
   final TextEditingController _pageController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _wasInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    ref.listen(activeSessionProvider, (prev, next) {
-      if (prev != null && next == null && mounted) {
-        Navigator.of(context).pop();
-      }
-    });
     _initializeSession();
   }
 
@@ -43,6 +38,10 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
       widget.bookId,
       initialBook: widget.initialBook,
     );
+
+    if (success) {
+      _wasInitialized = true;
+    }
 
     if (mounted) {
       setState(() {});
@@ -169,6 +168,12 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
     final sessionNotifier = ref.watch(
       sessionRecordingNotifierProvider.notifier,
     );
+    if (_wasInitialized && !sessionNotifier.isInitialized) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) Navigator.of(context).pop();
+      });
+      return const SizedBox.shrink();
+    }
     final StopWatchTimer stopWatchTimer = ref.watch(
       sessionRecordingNotifierProvider,
     );
