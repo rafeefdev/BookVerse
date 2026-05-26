@@ -7,6 +7,37 @@ class LibraryFolderService {
   final SqfliteService _sqflite = SqfliteService.instance;
   static const _foldersTable = 'library_folders';
   static const _folderBooksTable = 'library_folder_books';
+  static const defaultFolderId = '__default__';
+
+  Future<void> ensureDefaultFolder() async {
+    try {
+      final db = await _sqflite.database;
+      final existing = await db.query(
+        _foldersTable,
+        where: 'id = ?',
+        whereArgs: [defaultFolderId],
+      );
+      if (existing.isEmpty) {
+        await db.insert(_foldersTable, {
+          'id': defaultFolderId,
+          'name': 'Tanpa Folder',
+          'icon': 'inbox',
+          'sort_order': -1,
+          'created_at': DateTime.now().toIso8601String(),
+        });
+      }
+    } catch (e, stack) {
+      log('ensureDefaultFolder error: $e\n$stack');
+    }
+  }
+
+  Future<void> assignToDefaultFolder(String bookId) async {
+    await ensureDefaultFolder();
+    final ids = await getFolderIdsForBook(bookId);
+    if (!ids.contains(defaultFolderId)) {
+      await addBookToFolder(defaultFolderId, bookId);
+    }
+  }
 
   Future<List<LibraryFolder>> getAllFolders() async {
     try {

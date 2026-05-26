@@ -90,4 +90,24 @@ class LibraryRepo {
     final ids = await _folderService.getFolderIdsForBook(bookId);
     return ids.isNotEmpty;
   }
+
+  Future<void> saveBook(Book book) async {
+    await _bookmarkService.addToBookmark(book.toMap());
+    await _folderService.assignToDefaultFolder(book.id);
+  }
+
+  Future<void> removeBookFromAllFolders(String bookId) async {
+    final ids = await _folderService.getFolderIdsForBook(bookId);
+    for (final folderId in ids) {
+      await _folderService.removeBookFromFolder(folderId, bookId);
+    }
+  }
+
+  Future<void> ensureDefaultFolder() {
+    return _folderService.ensureDefaultFolder();
+  }
+
+  Future<void> removeBookmark(String bookId) async {
+    await _bookmarkService.removeBookmark(bookId);
+  }
 }

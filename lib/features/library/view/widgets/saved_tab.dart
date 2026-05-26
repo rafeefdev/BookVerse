@@ -1,4 +1,3 @@
-import 'package:book_verse/core/shared/components/booklisttile_component.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/library/model/library_folder_model.dart';
 import 'package:book_verse/features/library/model/library_state.dart';
@@ -52,45 +51,6 @@ class SavedTab extends StatelessWidget {
               itemBuilder: (context, index) {
                 final folder = state.folders[index];
                 return _FolderCard(folder: folder);
-              },
-            ),
-          ),
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: Row(
-            children: [
-              Text('Uncategorized', style: context.textTheme.titleMedium),
-            ],
-          ),
-        ),
-        if (state.uncategorizedBooks.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-            child: Text(
-              'All books are organized in folders.',
-              style: TextStyle(color: Colors.grey[500]),
-            ),
-          )
-        else
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: state.uncategorizedBooks.length,
-              itemBuilder: (context, index) {
-                final book = state.uncategorizedBooks[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: bookListTile(
-                    context,
-                    book,
-                    isWrappedByCard: true,
-                    isTemporarySource: false,
-                    onTap: () {
-                      context.push('/tracked-book-detail/${book.id}');
-                    },
-                  ),
-                );
               },
             ),
           ),

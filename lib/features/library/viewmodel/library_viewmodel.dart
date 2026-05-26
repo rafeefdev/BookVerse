@@ -15,9 +15,7 @@ class LibraryNotifier extends _$LibraryNotifier {
     try {
       final repo = ref.read(libraryRepoProvider);
       final allProgress = await repo.getAllProgressWithBooks();
-      final allBooks = await repo.getAllBookmarkedBooks();
       final folders = await repo.getAllFolders();
-      final bookIdsInFolders = await repo.getAllBookIdsInAnyFolder();
 
       final currentlyReading = allProgress
           .where((p) => p.book != null && p.currentPage < (p.book!.pageCount))
@@ -31,16 +29,10 @@ class LibraryNotifier extends _$LibraryNotifier {
           )
           .toList();
 
-      final bookIdsInFoldersSet = bookIdsInFolders.toSet();
-      final uncategorizedBooks = allBooks
-          .where((b) => !bookIdsInFoldersSet.contains(b.id))
-          .toList();
-
       return LibraryState(
         currentlyReading: currentlyReading,
         finished: finished,
         folders: folders,
-        uncategorizedBooks: uncategorizedBooks,
       );
     } catch (e, stack) {
       log('LibraryNotifier.build error: $e\n$stack');
@@ -91,6 +83,13 @@ class LibraryNotifier extends _$LibraryNotifier {
   Future<List<String>> getFolderIdsForBook(String bookId) async {
     final repo = ref.read(libraryRepoProvider);
     return repo.getFolderIdsForBook(bookId);
+  }
+
+  Future<void> removeBookFromAllFolders(String bookId) async {
+    final repo = ref.read(libraryRepoProvider);
+    await repo.removeBookFromAllFolders(bookId);
+    ref.invalidateSelf();
+    await future;
   }
 
   Future<List<Book>> getBooksInFolder(String folderId) async {
