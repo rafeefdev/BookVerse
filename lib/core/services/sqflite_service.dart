@@ -26,6 +26,9 @@ class SqfliteService {
         version: 2,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
+        onConfigure: (db) async {
+          await db.execute('PRAGMA foreign_keys = ON');
+        },
       );
     } else {
       sqfliteFfiInit();
@@ -39,6 +42,9 @@ class SqfliteService {
           version: 2,
           onCreate: _onCreate,
           onUpgrade: _onUpgrade,
+          onConfigure: (db) async {
+            await db.execute('PRAGMA foreign_keys = ON');
+          },
         ),
       );
     }

@@ -10,6 +10,7 @@ import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
 import 'package:book_verse/features/library/model/library_folder_service.dart';
 import 'package:book_verse/features/library/model/library_repo_di.dart';
+import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/search/viewmodel/search_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -290,11 +291,10 @@ class LibraryActionButton extends ConsumerWidget {
     await showModalBottomSheet(
       context: context,
       builder: (sheetContext) {
+        var saved = isBookmarked;
+        var selectedFolderIds = folderIdsForBook.toSet();
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            var saved = isBookmarked;
-            var selectedFolderIds = folderIdsForBook.toSet();
-
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -332,6 +332,7 @@ class LibraryActionButton extends ConsumerWidget {
                       selectedFolderIds.clear();
                     }
                     saved = value;
+                    ref.invalidate(libraryNotifierProvider);
                     setSheetState(() {});
                   },
                 ),
@@ -373,7 +374,16 @@ class LibraryActionButton extends ConsumerWidget {
                         selectedFolderIds
                           ..clear()
                           ..add(LibraryFolderService.defaultFolderId);
+                      } else {
+                        await repo.removeBookFromFolder(
+                          LibraryFolderService.defaultFolderId,
+                          selectedBook.id,
+                        );
+                        selectedFolderIds.remove(
+                          LibraryFolderService.defaultFolderId,
+                        );
                       }
+                      ref.invalidate(libraryNotifierProvider);
                       setSheetState(() {});
                     },
                   ),
@@ -390,6 +400,10 @@ class LibraryActionButton extends ConsumerWidget {
                             if (checked == true) {
                               await repo.addBookToFolder(
                                 folder.id,
+                                selectedBook.id,
+                              );
+                              await repo.removeBookFromFolder(
+                                LibraryFolderService.defaultFolderId,
                                 selectedBook.id,
                               );
                               selectedFolderIds.remove(
@@ -412,6 +426,7 @@ class LibraryActionButton extends ConsumerWidget {
                                 );
                               }
                             }
+                            ref.invalidate(libraryNotifierProvider);
                             setSheetState(() {});
                           },
                         ),
