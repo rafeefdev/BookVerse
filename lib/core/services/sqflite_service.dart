@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
@@ -10,22 +11,18 @@ class SqfliteService {
 
   SqfliteService._init();
 
-  /// Getter database
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase('bookverse.db');
     return _database!;
   }
 
-  /// Inisialisasi database sesuai platform
   Future<Database> _initDatabase(String dbName) async {
     if (Platform.isAndroid || Platform.isIOS) {
-      // Mobile pakai sqflite biasa
       final dbPath = await getDatabasesPath();
       final fullPath = join(dbPath, dbName);
       return await openDatabase(fullPath, version: 1, onCreate: _onCreate);
     } else {
-      // Desktop pakai sqflite_common_ffi
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
 
@@ -38,7 +35,6 @@ class SqfliteService {
     }
   }
 
-  /// Buat tabel awal
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS bookmarks (
@@ -75,80 +71,113 @@ class SqfliteService {
   }
 
   Future<void> saveReadingProgress(ReadingProgressModel progress) async {
-    final db = await database;
-    await db.insert(
-      'reading_progress',
-      progress.toJson(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    try {
+      final db = await database;
+      await db.insert(
+        'reading_progress',
+        progress.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } catch (e, stack) {
+      log('saveReadingProgress error: $e\n$stack');
+      rethrow;
+    }
   }
 
   Future<ReadingProgressModel?> getReadingProgress(String bookId) async {
-    final db = await database;
-    final maps = await db.query(
-      'reading_progress',
-      where: 'bookId = ?',
-      whereArgs: [bookId],
-    );
+    try {
+      final db = await database;
+      final maps = await db.query(
+        'reading_progress',
+        where: 'bookId = ?',
+        whereArgs: [bookId],
+      );
 
-    if (maps.isNotEmpty) {
-      return ReadingProgressModel.fromJson(maps.first);
+      if (maps.isNotEmpty) {
+        return ReadingProgressModel.fromJson(maps.first);
+      }
+      return null;
+    } catch (e, stack) {
+      log('getReadingProgress error: $e\n$stack');
+      rethrow;
     }
-    return null;
   }
 
   Future<List<ReadingProgressModel>> getAllReadingProgress() async {
-    final db = await database;
-    final maps = await db.query('reading_progress');
-    return maps.map((json) => ReadingProgressModel.fromJson(json)).toList();
+    try {
+      final db = await database;
+      final maps = await db.query('reading_progress');
+      return maps.map((json) => ReadingProgressModel.fromJson(json)).toList();
+    } catch (e, stack) {
+      log('getAllReadingProgress error: $e\n$stack');
+      rethrow;
+    }
   }
 
   Future<void> deleteReadingProgress(String bookId) async {
-    final db = await database;
-    await db.delete(
-      'reading_progress',
-      where: 'bookId = ?',
-      whereArgs: [bookId],
-    );
+    try {
+      final db = await database;
+      await db.delete(
+        'reading_progress',
+        where: 'bookId = ?',
+        whereArgs: [bookId],
+      );
+    } catch (e, stack) {
+      log('deleteReadingProgress error: $e\n$stack');
+      rethrow;
+    }
   }
 
   Future<void> saveReadingSession(ReadingSessionModel session) async {
-    final db = await database;
-    await db.insert('reading_sessions', session.toJson());
+    try {
+      final db = await database;
+      await db.insert('reading_sessions', session.toJson());
+    } catch (e, stack) {
+      log('saveReadingSession error: $e\n$stack');
+      rethrow;
+    }
   }
 
   Future<List<ReadingSessionModel>> getReadingSessions(String bookId) async {
-    final db = await database;
-    final maps = await db.query(
-      'reading_sessions',
-      where: 'bookId = ?',
-      whereArgs: [bookId],
-      orderBy: 'timestamp DESC',
-    );
-    return maps.map((json) => ReadingSessionModel.fromJson(json)).toList();
+    try {
+      final db = await database;
+      final maps = await db.query(
+        'reading_sessions',
+        where: 'bookId = ?',
+        whereArgs: [bookId],
+        orderBy: 'timestamp DESC',
+      );
+      return maps.map((json) => ReadingSessionModel.fromJson(json)).toList();
+    } catch (e, stack) {
+      log('getReadingSessions error: $e\n$stack');
+      rethrow;
+    }
   }
 
-  /// Mengecek apakah tabel ada
   Future<bool> isTableExists(String tableName) async {
-    final db = await database;
-    final result = await db.rawQuery(
-      '''
-        SELECT 
-          CASE 
-            WHEN EXISTS (
-              SELECT 1 
-              FROM sqlite_master 
-              WHERE type='table' AND name=?
-            ) 
-            THEN 1 
-            ELSE 0 
-          END AS table_exists
-      ''',
-      [tableName],
-    );
+    try {
+      final db = await database;
+      final result = await db.rawQuery(
+        '''
+          SELECT
+            CASE
+              WHEN EXISTS (
+                SELECT 1
+                FROM sqlite_master
+                WHERE type='table' AND name=?
+              )
+              THEN 1
+              ELSE 0
+            END AS table_exists
+        ''',
+        [tableName],
+      );
 
-    // result = [{table_exists: 1}] atau [{table_exists: 0}]
-    final value = result.first['table_exists'] as int;
-    return value == 1;
+      final value = result.first['table_exists'] as int;
+      return value == 1;
+    } catch (e, stack) {
+      log('isTableExists error: $e\n$stack');
+      return false;
+    }
   }
 }

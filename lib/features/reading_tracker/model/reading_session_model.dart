@@ -27,10 +27,12 @@ class ReadingSessionModel {
 
   factory ReadingSessionModel.fromJson(Map<String, dynamic> json) {
     return ReadingSessionModel(
-      bookId: json['bookId'] as String,
-      durationInSeconds: json['durationInSeconds'] as int,
-      endPage: json['endPage'] as int,
-      timestamp: DateTime.parse(json['timestamp'] as String),
+      bookId: (json['bookId'] as String?) ?? '',
+      durationInSeconds: (json['durationInSeconds'] as int?) ?? 0,
+      endPage: (json['endPage'] as int?) ?? 0,
+      timestamp: json['timestamp'] != null
+          ? (DateTime.tryParse(json['timestamp'] as String) ?? DateTime.now())
+          : DateTime.now(),
     );
   }
 

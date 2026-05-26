@@ -43,13 +43,26 @@ class BookmarksPage extends ConsumerWidget {
     debugPrintStack(label: error.toString(), stackTrace: stack);
     return Scaffold(
       appBar: AppBar(title: const Text('Saved Books Page')),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Icon(Icons.error_outline_rounded),
-            Text('Error Occured'),
-            Text('$error : $stack'),
-          ],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                size: 64,
+                color: Colors.red,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Something went wrong',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text('Failed to load saved books. Please try again.'),
+            ],
+          ),
         ),
       ),
     );
@@ -156,9 +169,11 @@ class BookmarksPage extends ConsumerWidget {
       itemCount: booksProgress.length,
       itemBuilder: (context, index) {
         final progress = booksProgress[index];
+        final book = progress.book;
+        if (book == null) return const SizedBox.shrink();
         return bookListTile(
           context,
-          progress.book!,
+          book,
           isWrappedByCard: true,
           isTemporarySource: false,
           readingProgress: progress,
@@ -175,11 +190,13 @@ class BookmarksPage extends ConsumerWidget {
       onTap: () {
         context.push('/tracked-book-detail/${progress.bookId}');
       },
-      child: bookGridTile(
-        book: progress.book!,
-        textTheme: Theme.of(context).textTheme,
-        readingProgress: progress,
-      ),
+      child: progress.book == null
+          ? const SizedBox.shrink()
+          : bookGridTile(
+              book: progress.book!,
+              textTheme: Theme.of(context).textTheme,
+              readingProgress: progress,
+            ),
     );
   }
 }

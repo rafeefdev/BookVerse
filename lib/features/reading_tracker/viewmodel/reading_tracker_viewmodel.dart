@@ -15,45 +15,63 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
 
   @override
   Future<ReadingProgressModel?> build(String bookId) async {
-    final progress = await _sqfliteService.getReadingProgress(bookId);
-    if (progress != null) {
-      // Also fetch the book details from bookmarks if available
-      final bookData = await _sqfliteService.database.then(
-        (db) => db.query('bookmarks', where: 'id = ?', whereArgs: [bookId]),
-      );
-      if (bookData.isNotEmpty) {
-        final book = Book.fromJson(bookData.first);
-        return progress.copyWith(book: book);
+    try {
+      final progress = await _sqfliteService.getReadingProgress(bookId);
+      if (progress != null) {
+        final bookData = await _sqfliteService.database.then(
+          (db) => db.query('bookmarks', where: 'id = ?', whereArgs: [bookId]),
+        );
+        if (bookData.isNotEmpty) {
+          try {
+            final book = Book.fromJson(bookData.first);
+            return progress.copyWith(book: book);
+          } catch (e) {
+            log('Failed to parse book data for $bookId: $e');
+          }
+        }
       }
+      return progress;
+    } catch (e, stack) {
+      log('ReadingTrackerNotifier.build error: $e\n$stack');
+      rethrow;
     }
-    return progress;
   }
 
   Future<void> updateReadingProgress(
     int newCurrentPage, {
     int? durationInSeconds,
   }) async {
-    final currentState = state.value;
-    if (currentState == null) return;
+    try {
+      final currentState = state.value;
+      if (currentState == null) return;
 
-    int updatedTotalReadingTime =
-        currentState.totalReadingTimeInSeconds + (durationInSeconds ?? 0);
+      int updatedTotalReadingTime =
+          currentState.totalReadingTimeInSeconds + (durationInSeconds ?? 0);
 
-    final updatedProgress = currentState.copyWith(
-      currentPage: newCurrentPage,
-      totalReadingTimeInSeconds: updatedTotalReadingTime,
-      lastRead: DateTime.now(),
-    );
+      final updatedProgress = currentState.copyWith(
+        currentPage: newCurrentPage,
+        totalReadingTimeInSeconds: updatedTotalReadingTime,
+        lastRead: DateTime.now(),
+      );
 
-    await _sqfliteService.saveReadingProgress(updatedProgress);
-    state = AsyncData(updatedProgress);
+      await _sqfliteService.saveReadingProgress(updatedProgress);
+      state = AsyncData(updatedProgress);
+    } catch (e, stack) {
+      log('updateReadingProgress error: $e\n$stack');
+      rethrow;
+    }
   }
 
   Future<void> addReadingSession(ReadingSessionModel session) async {
-    await _sqfliteService.saveReadingSession(session);
-    log(
-      'Reading session saved for book ${session.bookId}: ${session.durationInSeconds} seconds, ended on page ${session.endPage}',
-    );
+    try {
+      await _sqfliteService.saveReadingSession(session);
+      log(
+        'Reading session saved for book ${session.bookId}: ${session.durationInSeconds} seconds, ended on page ${session.endPage}',
+      );
+    } catch (e, stack) {
+      log('addReadingSession error: $e\n$stack');
+      rethrow;
+    }
   }
 }
 
@@ -62,5 +80,10 @@ Future<List<ReadingSessionModel>> bookReadingSessions(
   Ref ref,
   String bookId,
 ) async {
-  return SqfliteService.instance.getReadingSessions(bookId);
+  try {
+    return SqfliteService.instance.getReadingSessions(bookId);
+  } catch (e, stack) {
+    log('bookReadingSessions error: $e\n$stack');
+    return [];
+  }
 }

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:book_verse/core/router/app_router.dart';
@@ -14,18 +15,22 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // load .env file
-  await dotenv.load();
+  try {
+    await dotenv.load();
+  } catch (e) {
+    log('Failed to load .env file: $e');
+  }
 
-  // Inisialisasi database (multiplatform)
-  if (Platform.isAndroid || Platform.isIOS) {
-    // Mobile: otomatis pakai sqflite biasa
-    await SqfliteService.instance.database;
-  } else {
-    // Desktop (Linux, Windows, macOS) pakai sqflite_common_ffi
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-    await SqfliteService.instance.database;
+  try {
+    if (Platform.isAndroid || Platform.isIOS) {
+      await SqfliteService.instance.database;
+    } else {
+      sqfliteFfiInit();
+      databaseFactory = databaseFactoryFfi;
+      await SqfliteService.instance.database;
+    }
+  } catch (e, stack) {
+    log('Failed to initialize database: $e\n$stack');
   }
 
   runApp(

@@ -5,17 +5,22 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class PlaybookServices {
-  static int statusCode = 0;
+  static const _apiKeyName = 'GOOGLE_BOOKS_API_KEY';
+  static const _baseUrl = "https://www.googleapis.com/books/v1/volumes";
 
-  static Uri generateUrl({
+  Uri generateUrl({
     String? query,
     int maxResult = 30,
     String? author,
     String? title,
     String? publisher,
   }) {
-    String apiKey = dotenv.env['GOOGLE_BOOKS_API_KEY'] ?? 'default_value';
-    const String baseUrl = "https://www.googleapis.com/books/v1/volumes";
+    final apiKey = dotenv.env[_apiKeyName];
+    if (apiKey == null || apiKey.isEmpty || apiKey == 'default_value') {
+      throw Exception(
+        'Google Books API key not found. Set $_apiKeyName in .env file.',
+      );
+    }
 
     String baseQuery = query ?? '';
     String authorQuery = author == null ? '' : '+inauthor:$author';
@@ -23,7 +28,7 @@ class PlaybookServices {
     String publisherQuery = publisher == null ? '' : '+inpublisher:$publisher';
 
     return Uri.parse(
-      "$baseUrl?q=$baseQuery$authorQuery$publisherQuery$titleQuery&printType=books&maxResults=$maxResult&key=$apiKey",
+      "$_baseUrl?q=$baseQuery$authorQuery$publisherQuery$titleQuery&printType=books&maxResults=$maxResult&key=$apiKey",
     );
   }
 
@@ -38,7 +43,6 @@ class PlaybookServices {
     String? title,
     String? publisher,
   }) async {
-    List<Book> result = [];
     try {
       final response = await http.get(
         generateUrl(
@@ -50,25 +54,29 @@ class PlaybookServices {
         ),
       );
 
-      statusCode = response.statusCode;
-      log('status code : ${response.statusCode}');
+      log('Google Books API status code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final bookList = jsonDecode(response.body);
         if (bookList['items'] != null) {
-          result = (bookList['items'] as List)
+          return (bookList['items'] as List)
               .map((item) => Book.fromJson(item))
               .toList();
-          return result;
         }
         return [];
-      } else {
+      }
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
         throw Exception(
-          'Failed to load books: ${response.statusCode}, \n Complete Message : \n${response.body}',
+          'API authentication failed. Check your Google Books API key.',
         );
       }
+
+      throw Exception('Failed to load books: ${response.statusCode}');
+    } on Exception {
+      rethrow;
     } catch (e) {
-      log('Error fetching books: $e');
+      log('Unexpected error fetching books: $e');
       throw Exception('Failed to load books: $e');
     }
   }

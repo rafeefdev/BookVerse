@@ -34,13 +34,13 @@ class ReadingProgressModel {
 
   factory ReadingProgressModel.fromJson(Map<String, dynamic> json) {
     return ReadingProgressModel(
-      bookId: json['bookId'] as String,
-      currentPage: json['currentPage'] as int,
-      totalReadingTimeInSeconds: json['totalReadingTimeInSeconds'] as int? ?? 0,
+      bookId: (json['bookId'] as String?) ?? '',
+      currentPage: (json['currentPage'] as int?) ?? 0,
+      totalReadingTimeInSeconds:
+          (json['totalReadingTimeInSeconds'] as int?) ?? 0,
       lastRead: json['lastRead'] != null
-          ? DateTime.parse(json['lastRead'] as String)
+          ? DateTime.tryParse(json['lastRead'] as String)
           : null,
-      // book is not included in JSON serialization
     );
   }
 
@@ -50,7 +50,6 @@ class ReadingProgressModel {
       'currentPage': currentPage,
       'totalReadingTimeInSeconds': totalReadingTimeInSeconds,
       'lastRead': lastRead?.toIso8601String(),
-      // book is not included in JSON serialization
     };
   }
 

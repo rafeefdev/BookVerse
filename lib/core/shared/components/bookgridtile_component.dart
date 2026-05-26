@@ -31,9 +31,7 @@ Widget bookGridTile({
             Padding(
               padding: const EdgeInsets.only(left: 6, top: 4),
               child: SizedBox(
-                height: readingProgress != null
-                    ? 90
-                    : 72, // Adjust height if progress is shown
+                height: readingProgress != null ? 90 : 72,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -91,37 +89,34 @@ Widget bookGridTile({
 }
 
 Widget _thumbnail(Book book) {
-  return book.thumbnail.isNotEmpty
-      ? Expanded(
-          child: AspectRatio(
-            aspectRatio: 3 / 4,
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-              decoration: BoxDecoration(
+  return Expanded(
+    child: AspectRatio(
+      aspectRatio: 3 / 4,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.black, width: 0.05),
+          color: Colors.grey[300],
+        ),
+        child: book.thumbnail.isNotEmpty
+            ? ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.black, width: 0.05),
-                image: DecorationImage(
+                child: Image.network(
+                  book.thumbnail,
                   fit: BoxFit.fill,
-                  image: NetworkImage(book.thumbnail),
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Center(child: Icon(Icons.book, size: 32)),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(child: CircularProgressIndicator());
+                  },
                 ),
+              )
+            : const Center(
+                child: Icon(Icons.book, size: 48, color: Colors.grey),
               ),
-            ),
-          ),
-        )
-      : Expanded(
-          child: AspectRatio(
-            aspectRatio: 3 / 4,
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.black, width: 0.05),
-              ),
-              child: Center(
-                child: Icon(Icons.book, size: 48, color: Colors.grey[600]),
-              ),
-            ),
-          ),
-        );
+      ),
+    ),
+  );
 }

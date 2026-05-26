@@ -59,7 +59,9 @@ class DetailPage extends ConsumerWidget {
 
           if (book == null) {
             return Scaffold(
-              appBar: AppBar(title: Text('Detail', style: context.textTheme.titleLarge)),
+              appBar: AppBar(
+                title: Text('Detail', style: context.textTheme.titleLarge),
+              ),
               body: const Center(child: Text('Book not found')),
             );
           }
@@ -101,7 +103,13 @@ class DetailPage extends ConsumerWidget {
       selectedBook = book;
     } else {
       // Logic for isTemporarySource
-      int index = books!.indexWhere((book) => book.id == selectedBookId);
+      if (books == null) {
+        return Scaffold(
+          appBar: AppBar(title: const Text('Detail')),
+          body: const Center(child: Text('Book data not available')),
+        );
+      }
+      int index = books.indexWhere((book) => book.id == selectedBookId);
       if (index == -1) {
         return Scaffold(
           appBar: AppBar(title: const Text('Detail')),
@@ -125,7 +133,12 @@ class DetailPage extends ConsumerWidget {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 28, right: 28, top: 12, bottom: 28),
+        padding: const EdgeInsets.only(
+          left: 28,
+          right: 28,
+          top: 12,
+          bottom: 28,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -146,9 +159,10 @@ class DetailPage extends ConsumerWidget {
                   style: context.textTheme.titleLarge,
                 ),
                 Text(
-                  selectedBook.subTitle!.isEmpty
-                      ? 'Description is not avalable'
-                      : selectedBook.subTitle!,
+                  (selectedBook.subTitle != null &&
+                          selectedBook.subTitle!.isNotEmpty)
+                      ? selectedBook.subTitle!
+                      : 'Description is not available',
                   style: context.textTheme.titleSmall,
                 ),
                 iconWithTextHorizontal(
@@ -198,7 +212,9 @@ class DetailPage extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               LinearProgressIndicator(
-                value: selectedBook.pageCount > 0 ? readingProgress.currentPage / selectedBook.pageCount : 0.0,
+                value: selectedBook.pageCount > 0
+                    ? readingProgress.currentPage / selectedBook.pageCount
+                    : 0.0,
                 backgroundColor: Colors.grey[300],
                 color: context.colorScheme.primary,
                 minHeight: 10,
@@ -260,7 +276,9 @@ class BookmarkButton extends ConsumerWidget {
     return bookmarkedItems.when(
       data: (data) {
         // data is now List<ReadingProgressModel>
-        final isBookmarked = data.any((progress) => progress.bookId == selectedBook.id);
+        final isBookmarked = data.any(
+          (progress) => progress.bookId == selectedBook.id,
+        );
         return IconButton(
           onPressed: () {
             if (isBookmarked) {

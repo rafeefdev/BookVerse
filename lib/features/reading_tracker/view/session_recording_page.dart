@@ -214,12 +214,19 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
       );
     }
 
+    if (book == null || readingProgress == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Record Session')),
+        body: const Center(child: Text('Book data not available')),
+      );
+    }
+
     return _buildSessionUI(
       context,
       sessionNotifier,
       stopWatchTimer,
-      book!,
-      readingProgress!,
+      book,
+      readingProgress,
     );
   }
 
