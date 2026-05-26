@@ -21,7 +21,12 @@ class SqfliteService {
     if (Platform.isAndroid || Platform.isIOS) {
       final dbPath = await getDatabasesPath();
       final fullPath = join(dbPath, dbName);
-      return await openDatabase(fullPath, version: 1, onCreate: _onCreate);
+      return await openDatabase(
+        fullPath,
+        version: 2,
+        onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
+      );
     } else {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
@@ -30,7 +35,11 @@ class SqfliteService {
       final fullPath = join(dbPath, dbName);
       return await databaseFactory.openDatabase(
         fullPath,
-        options: OpenDatabaseOptions(version: 1, onCreate: _onCreate),
+        options: OpenDatabaseOptions(
+          version: 2,
+          onCreate: _onCreate,
+          onUpgrade: _onUpgrade,
+        ),
       );
     }
   }
@@ -68,6 +77,49 @@ class SqfliteService {
         timestamp TEXT
       )
     ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS library_folders (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        icon TEXT DEFAULT 'folder',
+        sort_order INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS library_folder_books (
+        folder_id TEXT NOT NULL,
+        book_id TEXT NOT NULL,
+        added_at TEXT NOT NULL,
+        PRIMARY KEY (folder_id, book_id),
+        FOREIGN KEY (folder_id) REFERENCES library_folders(id) ON DELETE CASCADE,
+        FOREIGN KEY (book_id) REFERENCES bookmarks(id) ON DELETE CASCADE
+      )
+    ''');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS library_folders (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          icon TEXT DEFAULT 'folder',
+          sort_order INTEGER DEFAULT 0,
+          created_at TEXT NOT NULL
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS library_folder_books (
+          folder_id TEXT NOT NULL,
+          book_id TEXT NOT NULL,
+          added_at TEXT NOT NULL,
+          PRIMARY KEY (folder_id, book_id),
+          FOREIGN KEY (folder_id) REFERENCES library_folders(id) ON DELETE CASCADE,
+          FOREIGN KEY (book_id) REFERENCES bookmarks(id) ON DELETE CASCADE
+        )
+      ''');
+    }
   }
 
   Future<void> saveReadingProgress(ReadingProgressModel progress) async {

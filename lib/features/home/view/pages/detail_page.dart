@@ -8,6 +8,8 @@ import 'package:book_verse/core/shared/helpers/helper/book_publishdate.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_title.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
+import 'package:book_verse/features/library/model/library_repo_di.dart';
+import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/search/viewmodel/search_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -129,7 +131,8 @@ class DetailPage extends ConsumerWidget {
         title: Text('Detail', style: context.textTheme.titleLarge),
         actions: [
           BookmarkButton(selectedBook: selectedBook),
-          const SizedBox(width: 16), // Adjust padding
+          AddToFolderButton(selectedBook: selectedBook),
+          const SizedBox(width: 12),
         ],
       ),
       body: SingleChildScrollView(
@@ -335,6 +338,88 @@ class BookmarkButton extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class AddToFolderButton extends ConsumerWidget {
+  const AddToFolderButton({super.key, required this.selectedBook});
+
+  final Book selectedBook;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return IconButton(
+      icon: const Icon(Icons.create_new_folder_outlined),
+      tooltip: 'Add to folder',
+      onPressed: () => _showFolderPicker(context, ref),
+    );
+  }
+
+  Future<void> _showFolderPicker(BuildContext context, WidgetRef ref) async {
+    final bookmarkNotifier = ref.read(bookmarkNotifierProvider.notifier);
+    final isBookmarked = bookmarkNotifier.isBookmarked(selectedBook.id);
+    if (!isBookmarked) {
+      await bookmarkNotifier.toggleBookmark(selectedBook);
+    }
+
+    final repo = ref.read(libraryRepoProvider);
+    final folders = await repo.getAllFolders();
+    final existingFolderIds = await repo.getFolderIdsForBook(selectedBook.id);
+
+    if (!context.mounted) return;
+
+    await showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final folderIds = existingFolderIds.toSet();
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    'Add to Folder',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                if (folders.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Text(
+                      'No folders yet. Create one from the Library tab.',
+                    ),
+                  )
+                else
+                  ...folders.map(
+                    (folder) => CheckboxListTile(
+                      title: Text(folder.name),
+                      subtitle: Text('${folder.bookCount} books'),
+                      value: folderIds.contains(folder.id),
+                      onChanged: (checked) async {
+                        if (checked == true) {
+                          await ref
+                              .read(libraryNotifierProvider.notifier)
+                              .addBookToFolder(folder.id, selectedBook.id);
+                          folderIds.add(folder.id);
+                        } else {
+                          await ref
+                              .read(libraryNotifierProvider.notifier)
+                              .removeBookFromFolder(folder.id, selectedBook.id);
+                          folderIds.remove(folder.id);
+                        }
+                        setSheetState(() {});
+                      },
+                    ),
+                  ),
+                const SizedBox(height: 16),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

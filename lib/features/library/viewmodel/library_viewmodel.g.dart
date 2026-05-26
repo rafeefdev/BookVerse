@@ -1,27 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'session_recording_viewmodel.dart';
+part of 'library_viewmodel.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$sessionRecordingNotifierHash() =>
-    r'4c94b14ebe8bb010ee239dc4856396ced6cf5491';
+String _$libraryNotifierHash() => r'c815ca636404789f7dee1d50d25bf8e50e88b378';
 
-/// See also [SessionRecordingNotifier].
-@ProviderFor(SessionRecordingNotifier)
-final sessionRecordingNotifierProvider =
-    NotifierProvider<SessionRecordingNotifier, StopWatchTimer>.internal(
-      SessionRecordingNotifier.new,
-      name: r'sessionRecordingNotifierProvider',
+/// See also [LibraryNotifier].
+@ProviderFor(LibraryNotifier)
+final libraryNotifierProvider =
+    AsyncNotifierProvider<LibraryNotifier, LibraryState>.internal(
+      LibraryNotifier.new,
+      name: r'libraryNotifierProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$sessionRecordingNotifierHash,
+          : _$libraryNotifierHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$SessionRecordingNotifier = Notifier<StopWatchTimer>;
+typedef _$LibraryNotifier = AsyncNotifier<LibraryState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
