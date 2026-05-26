@@ -7,7 +7,7 @@ part of 'reading_tracker_viewmodel.dart';
 // **************************************************************************
 
 String _$bookReadingSessionsHash() =>
-    r'c2adc39c5c3ec9e4583487f353371568bce5bead';
+    r'438aec3541f8504a68da9328d8257ed9a775c0c4';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -154,7 +154,7 @@ class _BookReadingSessionsProviderElement
 }
 
 String _$readingTrackerNotifierHash() =>
-    r'057c297403ea7444bead08dd789a6381439ee3b8';
+    r'1254835e074945bd27baeae7540a965e5b418173';
 
 abstract class _$ReadingTrackerNotifier
     extends BuildlessAsyncNotifier<ReadingProgressModel?> {

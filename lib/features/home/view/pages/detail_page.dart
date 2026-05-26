@@ -8,6 +8,8 @@ import 'package:book_verse/core/shared/helpers/helper/book_publishdate.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_title.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
+import 'package:book_verse/features/library/model/library_folder_service.dart';
+import 'package:book_verse/features/library/model/library_repo_di.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/search/viewmodel/search_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -128,8 +130,8 @@ class DetailPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text('Detail', style: context.textTheme.titleLarge),
         actions: [
-          BookmarkButton(selectedBook: selectedBook),
-          const SizedBox(width: 16), // Adjust padding
+          LibraryActionButton(selectedBook: selectedBook),
+          const SizedBox(width: 12),
         ],
       ),
       body: SingleChildScrollView(
@@ -262,79 +264,172 @@ class DetailPage extends ConsumerWidget {
   }
 }
 
-class BookmarkButton extends ConsumerWidget {
-  const BookmarkButton({super.key, required this.selectedBook});
+class LibraryActionButton extends ConsumerWidget {
+  const LibraryActionButton({super.key, required this.selectedBook});
 
   final Book selectedBook;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    log('bookmark button pressed & rebuilded');
-
-    final bookmarkedItems = ref.watch(bookmarkNotifierProvider);
-
-    return bookmarkedItems.when(
-      data: (data) {
-        // data is now List<ReadingProgressModel>
-        final isBookmarked = data.any(
-          (progress) => progress.bookId == selectedBook.id,
-        );
-        return IconButton(
-          onPressed: () {
-            if (isBookmarked) {
-              _showRemoveBookmarkAlert(context, ref);
-            } else {
-              _toggleBookmark(ref);
-            }
-          },
-          icon: Icon(
-            isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
-          ),
-        );
-      },
-      error: (error, stack) => IconButton(
-        onPressed: null,
-        icon: const Icon(Icons.bookmark_border_rounded, color: Colors.grey),
-      ),
-      loading: () => IconButton(
-        onPressed: null,
-        icon: const Icon(Icons.bookmark_border_rounded, color: Colors.grey),
-      ),
+    return IconButton(
+      icon: const Icon(Icons.library_add_outlined),
+      tooltip: 'Library actions',
+      onPressed: () => _showLibrarySheet(context, ref),
     );
   }
 
-  Future<void> _toggleBookmark(WidgetRef ref) {
-    return ref
-        .read(bookmarkNotifierProvider.notifier)
-        .toggleBookmark(selectedBook);
-  }
+  Future<void> _showLibrarySheet(BuildContext context, WidgetRef ref) async {
+    final bookmarkNotifier = ref.read(bookmarkNotifierProvider.notifier);
+    final isBookmarked = bookmarkNotifier.isBookmarked(selectedBook.id);
+    final repo = ref.read(libraryRepoProvider);
+    final folders = await repo.getAllFolders();
+    final folderIdsForBook = await repo.getFolderIdsForBook(selectedBook.id);
 
-  Future<dynamic> _showRemoveBookmarkAlert(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-    return showDialog(
+    if (!context.mounted) return;
+
+    await showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Are You Sure Want to Delete ?'),
-        content: Text(
-          'Book "${selectedBook.title}" will removed from bookmarked items',
-          style: const TextStyle(fontWeight: FontWeight.w300),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              _toggleBookmark(ref);
-              Navigator.pop(context);
-            },
-            child: const Text('Remove Book'),
-          ),
-        ],
-      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            var saved = isBookmarked;
+            var selectedFolderIds = folderIdsForBook.toSet();
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.library_add_outlined,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Library',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ],
+                  ),
+                ),
+                SwitchListTile(
+                  title: const Text('Save to Library'),
+                  subtitle: Text(saved ? 'Saved' : 'Not saved'),
+                  value: saved,
+                  onChanged: (value) async {
+                    if (value) {
+                      await repo.saveBook(selectedBook);
+                      if (selectedFolderIds.isEmpty) {
+                        selectedFolderIds.add(
+                          LibraryFolderService.defaultFolderId,
+                        );
+                      }
+                    } else {
+                      await repo.removeBookmark(selectedBook.id);
+                      await repo.removeBookFromAllFolders(selectedBook.id);
+                      selectedFolderIds.clear();
+                    }
+                    saved = value;
+                    setSheetState(() {});
+                  },
+                ),
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Move to Folder',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ),
+                ),
+                if (saved) ...[
+                  CheckboxListTile(
+                    title: Text(
+                      'Tanpa Folder',
+                      style: TextStyle(
+                        fontWeight:
+                            selectedFolderIds.contains(
+                              LibraryFolderService.defaultFolderId,
+                            )
+                            ? FontWeight.bold
+                            : null,
+                      ),
+                    ),
+                    subtitle: const Text('Default location'),
+                    value: selectedFolderIds.contains(
+                      LibraryFolderService.defaultFolderId,
+                    ),
+                    onChanged: (checked) async {
+                      if (checked == true) {
+                        await repo.removeBookFromAllFolders(selectedBook.id);
+                        await repo.addBookToFolder(
+                          LibraryFolderService.defaultFolderId,
+                          selectedBook.id,
+                        );
+                        selectedFolderIds
+                          ..clear()
+                          ..add(LibraryFolderService.defaultFolderId);
+                      }
+                      setSheetState(() {});
+                    },
+                  ),
+                  ...folders
+                      .where(
+                        (f) => f.id != LibraryFolderService.defaultFolderId,
+                      )
+                      .map(
+                        (folder) => CheckboxListTile(
+                          title: Text(folder.name),
+                          subtitle: Text('${folder.bookCount} books'),
+                          value: selectedFolderIds.contains(folder.id),
+                          onChanged: (checked) async {
+                            if (checked == true) {
+                              await repo.addBookToFolder(
+                                folder.id,
+                                selectedBook.id,
+                              );
+                              selectedFolderIds.remove(
+                                LibraryFolderService.defaultFolderId,
+                              );
+                              selectedFolderIds.add(folder.id);
+                            } else {
+                              await repo.removeBookFromFolder(
+                                folder.id,
+                                selectedBook.id,
+                              );
+                              selectedFolderIds.remove(folder.id);
+                              if (selectedFolderIds.isEmpty) {
+                                await repo.addBookToFolder(
+                                  LibraryFolderService.defaultFolderId,
+                                  selectedBook.id,
+                                );
+                                selectedFolderIds.add(
+                                  LibraryFolderService.defaultFolderId,
+                                );
+                              }
+                            }
+                            setSheetState(() {});
+                          },
+                        ),
+                      ),
+                ] else
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      'Save the book to library first to organize into folders.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                const SizedBox(height: 16),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

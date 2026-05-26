@@ -44,62 +44,79 @@ class ReadingTrackerDetailPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Book Info
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    book.thumbnail.isNotEmpty
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              book.thumbnail,
-                              width: 100,
-                              height: 150,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.book, size: 100),
-                            ),
-                          )
-                        : Container(
-                            width: 100,
-                            height: 150,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.book,
-                                size: 50,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
+                // Book Info Card (tappable → DetailPage)
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => context.push('/detail/${book.id}'),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            book.title,
-                            style: context.textTheme.headlineSmall,
+                          book.thumbnail.isNotEmpty
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    book.thumbnail,
+                                    width: 100,
+                                    height: 150,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(Icons.book, size: 100),
+                                  ),
+                                )
+                              : Container(
+                                  width: 100,
+                                  height: 150,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.book,
+                                      size: 50,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  book.title,
+                                  style: context.textTheme.headlineSmall,
+                                ),
+                                Text(
+                                  bookAuthors(book),
+                                  style: context.textTheme.titleSmall,
+                                ),
+                                Text(
+                                  book.publisher,
+                                  style: context.textTheme.bodyMedium,
+                                ),
+                                Text(
+                                  'Total Pages: ${book.pageCount}',
+                                  style: context.textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
                           ),
-                          Text(
-                            bookAuthors(book),
-                            style: context.textTheme.titleSmall,
-                          ),
-                          Text(
-                            book.publisher,
-                            style: context.textTheme.bodyMedium,
-                          ),
-                          Text(
-                            'Total Pages: ${book.pageCount}',
-                            style: context.textTheme.bodyMedium,
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.chevron_right,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
                 const SizedBox(height: 24),
 

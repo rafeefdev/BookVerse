@@ -1,7 +1,8 @@
 import 'package:book_verse/core/router/shell_scaffold.dart';
-import 'package:book_verse/features/bookmarks/view/bookmarks_page.dart';
 import 'package:book_verse/features/home/view/pages/detail_page.dart';
 import 'package:book_verse/features/home/view/pages/new_homepage.dart';
+import 'package:book_verse/features/library/view/library_page.dart';
+import 'package:book_verse/features/library/view/widgets/folder_detail_page.dart';
 import 'package:book_verse/features/onboarding/view/pages/splash_screens/first_page.dart';
 import 'package:book_verse/features/onboarding/view/pages/splash_screens/fourth_page.dart';
 import 'package:book_verse/features/onboarding/view/pages/splash_screens/second_page.dart';
@@ -37,6 +38,13 @@ final routerProvider = Provider<GoRouter>((ref) {
 
           if (hasOpened && isGoingToOnboarding) {
             return '/home';
+          }
+
+          final isGoingToBookmarks = state.matchedLocation.startsWith(
+            '/bookmarks',
+          );
+          if (isGoingToBookmarks) {
+            return '/library';
           }
 
           return null;
@@ -92,8 +100,17 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/bookmarks',
-                builder: (context, state) => const BookmarksPage(),
+                path: '/library',
+                builder: (context, state) => const LibraryPage(),
+                routes: [
+                  GoRoute(
+                    path: 'folder/:folderId',
+                    builder: (context, state) {
+                      final folderId = state.pathParameters['folderId'] ?? '';
+                      return FolderDetailPage(folderId: folderId);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
