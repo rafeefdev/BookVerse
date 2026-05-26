@@ -1,6 +1,7 @@
 import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
+import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/session_recording_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -128,6 +129,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
                   final success = await sessionNotifier.saveSession(lastPage);
 
                   if (success) {
+                    ref.invalidate(bookmarkNotifierProvider);
                     navigator.pop();
                     rootNavigator.pop();
                   } else {
@@ -228,87 +230,108 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
     Book book,
     ReadingProgressModel readingProgress,
   ) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Record Session')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              book.title,
-              style: context.textTheme.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              bookAuthors(book),
-              style: context.textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            StreamBuilder<int>(
-              stream: stopWatchTimer.rawTime,
-              initialData: stopWatchTimer.rawTime.value,
-              builder: (context, snap) {
-                final value = snap.data!;
-                return Text(
-                  _formatDuration(value ~/ 1000),
-                  style: context.textTheme.displayLarge,
-                );
-              },
-            ),
-            const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                StreamBuilder<int>(
-                  stream: stopWatchTimer.rawTime,
-                  initialData: stopWatchTimer.rawTime.value,
-                  builder: (context, snap) {
-                    final isRunning = stopWatchTimer.isRunning;
-                    return ElevatedButton.icon(
-                      onPressed: () {
-                        if (isRunning) {
-                          sessionNotifier.pauseTimer();
-                        } else {
-                          sessionNotifier.startTimer();
-                        }
-                        setState(() {});
-                      },
-                      icon: Icon(isRunning ? Icons.pause : Icons.play_arrow),
-                      label: Text(isRunning ? 'Pause' : 'Resume'),
-                    );
-                  },
-                ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    sessionNotifier.resetTimer();
-                  },
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Restart'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
+    return PopScope(
+      canPop: !stopWatchTimer.isRunning,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'Please finish or pause your reading session before leaving.',
+              ),
+              action: SnackBarAction(
+                label: 'Close',
                 onPressed: () {
-                  sessionNotifier.pauseTimer();
-                  _showSaveSessionDialog(
-                    context,
-                    readingProgress.currentPage,
-                    book.pageCount,
-                  );
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 },
-                icon: const Icon(Icons.check),
-                label: const Text('Finish Session'),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
               ),
             ),
-          ],
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Record Session')),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                book.title,
+                style: context.textTheme.headlineMedium,
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                bookAuthors(book),
+                style: context.textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              StreamBuilder<int>(
+                stream: stopWatchTimer.rawTime,
+                initialData: stopWatchTimer.rawTime.value,
+                builder: (context, snap) {
+                  final value = snap.data!;
+                  return Text(
+                    _formatDuration(value ~/ 1000),
+                    style: context.textTheme.displayLarge,
+                  );
+                },
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  StreamBuilder<int>(
+                    stream: stopWatchTimer.rawTime,
+                    initialData: stopWatchTimer.rawTime.value,
+                    builder: (context, snap) {
+                      final isRunning = stopWatchTimer.isRunning;
+                      return ElevatedButton.icon(
+                        onPressed: () {
+                          if (isRunning) {
+                            sessionNotifier.pauseTimer();
+                          } else {
+                            sessionNotifier.startTimer();
+                          }
+                          setState(() {});
+                        },
+                        icon: Icon(isRunning ? Icons.pause : Icons.play_arrow),
+                        label: Text(isRunning ? 'Pause' : 'Resume'),
+                      );
+                    },
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      sessionNotifier.resetTimer();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Restart'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () {
+                    sessionNotifier.pauseTimer();
+                    setState(() {});
+                    _showSaveSessionDialog(
+                      context,
+                      readingProgress.currentPage,
+                      book.pageCount,
+                    );
+                  },
+                  icon: const Icon(Icons.check),
+                  label: const Text('Finish Session'),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
