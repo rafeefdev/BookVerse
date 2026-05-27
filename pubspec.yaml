@@ -28,6 +28,7 @@ dependencies:
   go_router: ^17.0.1
   intl: ^0.20.2
   build_runner: ^2.5.4
+  google_fonts: ^6.2.1
   custom_lint: ^0.7.6
   riverpod_generator: ^2.6.5
   stop_watch_timer: ^3.2.2
@@ -43,14 +44,3 @@ flutter:
   assets:
     - .env
     - shorebird.yaml
-  fonts:
-    - family: PlusJakartaSans
-      fonts:
-        - asset: assets/fonts/PlusJakartaSans-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/PlusJakartaSans-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/PlusJakartaSans-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/PlusJakartaSans-Bold.ttf
-          weight: 700

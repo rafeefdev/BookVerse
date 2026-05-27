@@ -6,4 +6,8 @@ ThemeData lightTheme = ThemeData(
   textTheme: AppTypography.textTheme,
 );
 
-ThemeData darkTheme = ThemeData.dark();
+ThemeData darkTheme = ThemeData(
+  brightness: Brightness.dark,
+  fontFamily: AppTypography.fontFamily,
+  textTheme: AppTypography.textTheme,
+);
