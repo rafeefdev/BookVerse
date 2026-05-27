@@ -159,8 +159,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     final values = state.weeklyReading
         .map((d) => _showPages ? d.pages : d.minutes)
         .toList();
-    final maxVal = values.fold<int>(0, (max, v) => v > max ? v : max);
-    const chartHeight = 120.0;
+    const containerHeight = 180.0;
 
     return Card(
       child: Padding(
@@ -168,33 +167,18 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Weekly Progress', style: textTheme.titleMedium),
-                SegmentedButton<bool>(
-                  segments: const [
-                    ButtonSegment(value: false, label: Text('Durasi')),
-                    ButtonSegment(value: true, label: Text('Halaman')),
-                  ],
-                  selected: {_showPages},
-                  onSelectionChanged: (selected) {
-                    setState(() => _showPages = selected.first);
-                  },
-                ),
-              ],
-            ),
+            Text('Weekly Progress', style: textTheme.titleMedium),
             const SizedBox(height: 20),
-            SizedBox(
-              height: chartHeight + 40,
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              height: containerHeight + 48,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: List.generate(state.weeklyReading.length, (i) {
                   final day = state.weeklyReading[i];
                   final val = values[i];
-                  final barHeight = maxVal > 0
-                      ? (val / maxVal) * chartHeight
-                      : 0.0;
+                  final refMax = _showPages ? 150.0 : 60.0;
+                  final barHeight = (val / refMax) * containerHeight;
                   return Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -210,7 +194,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                             ),
                           const SizedBox(height: 4),
                           Container(
-                            height: barHeight.clamp(4.0, chartHeight),
+                            height: barHeight.clamp(4.0, containerHeight),
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: day.isToday
@@ -234,10 +218,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 }),
               ),
             ),
-            if (state.streak > 0) ...[
-              const SizedBox(height: 16),
-              Row(
-                children: [
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                if (state.streak > 0) ...[
                   Icon(
                     Icons.local_fire_department,
                     color: colorScheme.error,
@@ -251,8 +235,29 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     ),
                   ),
                 ],
-              ),
-            ],
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => setState(() => _showPages = !_showPages),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.swap_horiz,
+                        size: 14,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _showPages ? 'halaman' : 'durasi',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
