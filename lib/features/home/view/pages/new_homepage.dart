@@ -18,7 +18,11 @@ class _HomeState extends ConsumerState<NewHomePage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircleAvatar(radius: 30, child: Icon(Icons.search, size: 30)),
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: context.colorScheme.surfaceContainerHighest,
+              child: Icon(Icons.search, size: 30),
+            ),
             const SizedBox(height: 10),
             Text(
               "Tap to browse millions of books !",
@@ -40,15 +44,14 @@ class _HomeState extends ConsumerState<NewHomePage> {
                       vertical: 15,
                     ),
                     decoration: BoxDecoration(
-                      color:
-                          context.theme.brightness == Brightness.dark
-                              ? Colors.grey[800]
-                              : Colors.grey.shade200,
+                      color: context.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Search...',
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(
+                        color: context.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ),

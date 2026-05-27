@@ -96,6 +96,7 @@ class FolderDetailPage extends ConsumerWidget {
           .read(libraryNotifierProvider.notifier)
           .getBooksInFolder(folderId),
       builder: (context, snapshot) {
+        final scheme = Theme.of(context).colorScheme;
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -105,11 +106,14 @@ class FolderDetailPage extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.folder_open, size: 64, color: Colors.grey[400]),
+                Icon(Icons.folder_open, size: 64, color: scheme.outlineVariant),
                 const SizedBox(height: 16),
                 Text(
                   'Folder is empty',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),

@@ -47,14 +47,26 @@ class BookmarkButton extends ConsumerWidget {
           ),
         );
       },
-      error: (error, stack) => IconButton(
-        onPressed: null,
-        icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
-      ),
-      loading: () => IconButton(
-        onPressed: null,
-        icon: Icon(Icons.bookmark_border_rounded, color: Colors.grey),
-      ),
+      error: (error, stack) {
+        final scheme = Theme.of(context).colorScheme;
+        return IconButton(
+          onPressed: null,
+          icon: Icon(
+            Icons.bookmark_border_rounded,
+            color: scheme.onSurfaceVariant.withValues(alpha: 0.38),
+          ),
+        );
+      },
+      loading: () {
+        final scheme = Theme.of(context).colorScheme;
+        return IconButton(
+          onPressed: null,
+          icon: Icon(
+            Icons.bookmark_border_rounded,
+            color: scheme.onSurfaceVariant.withValues(alpha: 0.38),
+          ),
+        );
+      },
     );
   }
 }

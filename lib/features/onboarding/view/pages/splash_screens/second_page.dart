@@ -8,56 +8,48 @@ class SecondScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-        child: Column(
-          children: [
-            SizedBox(height: 480),
-            // Subtitle kecil
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Powerfull Search',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          child: Column(
+            children: [
+              SizedBox(height: 480),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Powerfull Search', style: TextStyle(fontSize: 14)),
               ),
-            ),
-            const SizedBox(height: 10),
-            // Judul besar
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Explore the Ocean of Knowledge',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 15),
-
-            // Deskripsi singkat
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Deep search into millions of books across genres, authors, and publishers',
-                style: TextStyle(fontSize: 16, color: Colors.black87),
-              ),
-            ),
-            const Spacer(),
-            // bottom widgets
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Dot indicator (simbol halaman aktif)
-                Row(
-                  children: [
-                    dotIndicator(true),
-                    dotIndicator(false),
-                    dotIndicator(false),
-                  ],
+              const SizedBox(height: 10),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Explore the Ocean of Knowledge',
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                 ),
-                // Tombol Next
-                nextButton(context, path: '/onboarding/3'),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(height: 15),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Deep search into millions of books across genres, authors, and publishers',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      dotIndicator(context, true),
+                      dotIndicator(context, false),
+                      dotIndicator(context, false),
+                    ],
+                  ),
+                  nextButton(context, path: '/onboarding/3'),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

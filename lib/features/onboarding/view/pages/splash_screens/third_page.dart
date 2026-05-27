@@ -8,56 +8,48 @@ class ThirdScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-        child: Column(
-          children: [
-            SizedBox(height: 480),
-            // Subtitle kecil
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Reading Timer',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          child: Column(
+            children: [
+              SizedBox(height: 480),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Reading Timer', style: TextStyle(fontSize: 14)),
               ),
-            ),
-            const SizedBox(height: 10),
-            // Judul besar
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Keep Track of Your Reading Moments',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 15),
-
-            // Deskripsi singkat
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'A special stopwatch helps track your reading habits in precise detail.',
-                style: TextStyle(fontSize: 16, color: Colors.black87),
-              ),
-            ),
-            const Spacer(),
-            // bottom widgets
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Dot indicator (simbol halaman aktif)
-                Row(
-                  children: [
-                    dotIndicator(false),
-                    dotIndicator(true),
-                    dotIndicator(false),
-                  ],
+              const SizedBox(height: 10),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Keep Track of Your Reading Moments',
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                 ),
-                // Tombol Next
-                nextButton(context, path: '/onboarding/4'),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(height: 15),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'A special stopwatch helps track your reading habits in precise detail.',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      dotIndicator(context, false),
+                      dotIndicator(context, true),
+                      dotIndicator(context, false),
+                    ],
+                  ),
+                  nextButton(context, path: '/onboarding/4'),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

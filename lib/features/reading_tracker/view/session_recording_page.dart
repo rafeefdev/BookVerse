@@ -39,7 +39,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(sessionNotifier.errorMessage ?? 'Unknown error'),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }
@@ -139,7 +139,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
                           sessionNotifier.errorMessage ??
                               'Failed to save session',
                         ),
-                        backgroundColor: Colors.red,
+                        backgroundColor: Theme.of(context).colorScheme.error,
                       ),
                     );
                   }
@@ -184,30 +184,32 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
     if (hasError) {
       return Scaffold(
         appBar: AppBar(title: const Text('Record Session')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  size: 64,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  sessionNotifier.errorMessage ?? 'An error occurred',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Go Back'),
-                ),
-              ],
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    sessionNotifier.errorMessage ?? 'An error occurred',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Go Back'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -258,86 +260,90 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
       },
       child: Scaffold(
         appBar: AppBar(title: const Text('Record Session')),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                book.title,
-                style: context.textTheme.headlineMedium,
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                bookAuthors(book),
-                style: context.textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              StreamBuilder<int>(
-                stream: stopWatchTimer.rawTime,
-                initialData: stopWatchTimer.rawTime.value,
-                builder: (context, snap) {
-                  final value = snap.data!;
-                  return Text(
-                    _formatDuration(value ~/ 1000),
-                    style: context.textTheme.displayLarge,
-                  );
-                },
-              ),
-              const SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  StreamBuilder<int>(
-                    stream: stopWatchTimer.rawTime,
-                    initialData: stopWatchTimer.rawTime.value,
-                    builder: (context, snap) {
-                      final isRunning = stopWatchTimer.isRunning;
-                      return ElevatedButton.icon(
-                        onPressed: () {
-                          if (isRunning) {
-                            sessionNotifier.pauseTimer();
-                          } else {
-                            sessionNotifier.startTimer();
-                          }
-                          setState(() {});
-                        },
-                        icon: Icon(isRunning ? Icons.pause : Icons.play_arrow),
-                        label: Text(isRunning ? 'Pause' : 'Resume'),
-                      );
-                    },
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      sessionNotifier.resetTimer();
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Restart'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: () {
-                    sessionNotifier.pauseTimer();
-                    setState(() {});
-                    _showSaveSessionDialog(
-                      context,
-                      readingProgress.currentPage,
-                      book.pageCount,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  book.title,
+                  style: context.textTheme.headlineMedium,
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  bookAuthors(book),
+                  style: context.textTheme.titleMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                StreamBuilder<int>(
+                  stream: stopWatchTimer.rawTime,
+                  initialData: stopWatchTimer.rawTime.value,
+                  builder: (context, snap) {
+                    final value = snap.data!;
+                    return Text(
+                      _formatDuration(value ~/ 1000),
+                      style: context.textTheme.displayLarge,
                     );
                   },
-                  icon: const Icon(Icons.check),
-                  label: const Text('Finish Session'),
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    StreamBuilder<int>(
+                      stream: stopWatchTimer.rawTime,
+                      initialData: stopWatchTimer.rawTime.value,
+                      builder: (context, snap) {
+                        final isRunning = stopWatchTimer.isRunning;
+                        return ElevatedButton.icon(
+                          onPressed: () {
+                            if (isRunning) {
+                              sessionNotifier.pauseTimer();
+                            } else {
+                              sessionNotifier.startTimer();
+                            }
+                            setState(() {});
+                          },
+                          icon: Icon(
+                            isRunning ? Icons.pause : Icons.play_arrow,
+                          ),
+                          label: Text(isRunning ? 'Pause' : 'Resume'),
+                        );
+                      },
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        sessionNotifier.resetTimer();
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Restart'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () {
+                      sessionNotifier.pauseTimer();
+                      setState(() {});
+                      _showSaveSessionDialog(
+                        context,
+                        readingProgress.currentPage,
+                        book.pageCount,
+                      );
+                    },
+                    icon: const Icon(Icons.check),
+                    label: const Text('Finish Session'),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

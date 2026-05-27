@@ -17,6 +17,7 @@ class SavedTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       children: [
         Padding(
@@ -38,7 +39,7 @@ class SavedTab extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
             child: Text(
               'No folders yet. Tap + to create one.',
-              style: TextStyle(color: Colors.grey[500]),
+              style: TextStyle(color: scheme.outline),
             ),
           )
         else
@@ -77,6 +78,7 @@ class _FolderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: () {
         context.push('/library/folder/${folder.id}');
@@ -85,17 +87,13 @@ class _FolderCard extends StatelessWidget {
         width: 140,
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: scheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.folder,
-              size: 40,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            Icon(Icons.folder, size: 40, color: scheme.primary),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -108,7 +106,9 @@ class _FolderCard extends StatelessWidget {
             ),
             Text(
               '${folder.bookCount} books',
-              style: context.textTheme.bodySmall?.copyWith(color: Colors.grey),
+              style: context.textTheme.bodySmall?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),

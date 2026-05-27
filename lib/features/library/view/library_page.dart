@@ -1,3 +1,4 @@
+import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/library/model/library_state.dart';
 import 'package:book_verse/features/library/view/widgets/currently_reading_tab.dart';
 import 'package:book_verse/features/library/view/widgets/finished_tab.dart';
@@ -40,7 +41,11 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: context.colorScheme.error,
+            ),
             const SizedBox(height: 16),
             const Text('Could not load your library'),
             const SizedBox(height: 8),

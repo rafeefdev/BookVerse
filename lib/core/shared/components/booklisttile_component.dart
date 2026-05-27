@@ -12,6 +12,7 @@ Widget bookListTile(
   ReadingProgressModel? readingProgress,
   void Function()? onTap,
 }) {
+  final scheme = Theme.of(context).colorScheme;
   double progressValue = 0.0;
   String progressText = 'Not started';
 
@@ -41,17 +42,21 @@ Widget bookListTile(
                 width: 50,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: scheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Center(child: Icon(Icons.book, color: Colors.grey[600])),
+                child: Center(
+                  child: Icon(Icons.book, color: scheme.onSurfaceVariant),
+                ),
               ),
         title: Text(
           book.title,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(bookAuthors(book)),
-        trailing: onTap != null ? const Icon(Icons.arrow_forward_ios) : null,
+        trailing: onTap != null
+            ? Icon(Icons.arrow_forward_ios, color: scheme.onSurfaceVariant)
+            : null,
       ),
       if (readingProgress != null)
         Padding(
@@ -61,14 +66,11 @@ Widget bookListTile(
             children: [
               LinearProgressIndicator(
                 value: progressValue,
-                backgroundColor: Colors.grey[300],
-                color: Theme.of(context).primaryColor,
+                backgroundColor: scheme.surfaceContainerHighest,
+                color: scheme.primary,
               ),
               const SizedBox(height: 4),
-              Text(
-                progressText,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              Text(progressText, style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
         ),
@@ -76,9 +78,12 @@ Widget bookListTile(
   );
 
   Widget lisTile = InkWell(
-    onTap: onTap ??
+    onTap:
+        onTap ??
         () {
-          context.push('/detail/${book.id}?isTemporarySource=$isTemporarySource');
+          context.push(
+            '/detail/${book.id}?isTemporarySource=$isTemporarySource',
+          );
         },
     child: listTileContent,
   );
