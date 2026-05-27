@@ -2,6 +2,7 @@ import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
+import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/session_recording_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -130,6 +131,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
 
                   if (success) {
                     ref.invalidate(bookmarkNotifierProvider);
+                    ref.invalidate(libraryNotifierProvider);
                     navigator.pop();
                     rootNavigator.pop();
                   } else {
