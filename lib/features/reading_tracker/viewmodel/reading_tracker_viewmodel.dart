@@ -33,7 +33,7 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
       return progress;
     } catch (e, stack) {
       log('ReadingTrackerNotifier.build error: $e\n$stack');
-      rethrow;
+      return null;
     }
   }
 
@@ -58,7 +58,6 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
       state = AsyncData(updatedProgress);
     } catch (e, stack) {
       log('updateReadingProgress error: $e\n$stack');
-      rethrow;
     }
   }
 
@@ -70,7 +69,6 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
       );
     } catch (e, stack) {
       log('addReadingSession error: $e\n$stack');
-      rethrow;
     }
   }
 }

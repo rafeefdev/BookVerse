@@ -41,55 +41,84 @@ class LibraryNotifier extends _$LibraryNotifier {
   }
 
   Future<void> createFolder(String name) async {
-    final repo = ref.read(libraryRepoProvider);
-    final folder = LibraryFolder(
-      id: LibraryFolder.generateId(),
-      name: name,
-      createdAt: DateTime.now(),
-    );
-    await repo.createFolder(folder);
-    ref.invalidateSelf();
-    await future;
+    try {
+      final repo = ref.read(libraryRepoProvider);
+      final folder = LibraryFolder(
+        id: LibraryFolder.generateId(),
+        name: name,
+        createdAt: DateTime.now(),
+      );
+      await repo.createFolder(folder);
+      ref.invalidateSelf();
+      await future;
+    } catch (e, stack) {
+      log('createFolder error: $e\n$stack');
+    }
   }
 
   Future<void> renameFolder(String folderId, String newName) async {
-    final repo = ref.read(libraryRepoProvider);
-    await repo.renameFolder(folderId, newName);
-    ref.invalidateSelf();
-    await future;
+    try {
+      final repo = ref.read(libraryRepoProvider);
+      await repo.renameFolder(folderId, newName);
+      ref.invalidateSelf();
+      await future;
+    } catch (e, stack) {
+      log('renameFolder error: $e\n$stack');
+    }
   }
 
   Future<void> deleteFolder(String folderId) async {
-    final repo = ref.read(libraryRepoProvider);
-    await repo.deleteFolder(folderId);
-    ref.invalidateSelf();
-    await future;
+    try {
+      final repo = ref.read(libraryRepoProvider);
+      await repo.deleteFolder(folderId);
+      ref.invalidateSelf();
+      await future;
+    } catch (e, stack) {
+      log('deleteFolder error: $e\n$stack');
+    }
   }
 
   Future<void> addBookToFolder(String folderId, String bookId) async {
-    final repo = ref.read(libraryRepoProvider);
-    await repo.addBookToFolder(folderId, bookId);
-    ref.invalidateSelf();
-    await future;
+    try {
+      final repo = ref.read(libraryRepoProvider);
+      await repo.addBookToFolder(folderId, bookId);
+      ref.invalidateSelf();
+      await future;
+    } catch (e, stack) {
+      log('addBookToFolder error: $e\n$stack');
+    }
   }
 
   Future<void> removeBookFromFolder(String folderId, String bookId) async {
-    final repo = ref.read(libraryRepoProvider);
-    await repo.removeBookFromFolder(folderId, bookId);
-    ref.invalidateSelf();
-    await future;
+    try {
+      final repo = ref.read(libraryRepoProvider);
+      await repo.removeBookFromFolder(folderId, bookId);
+      ref.invalidateSelf();
+      await future;
+    } catch (e, stack) {
+      log('removeBookFromFolder error: $e\n$stack');
+    }
   }
 
   Future<List<String>> getFolderIdsForBook(String bookId) async {
-    final repo = ref.read(libraryRepoProvider);
-    return repo.getFolderIdsForBook(bookId);
+    try {
+      final repo = ref.read(libraryRepoProvider);
+      return repo.getFolderIdsForBook(bookId);
+    } catch (e, stack) {
+      log('getFolderIdsForBook error: $e\n$stack');
+      return [];
+    }
   }
 
   Future<void> removeBookFromAllFolders(String bookId) async {
-    final repo = ref.read(libraryRepoProvider);
-    await repo.removeBookFromAllFolders(bookId);
-    ref.invalidateSelf();
-    await future;
+    try {
+      final repo = ref.read(libraryRepoProvider);
+      await repo.removeBookFromAllFolders(bookId);
+      ref.invalidateSelf();
+      await future;
+    } catch (e, stack) {
+      log('removeBookFromAllFolders error: $e\n$stack');
+    }
   }
 
   Future<List<Book>> getBooksInFolder(String folderId) async {

@@ -36,7 +36,7 @@ class BookmarkRepo {
       }).toList();
     } catch (e, stack) {
       log('getReadingProgressWithBooks error: $e\n$stack');
-      rethrow;
+      return [];
     }
   }
 
@@ -50,7 +50,6 @@ class BookmarkRepo {
       await _sqfliteService.saveReadingProgress(initialProgress);
     } catch (e, stack) {
       log('addToBookmark error: $e\n$stack');
-      rethrow;
     }
   }
 
@@ -60,7 +59,6 @@ class BookmarkRepo {
       await _sqfliteService.deleteReadingProgress(bookId);
     } catch (e, stack) {
       log('removeBookmark error: $e\n$stack');
-      rethrow;
     }
   }
 

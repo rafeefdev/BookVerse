@@ -36,7 +36,21 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
     return libraryAsync.when(
       data: (state) => _buildContent(state),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, _) => Center(child: Text('Error: $err')),
+      error: (err, _) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            const Text('Could not load your library'),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => ref.invalidate(libraryNotifierProvider),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

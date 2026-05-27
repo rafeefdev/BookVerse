@@ -36,7 +36,7 @@ class LibraryRepo {
       }).toList();
     } catch (e, stack) {
       log('getAllProgressWithBooks error: $e\n$stack');
-      rethrow;
+      return [];
     }
   }
 

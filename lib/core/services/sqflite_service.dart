@@ -105,6 +105,39 @@ class SqfliteService {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS bookmarks (
+        id TEXT PRIMARY KEY,
+        title TEXT,
+        authors TEXT,
+        description TEXT,
+        thumbnail TEXT,
+        publishedDate TEXT,
+        pageCount INTEGER,
+        categories TEXT,
+        publisher TEXT,
+        subTitle TEXT,
+        isFavorite INTEGER
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS reading_progress (
+        bookId TEXT PRIMARY KEY,
+        currentPage INTEGER,
+        totalReadingTimeInSeconds INTEGER,
+        lastRead TEXT
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS reading_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        bookId TEXT,
+        durationInSeconds INTEGER,
+        endPage INTEGER,
+        timestamp TEXT
+      )
+    ''');
+
     if (oldVersion < 2) {
       await db.execute('''
         CREATE TABLE IF NOT EXISTS library_folders (
@@ -138,7 +171,6 @@ class SqfliteService {
       );
     } catch (e, stack) {
       log('saveReadingProgress error: $e\n$stack');
-      rethrow;
     }
   }
 
@@ -157,7 +189,7 @@ class SqfliteService {
       return null;
     } catch (e, stack) {
       log('getReadingProgress error: $e\n$stack');
-      rethrow;
+      return null;
     }
   }
 
@@ -168,7 +200,7 @@ class SqfliteService {
       return maps.map((json) => ReadingProgressModel.fromJson(json)).toList();
     } catch (e, stack) {
       log('getAllReadingProgress error: $e\n$stack');
-      rethrow;
+      return [];
     }
   }
 
@@ -182,7 +214,6 @@ class SqfliteService {
       );
     } catch (e, stack) {
       log('deleteReadingProgress error: $e\n$stack');
-      rethrow;
     }
   }
 
@@ -192,7 +223,6 @@ class SqfliteService {
       await db.insert('reading_sessions', session.toJson());
     } catch (e, stack) {
       log('saveReadingSession error: $e\n$stack');
-      rethrow;
     }
   }
 
@@ -208,7 +238,7 @@ class SqfliteService {
       return maps.map((json) => ReadingSessionModel.fromJson(json)).toList();
     } catch (e, stack) {
       log('getReadingSessions error: $e\n$stack');
-      rethrow;
+      return [];
     }
   }
 
