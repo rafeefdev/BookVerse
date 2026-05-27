@@ -1,5 +1,6 @@
 import 'package:book_verse/core/shared/typography_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 const _seedColor = Color(0xFF6750A4);
 
@@ -10,7 +11,7 @@ ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
   ),
   fontFamily: AppTypography.fontFamily,
-  textTheme: AppTypography.textTheme,
+  textTheme: GoogleFonts.plusJakartaSansTextTheme(ThemeData.light().textTheme),
   iconTheme: IconThemeData(
     color: ColorScheme.fromSeed(
       seedColor: _seedColor,
@@ -27,7 +28,7 @@ ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
   ),
   fontFamily: AppTypography.fontFamily,
-  textTheme: AppTypography.textTheme,
+  textTheme: GoogleFonts.plusJakartaSansTextTheme(ThemeData.dark().textTheme),
   iconTheme: IconThemeData(
     color: ColorScheme.fromSeed(
       seedColor: _seedColor,
