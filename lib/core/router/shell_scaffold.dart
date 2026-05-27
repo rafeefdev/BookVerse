@@ -36,7 +36,14 @@ class ShellScaffold extends StatelessWidget {
             );
           },
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.explore),
+              label: 'Explore',
+            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.library_books),
               label: 'My Library',

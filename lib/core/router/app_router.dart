@@ -1,4 +1,5 @@
 import 'package:book_verse/core/router/shell_scaffold.dart';
+import 'package:book_verse/features/dashboard/view/pages/dashboard_page.dart';
 import 'package:book_verse/features/home/view/pages/detail_page.dart';
 import 'package:book_verse/features/home/view/pages/new_homepage.dart';
 import 'package:book_verse/features/library/view/library_page.dart';
@@ -23,7 +24,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/home',
+    initialLocation: '/dashboard',
     redirect: (context, state) {
       // Using when to handle async value
       return onBoardingStatus.when(
@@ -37,7 +38,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           }
 
           if (hasOpened && isGoingToOnboarding) {
-            return '/home';
+            return '/dashboard';
           }
 
           final isGoingToBookmarks = state.matchedLocation.startsWith(
@@ -79,9 +80,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 const Text('Something went wrong'),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
-                  onPressed: () => context.go('/home'),
-                  icon: const Icon(Icons.home),
-                  label: const Text('Go to Home'),
+                  onPressed: () => context.go('/dashboard'),
+                  icon: const Icon(Icons.bar_chart),
+                  label: const Text('Go to Dashboard'),
                 ),
               ],
             ),
@@ -96,7 +97,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/home',
+                path: '/dashboard',
+                builder: (context, state) => const DashboardPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/explore',
                 builder: (context, state) => const NewHomePage(),
               ),
             ],

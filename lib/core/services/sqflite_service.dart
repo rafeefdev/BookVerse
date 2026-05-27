@@ -242,6 +242,20 @@ class SqfliteService {
     }
   }
 
+  Future<List<ReadingSessionModel>> getAllReadingSessions() async {
+    try {
+      final db = await database;
+      final maps = await db.query(
+        'reading_sessions',
+        orderBy: 'timestamp DESC',
+      );
+      return maps.map((json) => ReadingSessionModel.fromJson(json)).toList();
+    } catch (e, stack) {
+      log('getAllReadingSessions error: $e\n$stack');
+      return [];
+    }
+  }
+
   Future<bool> isTableExists(String tableName) async {
     try {
       final db = await database;
