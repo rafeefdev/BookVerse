@@ -6,6 +6,7 @@ class FirstScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
         child: SizedBox.expand(
@@ -13,7 +14,7 @@ class FirstScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const Spacer(flex: 2),
-              literaLifeLogo(150),
+              literaLifeLogo(150, scheme.primary),
               const Spacer(flex: 3),
               FilledButton(
                 onPressed: () {
@@ -35,7 +36,7 @@ class FirstScreen extends StatelessWidget {
   }
 }
 
-Widget literaLifeLogo(double size) {
+Widget literaLifeLogo(double size, Color accentColor) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
@@ -44,11 +45,7 @@ Widget literaLifeLogo(double size) {
         width: size,
         child: Card(
           elevation: 4,
-          child: Icon(
-            Icons.book,
-            size: size / 2,
-            color: Colors.deepPurpleAccent,
-          ),
+          child: Icon(Icons.book, size: size / 2, color: accentColor),
         ),
       ),
       SizedBox(height: 16),

@@ -27,7 +27,7 @@ class BookmarksPage extends ConsumerWidget {
       },
       loading: () => _buildLoadingIndicatorPage(),
       error: (error, stack) {
-        return _buildErrorInfo(error, stack);
+        return _buildErrorInfo(context, error, stack);
       },
     );
   }
@@ -39,7 +39,8 @@ class BookmarksPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorInfo(Object error, StackTrace stack) {
+  Widget _buildErrorInfo(BuildContext context, Object error, StackTrace stack) {
+    final scheme = Theme.of(context).colorScheme;
     debugPrintStack(label: error.toString(), stackTrace: stack);
     return Scaffold(
       appBar: AppBar(title: const Text('Saved Books Page')),
@@ -49,18 +50,21 @@ class BookmarksPage extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.error_outline_rounded,
-                size: 64,
-                color: Colors.red,
-              ),
+              Icon(Icons.error_outline_rounded, size: 64, color: scheme.error),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Something went wrong',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: scheme.onSurface,
+                ),
               ),
               const SizedBox(height: 8),
-              const Text('Failed to load saved books. Please try again.'),
+              Text(
+                'Failed to load saved books. Please try again.',
+                style: TextStyle(color: scheme.onSurface),
+              ),
             ],
           ),
         ),
@@ -195,6 +199,7 @@ class BookmarksPage extends ConsumerWidget {
           : bookGridTile(
               book: progress.book!,
               textTheme: Theme.of(context).textTheme,
+              colorScheme: Theme.of(context).colorScheme,
               readingProgress: progress,
             ),
     );

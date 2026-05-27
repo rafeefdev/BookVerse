@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 Widget bookGridTile({
   required Book book,
   required TextTheme textTheme,
+  required ColorScheme colorScheme,
   double? aspectRatio,
   ReadingProgressModel? readingProgress,
 }) {
@@ -27,7 +28,7 @@ Widget bookGridTile({
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            _thumbnail(book),
+            _thumbnail(book, colorScheme),
             Padding(
               padding: const EdgeInsets.only(left: 6, top: 4),
               child: SizedBox(
@@ -39,7 +40,7 @@ Widget bookGridTile({
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(Icons.book, color: Colors.grey[600]),
+                        Icon(Icons.book, color: colorScheme.onSurfaceVariant),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
@@ -56,7 +57,7 @@ Widget bookGridTile({
                     ),
                     Row(
                       children: [
-                        Icon(Icons.person, color: Colors.grey[600]),
+                        Icon(Icons.person, color: colorScheme.onSurfaceVariant),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
@@ -71,7 +72,7 @@ Widget bookGridTile({
                       const SizedBox(height: 8),
                       LinearProgressIndicator(
                         value: progressValue,
-                        backgroundColor: Colors.grey[300],
+                        backgroundColor: colorScheme.surfaceContainerHighest,
                         color: textTheme.bodySmall?.color,
                       ),
                       const SizedBox(height: 4),
@@ -88,7 +89,7 @@ Widget bookGridTile({
   );
 }
 
-Widget _thumbnail(Book book) {
+Widget _thumbnail(Book book, ColorScheme colorScheme) {
   return Expanded(
     child: AspectRatio(
       aspectRatio: 3 / 4,
@@ -96,8 +97,8 @@ Widget _thumbnail(Book book) {
         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.black, width: 0.05),
-          color: Colors.grey[300],
+          border: Border.all(color: colorScheme.outlineVariant, width: 0.05),
+          color: colorScheme.surfaceContainerHighest,
         ),
         child: book.thumbnail.isNotEmpty
             ? ClipRRect(
@@ -113,8 +114,12 @@ Widget _thumbnail(Book book) {
                   },
                 ),
               )
-            : const Center(
-                child: Icon(Icons.book, size: 48, color: Colors.grey),
+            : Center(
+                child: Icon(
+                  Icons.book,
+                  size: 48,
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
       ),
     ),

@@ -12,16 +12,21 @@ class FinishedTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final books = state.finished;
+    final scheme = Theme.of(context).colorScheme;
     if (books.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.check_circle_outline, size: 64, color: Colors.grey[400]),
+            Icon(
+              Icons.check_circle_outline,
+              size: 64,
+              color: scheme.outlineVariant,
+            ),
             const SizedBox(height: 16),
             Text(
               'No finished books yet',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
             ),
           ],
         ),

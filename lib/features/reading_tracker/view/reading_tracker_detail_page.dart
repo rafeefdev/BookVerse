@@ -33,184 +33,176 @@ class ReadingTrackerDetailPage extends ConsumerWidget {
             return const Center(child: Text('Book not found or not tracked.'));
           }
           final book = progress.book!;
+          final scheme = Theme.of(context).colorScheme;
           final double progressValue = book.pageCount > 0
               ? progress.currentPage / book.pageCount
               : 0.0;
           final String progressText =
               '${progress.currentPage} / ${book.pageCount} pages';
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Book Info Card (tappable → DetailPage)
-                Card(
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    onTap: () => context.push('/detail/${book.id}'),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          book.thumbnail.isNotEmpty
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    book.thumbnail,
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Card(
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () => context.push('/detail/${book.id}'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            book.thumbnail.isNotEmpty
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(
+                                      book.thumbnail,
+                                      width: 100,
+                                      height: 150,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(Icons.book, size: 100),
+                                    ),
+                                  )
+                                : Container(
                                     width: 100,
                                     height: 150,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Icon(Icons.book, size: 100),
-                                  ),
-                                )
-                              : Container(
-                                  width: 100,
-                                  height: 150,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.book,
-                                      size: 50,
-                                      color: Colors.grey[600],
+                                    decoration: BoxDecoration(
+                                      color: scheme.surfaceContainerHighest,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.book,
+                                        size: 50,
+                                        color: scheme.onSurfaceVariant,
+                                      ),
                                     ),
                                   ),
-                                ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  book.title,
-                                  style: context.textTheme.headlineSmall,
-                                ),
-                                Text(
-                                  bookAuthors(book),
-                                  style: context.textTheme.titleSmall,
-                                ),
-                                Text(
-                                  book.publisher,
-                                  style: context.textTheme.bodyMedium,
-                                ),
-                                Text(
-                                  'Total Pages: ${book.pageCount}',
-                                  style: context.textTheme.bodyMedium,
-                                ),
-                              ],
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    book.title,
+                                    style: context.textTheme.headlineSmall,
+                                  ),
+                                  Text(
+                                    bookAuthors(book),
+                                    style: context.textTheme.titleSmall,
+                                  ),
+                                  Text(
+                                    book.publisher,
+                                    style: context.textTheme.bodyMedium,
+                                  ),
+                                  Text(
+                                    'Total Pages: ${book.pageCount}',
+                                    style: context.textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.chevron_right,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                          ),
-                        ],
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.chevron_right,
+                              color: scheme.onSurfaceVariant,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
-
-                // Reading Progress
-                Text('Current Progress', style: context.textTheme.titleLarge),
-                const SizedBox(height: 8),
-                LinearProgressIndicator(
-                  value: progressValue,
-                  backgroundColor: Colors.grey[300],
-                  color: context.colorScheme.primary,
-                  minHeight: 10,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(progressText, style: context.textTheme.bodyLarge),
-                    Text(
-                      '${(progressValue * 100).toStringAsFixed(1)}%',
-                      style: context.textTheme.bodyLarge,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Total Reading Time
-                Text(
-                  'Total Time Spent Reading',
-                  style: context.textTheme.titleLarge,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _formatDuration(progress.totalReadingTimeInSeconds),
-                  style: context.textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 24),
-
-                // Start Session Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      context.push('/record-session/${book.id}');
-                    },
-                    icon: const Icon(Icons.timer),
-                    label: const Text('Record New Session'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                  const SizedBox(height: 24),
+                  Text('Current Progress', style: context.textTheme.titleLarge),
+                  const SizedBox(height: 8),
+                  LinearProgressIndicator(
+                    value: progressValue,
+                    backgroundColor: scheme.surfaceContainerHighest,
+                    color: scheme.primary,
+                    minHeight: 10,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(progressText, style: context.textTheme.bodyLarge),
+                      Text(
+                        '${(progressValue * 100).toStringAsFixed(1)}%',
+                        style: context.textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Total Time Spent Reading',
+                    style: context.textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _formatDuration(progress.totalReadingTimeInSeconds),
+                    style: context.textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        context.push('/record-session/${book.id}');
+                      },
+                      icon: const Icon(Icons.timer),
+                      label: const Text('Record New Session'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
-
-                // Reading Sessions History
-                Text(
-                  'Reading Sessions History',
-                  style: context.textTheme.titleLarge,
-                ),
-                const SizedBox(height: 16),
-                readingSessionsAsync.when(
-                  data: (sessions) {
-                    if (sessions.isEmpty) {
-                      return const Center(
-                        child: Text('No reading sessions recorded yet.'),
-                      );
-                    }
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: sessions.length,
-                      itemBuilder: (context, index) {
-                        final session = sessions[index];
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: ListTile(
-                            leading: const Icon(Icons.history_toggle_off),
-                            title: Text(
-                              'Session ${sessions.length - index} - Page ${session.endPage}',
-                            ),
-                            subtitle: Text(
-                              '${_formatDuration(session.durationInSeconds)} - ${DateFormat('MMM dd, yyyy HH:mm').format(session.timestamp)}',
-                            ),
-                          ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Reading Sessions History',
+                    style: context.textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 16),
+                  readingSessionsAsync.when(
+                    data: (sessions) {
+                      if (sessions.isEmpty) {
+                        return const Center(
+                          child: Text('No reading sessions recorded yet.'),
                         );
-                      },
-                    );
-                  },
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (error, stack) =>
-                      Center(child: Text('Error loading sessions: $error')),
-                ),
-              ],
+                      }
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: sessions.length,
+                        itemBuilder: (context, index) {
+                          final session = sessions[index];
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: ListTile(
+                              leading: const Icon(Icons.history_toggle_off),
+                              title: Text(
+                                'Session ${sessions.length - index} - Page ${session.endPage}',
+                              ),
+                              subtitle: Text(
+                                '${_formatDuration(session.durationInSeconds)} - ${DateFormat('MMM dd, yyyy HH:mm').format(session.timestamp)}',
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (error, stack) =>
+                        Center(child: Text('Error loading sessions: $error')),
+                  ),
+                ],
+              ),
             ),
           );
         },

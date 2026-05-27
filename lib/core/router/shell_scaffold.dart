@@ -19,29 +19,30 @@ class ShellScaffold extends StatelessWidget {
         actions: [
           IconButton.filledTonal(
             onPressed: () {
-              // Navigate to settings page
               context.push('/settings');
             },
             icon: const Icon(Icons.settings),
           ),
         ],
       ),
-      body: navigationShell,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: (index) {
-          navigationShell.goBranch(
-            index,
-            initialLocation: index == navigationShell.currentIndex,
-          );
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_books),
-            label: 'My Library',
-          ),
-        ],
+      body: SafeArea(child: navigationShell),
+      bottomNavigationBar: SafeArea(
+        child: BottomNavigationBar(
+          currentIndex: navigationShell.currentIndex,
+          onTap: (index) {
+            navigationShell.goBranch(
+              index,
+              initialLocation: index == navigationShell.currentIndex,
+            );
+          },
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.library_books),
+              label: 'My Library',
+            ),
+          ],
+        ),
       ),
     );
   }

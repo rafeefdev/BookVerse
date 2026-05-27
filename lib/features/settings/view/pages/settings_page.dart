@@ -13,47 +13,49 @@ class SettingsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings Page')),
-      body: Column(
-        children: [
-          ListTile(
-            title: const Text('App Theme'),
-            subtitle: const Text('Change app theme'),
-            leading: CircleAvatar(child: Icon(Icons.format_paint_rounded)),
-            trailing: DropdownButtonHideUnderline(
-              child: DropdownButton<ThemeMode>(
-                value: themeMode,
-                elevation: 2,
-                style: context.textTheme.bodyMedium,
-                items: [
-                  customDropdownMenuItem(
-                    value: ThemeMode.dark,
-                    onTap: () {},
-                    icon: Icons.dark_mode_rounded,
-                    label: 'dark',
-                  ),
-                  customDropdownMenuItem(
-                    value: ThemeMode.light,
-                    onTap: () {},
-                    icon: Icons.light_mode_rounded,
-                    label: 'light',
-                  ),
-                  customDropdownMenuItem(
-                    value: ThemeMode.system,
-                    onTap: () {},
-                    icon: Icons.system_security_update_good_rounded,
-                    label: 'system',
-                  ),
-                ],
-                onChanged: (value) async {
-                  if (value == null) return;
-                  await ref
-                      .read(thememodeProviderProvider.notifier)
-                      .changeTheme(value);
-                },
+      body: SafeArea(
+        child: Column(
+          children: [
+            ListTile(
+              title: const Text('App Theme'),
+              subtitle: const Text('Change app theme'),
+              leading: CircleAvatar(child: Icon(Icons.format_paint_rounded)),
+              trailing: DropdownButtonHideUnderline(
+                child: DropdownButton<ThemeMode>(
+                  value: themeMode,
+                  elevation: 2,
+                  style: context.textTheme.bodyMedium,
+                  items: [
+                    customDropdownMenuItem(
+                      value: ThemeMode.dark,
+                      onTap: () {},
+                      icon: Icons.dark_mode_rounded,
+                      label: 'dark',
+                    ),
+                    customDropdownMenuItem(
+                      value: ThemeMode.light,
+                      onTap: () {},
+                      icon: Icons.light_mode_rounded,
+                      label: 'light',
+                    ),
+                    customDropdownMenuItem(
+                      value: ThemeMode.system,
+                      onTap: () {},
+                      icon: Icons.system_security_update_good_rounded,
+                      label: 'system',
+                    ),
+                  ],
+                  onChanged: (value) async {
+                    if (value == null) return;
+                    await ref
+                        .read(thememodeProviderProvider.notifier)
+                        .changeTheme(value);
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

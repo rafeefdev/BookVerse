@@ -17,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-// Extension to provide firstWhereOrNull functionality
 extension IterableExtension<T> on Iterable<T> {
   T? firstWhereOrNull(bool Function(T element) test) {
     for (var element in this) {
@@ -45,7 +44,6 @@ class DetailPage extends ConsumerWidget {
     final bookmarkedItems = ref.watch(bookmarkNotifierProvider);
 
     if (isTemporarySource) {
-      // For temporary source, we don't have reading progress, just display book details
       return _buildDetailPage(
         context,
         books: searchBookResult,
@@ -53,7 +51,6 @@ class DetailPage extends ConsumerWidget {
         ref: ref,
       );
     } else {
-      // For bookmarked items, we have reading progress
       return bookmarkedItems.when(
         data: (bookProgressList) {
           final ReadingProgressModel? progress = bookProgressList
@@ -95,17 +92,17 @@ class DetailPage extends ConsumerWidget {
 
   Widget _buildDetailPage(
     BuildContext context, {
-    List<Book>? books, // Only used for isTemporarySource
-    Book? book, // Directly passed for non-temporary sources
+    List<Book>? books,
+    Book? book,
     required String selectedBookId,
     required WidgetRef ref,
-    ReadingProgressModel? readingProgress, // Passed for non-temporary sources
+    ReadingProgressModel? readingProgress,
   }) {
+    final scheme = context.colorScheme;
     Book selectedBook;
     if (book != null) {
       selectedBook = book;
     } else {
-      // Logic for isTemporarySource
       if (books == null) {
         return Scaffold(
           appBar: AppBar(title: const Text('Detail')),
@@ -135,130 +132,135 @@ class DetailPage extends ConsumerWidget {
           const SizedBox(width: 12),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(
-          left: 28,
-          right: 28,
-          top: 12,
-          bottom: 28,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: SizedBox(width: 216, child: bookThumbnail(selectedBook)),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.start,
-              verticalDirection: VerticalDirection.down,
-              runSpacing: 8,
-              children: [
-                Text(
-                  bookTitle(selectedBook.title, 60),
-                  softWrap: true,
-                  style: context.textTheme.titleLarge,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(
+            left: 28,
+            right: 28,
+            top: 12,
+            bottom: 28,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: 216,
+                  child: bookThumbnail(selectedBook, scheme),
                 ),
-                Text(
-                  (selectedBook.subTitle != null &&
-                          selectedBook.subTitle!.isNotEmpty)
-                      ? selectedBook.subTitle!
-                      : 'Description is not available',
-                  style: context.textTheme.titleSmall,
-                ),
-                iconWithTextHorizontal(
-                  context,
-                  selectedBook,
-                  icon: Icons.person_2,
-                  text: bookAuthors(selectedBook),
-                ),
-                iconWithTextHorizontal(
-                  context,
-                  selectedBook,
-                  icon: Icons.file_copy_rounded,
-                  text: bookCategories(selectedBook),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                bookDetailInfoTile(
-                  context,
-                  title: 'Published Date',
-                  data: bookPublishDate(selectedBook.publishedDate),
-                  icon: Icons.calendar_month_rounded,
-                ),
-                bookDetailInfoTile(
-                  context,
-                  title: 'Page Count',
-                  data: selectedBook.pageCount.toString(),
-                  icon: Icons.menu_book_rounded,
-                ),
-                bookDetailInfoTile(
-                  context,
-                  data: selectedBook.publisher,
-                  icon: Icons.print_rounded,
-                  dataMaxLines: 1,
-                  title: 'Publisher',
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            if (readingProgress != null && !isTemporarySource) ...[
-              Text(
-                'Your Reading Progress',
-                style: context.textTheme.titleLarge,
               ),
-              const SizedBox(height: 8),
-              LinearProgressIndicator(
-                value: selectedBook.pageCount > 0
-                    ? readingProgress.currentPage / selectedBook.pageCount
-                    : 0.0,
-                backgroundColor: Colors.grey[300],
-                color: context.colorScheme.primary,
-                minHeight: 10,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              const SizedBox(height: 12),
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.start,
+                verticalDirection: VerticalDirection.down,
+                runSpacing: 8,
                 children: [
                   Text(
-                    '${readingProgress.currentPage} / ${selectedBook.pageCount} pages',
-                    style: context.textTheme.bodyLarge,
+                    bookTitle(selectedBook.title, 60),
+                    softWrap: true,
+                    style: context.textTheme.titleLarge,
                   ),
                   Text(
-                    '${((selectedBook.pageCount > 0 ? readingProgress.currentPage / selectedBook.pageCount : 0.0) * 100).toStringAsFixed(1)}%',
-                    style: context.textTheme.bodyLarge,
+                    (selectedBook.subTitle != null &&
+                            selectedBook.subTitle!.isNotEmpty)
+                        ? selectedBook.subTitle!
+                        : 'Description is not available',
+                    style: context.textTheme.titleSmall,
+                  ),
+                  iconWithTextHorizontal(
+                    context,
+                    selectedBook,
+                    icon: Icons.person_2,
+                    text: bookAuthors(selectedBook),
+                  ),
+                  iconWithTextHorizontal(
+                    context,
+                    selectedBook,
+                    icon: Icons.file_copy_rounded,
+                    text: bookCategories(selectedBook),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    context.push('/record-session/${selectedBook.id}');
-                  },
-                  icon: const Icon(Icons.timer),
-                  label: const Text('Record New Session'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  bookDetailInfoTile(
+                    context,
+                    title: 'Published Date',
+                    data: bookPublishDate(selectedBook.publishedDate),
+                    icon: Icons.calendar_month_rounded,
                   ),
-                ),
+                  bookDetailInfoTile(
+                    context,
+                    title: 'Page Count',
+                    data: selectedBook.pageCount.toString(),
+                    icon: Icons.menu_book_rounded,
+                  ),
+                  bookDetailInfoTile(
+                    context,
+                    data: selectedBook.publisher,
+                    icon: Icons.print_rounded,
+                    dataMaxLines: 1,
+                    title: 'Publisher',
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
+              if (readingProgress != null && !isTemporarySource) ...[
+                Text(
+                  'Your Reading Progress',
+                  style: context.textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                LinearProgressIndicator(
+                  value: selectedBook.pageCount > 0
+                      ? readingProgress.currentPage / selectedBook.pageCount
+                      : 0.0,
+                  backgroundColor: scheme.surfaceContainerHighest,
+                  color: scheme.primary,
+                  minHeight: 10,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${readingProgress.currentPage} / ${selectedBook.pageCount} pages',
+                      style: context.textTheme.bodyLarge,
+                    ),
+                    Text(
+                      '${((selectedBook.pageCount > 0 ? readingProgress.currentPage / selectedBook.pageCount : 0.0) * 100).toStringAsFixed(1)}%',
+                      style: context.textTheme.bodyLarge,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      context.push('/record-session/${selectedBook.id}');
+                    },
+                    icon: const Icon(Icons.timer),
+                    label: const Text('Record New Session'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+              Text(
+                selectedBook.description,
+                style: context.textTheme.bodyMedium,
+                textAlign: TextAlign.justify,
+              ),
             ],
-            Text(
-              selectedBook.description,
-              style: context.textTheme.bodyMedium,
-              textAlign: TextAlign.justify,
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -449,15 +451,18 @@ class LibraryActionButton extends ConsumerWidget {
   }
 }
 
-Widget bookThumbnail(Book selectedBook) {
+Widget bookThumbnail(Book selectedBook, ColorScheme colorScheme) {
   return selectedBook.thumbnail.isEmpty
       ? AspectRatio(
           aspectRatio: 3 / 4,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.black, width: 0.05),
+              border: Border.all(
+                color: colorScheme.outlineVariant,
+                width: 0.05,
+              ),
             ),
             child: const Icon(Icons.print, size: 35),
           ),
@@ -467,7 +472,7 @@ Widget bookThumbnail(Book selectedBook) {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(20)),
-              border: Border.all(color: Colors.black, width: 0.2),
+              border: Border.all(color: colorScheme.outlineVariant, width: 0.2),
               image: DecorationImage(
                 fit: BoxFit.cover,
                 image: NetworkImage(selectedBook.thumbnail),

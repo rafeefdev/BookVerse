@@ -10,10 +10,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/services.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+    ),
+  );
 
   try {
     await dotenv.load();
@@ -50,6 +58,22 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ThemeMode appThemeMode =
         ref.watch(thememodeProviderProvider).value ?? ThemeMode.system;
+
+    if (appThemeMode != ThemeMode.system) {
+      final isDark = appThemeMode == ThemeMode.dark;
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarDividerColor: Colors.transparent,
+          statusBarBrightness: isDark ? Brightness.light : Brightness.dark,
+          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+          systemNavigationBarIconBrightness: isDark
+              ? Brightness.light
+              : Brightness.dark,
+        ),
+      );
+    }
+
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(

@@ -37,7 +37,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(searchNotifierProvider);
-    bool isDarkMode = context.theme.brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -48,7 +47,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: isDarkMode ? Colors.grey[800] : Colors.grey.shade200,
+                color: context.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(30),
               ),
               child: TextField(
@@ -60,7 +59,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             ),
           ),
         ),
-        backgroundColor: isDarkMode ? Colors.grey[600] : Colors.grey.shade200,
+        backgroundColor: context.colorScheme.surfaceContainerHighest,
         elevation: 0,
       ),
       body: _buildBody(searchState),
@@ -79,12 +78,16 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              Icon(
+                Icons.error_outline,
+                size: 48,
+                color: context.colorScheme.error,
+              ),
               const SizedBox(height: 16),
               Text(
                 searchState.error!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.red),
+                style: TextStyle(color: context.colorScheme.error),
               ),
             ],
           ),

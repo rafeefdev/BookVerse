@@ -12,16 +12,21 @@ class CurrentlyReadingTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final books = state.currentlyReading;
+    final scheme = Theme.of(context).colorScheme;
     if (books.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.menu_book_outlined, size: 64, color: Colors.grey[400]),
+            Icon(
+              Icons.menu_book_outlined,
+              size: 64,
+              color: scheme.outlineVariant,
+            ),
             const SizedBox(height: 16),
             Text(
               'No books being read',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
             ),
           ],
         ),
