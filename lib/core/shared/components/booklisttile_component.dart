@@ -18,7 +18,10 @@ Widget bookListTile(
 
   if (readingProgress != null && book.pageCount > 0) {
     progressValue = readingProgress.currentPage / book.pageCount;
-    progressText = '${readingProgress.currentPage} / ${book.pageCount} pages';
+    final percent = ((readingProgress.currentPage / book.pageCount) * 100)
+        .round();
+    progressText =
+        '${readingProgress.currentPage}/${book.pageCount} hlm  $percent%';
   }
 
   Widget listTileContent = Column(

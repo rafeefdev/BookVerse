@@ -1,0 +1,320 @@
+import 'package:book_verse/core/shared/components/booklisttile_component.dart';
+import 'package:book_verse/core/shared/themes_extension.dart';
+import 'package:book_verse/features/dashboard/model/dashboard_state.dart';
+import 'package:book_verse/features/dashboard/viewmodel/dashboard_viewmodel.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+class DashboardPage extends ConsumerStatefulWidget {
+  const DashboardPage({super.key});
+
+  @override
+  ConsumerState<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends ConsumerState<DashboardPage> {
+  bool _showPages = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final dashboardAsync = ref.watch(dashboardProvider);
+    final textTheme = context.textTheme;
+    final colorScheme = context.colorScheme;
+
+    return Scaffold(
+      body: SafeArea(
+        child: dashboardAsync.when(
+          data: (state) => _buildContent(state, textTheme, colorScheme),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('Error: $e')),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(
+    DashboardState state,
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+  ) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildTodaySummary(state, textTheme, colorScheme),
+          const SizedBox(height: 16),
+          _buildWeeklyChart(state, textTheme, colorScheme),
+          const SizedBox(height: 16),
+          _buildCurrentlyReading(state, textTheme, colorScheme),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTodaySummary(
+    DashboardState state,
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Today's Summary", style: textTheme.titleMedium),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _statCard(
+                Icons.timer_outlined,
+                '${state.todayMinutes}',
+                'menit',
+                colorScheme,
+                textTheme,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _statCard(
+                Icons.menu_book,
+                '${state.todayPages}',
+                'halaman',
+                colorScheme,
+                textTheme,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          _comparisonText(state.todayMinutes, state.yesterdayMinutes),
+          style: textTheme.bodySmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _statCard(
+    IconData icon,
+    String value,
+    String unit,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Column(
+          children: [
+            Icon(icon, color: colorScheme.onSurfaceVariant),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              unit,
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _comparisonText(int todayMin, int yesterdayMin) {
+    if (todayMin == 0 && yesterdayMin == 0) {
+      return 'Belum ada aktivitas membaca';
+    }
+    if (todayMin == 0 && yesterdayMin > 0) {
+      return 'Belum membaca hari ini';
+    }
+    if (todayMin > 0 && yesterdayMin == 0) {
+      return 'Mulai membaca hari ini! (+$todayMin menit)';
+    }
+    if (todayMin == yesterdayMin) {
+      return 'Sama seperti kemarin ($yesterdayMin menit)';
+    }
+    if (todayMin > yesterdayMin) {
+      final pct = (((todayMin - yesterdayMin) / yesterdayMin) * 100).round();
+      return '↑ $pct% lebih banyak dari kemarin';
+    }
+    final pct = (((yesterdayMin - todayMin) / yesterdayMin) * 100).round();
+    return '↓ $pct% lebih sedikit dari kemarin';
+  }
+
+  Widget _buildWeeklyChart(
+    DashboardState state,
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+  ) {
+    final values = state.weeklyReading
+        .map((d) => _showPages ? d.pages : d.minutes)
+        .toList();
+    final maxVal = values.fold<int>(0, (max, v) => v > max ? v : max);
+    const chartHeight = 120.0;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Weekly Progress', style: textTheme.titleMedium),
+                SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(value: false, label: Text('Durasi')),
+                    ButtonSegment(value: true, label: Text('Halaman')),
+                  ],
+                  selected: {_showPages},
+                  onSelectionChanged: (selected) {
+                    setState(() => _showPages = selected.first);
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: chartHeight + 40,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: List.generate(state.weeklyReading.length, (i) {
+                  final day = state.weeklyReading[i];
+                  final val = values[i];
+                  final barHeight = maxVal > 0
+                      ? (val / maxVal) * chartHeight
+                      : 0.0;
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (val > 0)
+                            Text(
+                              '$val',
+                              style: textTheme.labelSmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          const SizedBox(height: 4),
+                          Container(
+                            height: barHeight.clamp(4.0, chartHeight),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: day.isToday
+                                  ? colorScheme.primary
+                                  : colorScheme.primaryContainer,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            day.label,
+                            style: textTheme.labelSmall?.copyWith(
+                              fontWeight: day.isToday ? FontWeight.bold : null,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+            if (state.streak > 0) ...[
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Icon(
+                    Icons.local_fire_department,
+                    color: colorScheme.error,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${state.streak} hari berturut-turut',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurrentlyReading(
+    DashboardState state,
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+  ) {
+    if (state.currentlyReading.isEmpty) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Currently Reading', style: textTheme.titleMedium),
+              const SizedBox(height: 16),
+              Center(
+                child: Text(
+                  'Belum ada buku yang sedang dibaca',
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Currently Reading', style: textTheme.titleMedium),
+            TextButton(
+              onPressed: () => context.go('/library'),
+              child: const Text('Lihat Semua'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        ...state.currentlyReading.map((progress) {
+          final book = progress.book!;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: bookListTile(
+              context,
+              book,
+              readingProgress: progress,
+              isWrappedByCard: true,
+              onTap: () => context.push('/tracked-book-detail/${book.id}'),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+}
