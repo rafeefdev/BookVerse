@@ -68,14 +68,10 @@ class LibraryNotifier extends _$LibraryNotifier {
   }
 
   Future<void> deleteFolder(String folderId) async {
-    try {
-      final repo = ref.read(libraryRepoProvider);
-      await repo.deleteFolder(folderId);
-      ref.invalidateSelf();
-      await future;
-    } catch (e, stack) {
-      log('deleteFolder error: $e\n$stack');
-    }
+    final repo = ref.read(libraryRepoProvider);
+    await repo.deleteFolder(folderId);
+    ref.invalidateSelf();
+    await future;
   }
 
   Future<void> addBookToFolder(String folderId, String bookId) async {
