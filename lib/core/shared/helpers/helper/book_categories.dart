@@ -1,14 +1,10 @@
 import 'package:book_verse/core/models/book_model.dart';
 
 String bookCategories(Book selectedBook) {
-  List? bookCategories = selectedBook.categories;
-  String result = 'Unknown Category';
-
-  if (bookCategories!.length == 1) {
-    result = bookCategories[0];
-    return result;
-  } else if (bookCategories.length > 1) {
-    result = '${selectedBook.categories!.join(', ')}, etc';
+  final bookCategories = selectedBook.categories;
+  if (bookCategories == null || bookCategories.isEmpty) {
+    return 'Unknown Category';
   }
-  return result;
+  if (bookCategories.length == 1) return bookCategories[0];
+  return '${bookCategories.join(', ')}, etc';
 }

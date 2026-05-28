@@ -17,23 +17,14 @@ class BookmarkRepo {
 
       final List<Book> books = booksMap.map((b) => Book.fromJson(b)).toList();
 
-      return progressMap.map((progress) {
-        final book = books.firstWhere(
-          (b) => b.id == progress.bookId,
-          orElse: () => Book(
-            id: progress.bookId,
-            title: 'Unknown Book',
-            authors: [],
-            description: '',
-            thumbnail: '',
-            publishedDate: '',
-            pageCount: 0,
-            publisher: '',
-            subTitle: '',
-          ),
-        );
-        return progress.copyWith(book: book);
-      }).toList();
+      final bookIds = books.map((b) => b.id).toSet();
+      return progressMap
+          .where((progress) => bookIds.contains(progress.bookId))
+          .map((progress) {
+            final book = books.firstWhere((b) => b.id == progress.bookId);
+            return progress.copyWith(book: book);
+          })
+          .toList();
     } catch (e, stack) {
       log('getReadingProgressWithBooks error: $e\n$stack');
       return [];
