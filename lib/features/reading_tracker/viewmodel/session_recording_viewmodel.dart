@@ -87,7 +87,7 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     _stopWatchTimer.onResetTimer();
   }
 
-  Future<bool> saveSession(int endPage) async {
+  Future<bool> saveSession(int endPage, {int? userPageCount}) async {
     if (_hasError || !_isInitialized || _initialProgress == null) {
       return false;
     }
@@ -100,6 +100,7 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
           .updateReadingProgress(
             endPage,
             durationInSeconds: totalElapsedSeconds,
+            userPageCount: userPageCount,
           );
 
       final session = ReadingSessionModel(

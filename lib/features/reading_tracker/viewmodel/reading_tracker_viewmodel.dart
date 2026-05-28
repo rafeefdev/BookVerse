@@ -40,6 +40,7 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
   Future<void> updateReadingProgress(
     int newCurrentPage, {
     int? durationInSeconds,
+    int? userPageCount,
   }) async {
     try {
       final currentState = state.value;
@@ -52,6 +53,7 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
         currentPage: newCurrentPage,
         totalReadingTimeInSeconds: updatedTotalReadingTime,
         lastRead: DateTime.now(),
+        userPageCount: userPageCount,
       );
 
       await _sqfliteService.saveReadingProgress(updatedProgress);

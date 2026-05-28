@@ -7,6 +7,7 @@ import 'package:book_verse/features/reading_tracker/model/reading_progress_model
 import 'package:book_verse/features/reading_tracker/viewmodel/session_recording_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class SessionRecordingPage extends ConsumerStatefulWidget {
@@ -20,7 +21,6 @@ class SessionRecordingPage extends ConsumerStatefulWidget {
 
 class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
   final TextEditingController _pageController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -60,98 +60,304 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
-  Future<void> _showSaveSessionDialog(
+  Future<void> _showSaveBottomSheet(
     BuildContext context,
     int previousCurrentPage,
     int totalPages,
   ) async {
-    return showDialog<void>(
+    int adjustedTotal = totalPages;
+    bool isExpanded = false;
+    bool pagesAdjusted = false;
+    final totalPagesController = TextEditingController(
+      text: totalPages.toString(),
+    );
+    final sheetFormKey = GlobalKey<FormState>();
+
+    await showModalBottomSheet<void>(
       context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Finish Reading Session'),
-          content: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: ListBody(
-                children: <Widget>[
-                  Text(
-                    'Your previous progress: $previousCurrentPage / $totalPages pages',
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _pageController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Last page read in this session',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a page number';
-                      }
-                      final page = int.tryParse(value);
-                      if (page == null) {
-                        return 'Please enter a valid number';
-                      }
-                      if (page < 1 || page > totalPages) {
-                        return 'Page must be between 1 and $totalPages';
-                      }
-                      if (page < previousCurrentPage) {
-                        return 'Page cannot be less than previous progress ($previousCurrentPage)';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (sheetInnerContext, setSheetState) {
+            final effectiveTotal = pagesAdjusted ? adjustedTotal : totalPages;
+
+            String? pageValidator(String? value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a page number';
+              }
+              final page = int.tryParse(value);
+              if (page == null) return 'Please enter a valid number';
+              if (page < 1 || page > effectiveTotal) {
+                return 'Page must be between 1 and $effectiveTotal';
+              }
+              if (page < previousCurrentPage) {
+                return 'Page cannot be less than previous progress ($previousCurrentPage)';
+              }
+              return null;
+            }
+
+            final pageText = _pageController.text;
+            final pageVal = int.tryParse(pageText);
+            final showEditionError = pageVal != null && pageVal > totalPages;
+
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 12,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24,
               ),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-            FilledButton(
-              child: const Text('Save Session'),
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  final lastPage = int.parse(_pageController.text);
-                  final navigator = Navigator.of(dialogContext);
-                  final rootNavigator = Navigator.of(context);
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
-
-                  final sessionNotifier = ref.read(
-                    sessionRecordingNotifierProvider.notifier,
-                  );
-                  final success = await sessionNotifier.saveSession(lastPage);
-
-                  if (success) {
-                    ref.invalidate(bookmarkNotifierProvider);
-                    ref.invalidate(libraryNotifierProvider);
-                    navigator.pop();
-                    rootNavigator.pop();
-                  } else {
-                    scaffoldMessenger.showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          sessionNotifier.errorMessage ??
-                              'Failed to save session',
+              child: Form(
+                key: sheetFormKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
                         ),
-                        backgroundColor: Theme.of(context).colorScheme.error,
                       ),
-                    );
-                  }
-                }
-              },
-            ),
-          ],
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Finish Reading Session',
+                      style: context.textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Your progress: $previousCurrentPage / $effectiveTotal pages',
+                      style: context.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _pageController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Last page read in this session',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: pageValidator,
+                    ),
+                    if (showEditionError) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        'Page exceeds edition length',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 4),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        onPressed: () => setSheetState(() {
+                          if (!isExpanded) {
+                            totalPagesController.text = adjustedTotal
+                                .toString();
+                          }
+                          isExpanded = !isExpanded;
+                        }),
+                        icon: AnimatedRotation(
+                          turns: isExpanded ? 0.5 : 0,
+                          duration: const Duration(milliseconds: 200),
+                          child: const Icon(Icons.expand_more, size: 20),
+                        ),
+                        label: Text(
+                          isExpanded
+                              ? 'Hide edition settings'
+                              : 'Adjust page count',
+                        ),
+                      ),
+                    ),
+                    if (pagesAdjusted) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            size: 16,
+                            color: Colors.green[600],
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Edition adjusted to $adjustedTotal pages',
+                            style: TextStyle(
+                              color: Colors.green[600],
+                              fontSize: 13,
+                            ),
+                          ),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () => setSheetState(() {
+                              pagesAdjusted = false;
+                              adjustedTotal = totalPages;
+                              totalPagesController.text = totalPages.toString();
+                            }),
+                            child: Text(
+                              'Revert',
+                              style: TextStyle(
+                                color: context.textTheme.bodySmall?.color,
+                                fontSize: 13,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      alignment: Alignment.topCenter,
+                      child: isExpanded
+                          ? Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Divider(),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Edition Settings',
+                                    style: context.textTheme.titleSmall,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Adjust for your copy',
+                                    style: TextStyle(
+                                      color: context.textTheme.bodySmall?.color,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  TextFormField(
+                                    controller: totalPagesController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                      labelText: 'Total pages',
+                                      border: const OutlineInputBorder(),
+                                      suffixText: 'pages',
+                                      suffixStyle: TextStyle(
+                                        color:
+                                            context.textTheme.bodySmall?.color,
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Enter total pages';
+                                      }
+                                      final p = int.tryParse(value);
+                                      if (p == null || p < 1) {
+                                        return 'Enter a valid number';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Reference: $totalPages (Google Books)',
+                                    style: TextStyle(
+                                      color: context.textTheme.bodySmall?.color,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: FilledButton.tonal(
+                                      onPressed: () {
+                                        if (totalPagesController
+                                            .text
+                                            .isNotEmpty) {
+                                          final newTotal = int.tryParse(
+                                            totalPagesController.text,
+                                          );
+                                          if (newTotal != null &&
+                                              newTotal > 0) {
+                                            setSheetState(() {
+                                              adjustedTotal = newTotal;
+                                              pagesAdjusted = true;
+                                              isExpanded = false;
+                                            });
+                                          }
+                                        }
+                                      },
+                                      child: const Text('Save Changes'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.of(sheetContext).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                        const Spacer(),
+                        FilledButton(
+                          onPressed: () async {
+                            if (sheetFormKey.currentState!.validate()) {
+                              final lastPage = int.parse(_pageController.text);
+                              final notifier = ref.read(
+                                sessionRecordingNotifierProvider.notifier,
+                              );
+                              final success = await notifier.saveSession(
+                                lastPage,
+                                userPageCount: pagesAdjusted
+                                    ? adjustedTotal
+                                    : null,
+                              );
+                              if (!sheetContext.mounted) return;
+                              if (success) {
+                                ref.invalidate(bookmarkNotifierProvider);
+                                ref.invalidate(libraryNotifierProvider);
+                                Navigator.of(sheetContext).pop();
+                                if (context.mounted) {
+                                  context.pop();
+                                }
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      notifier.errorMessage ??
+                                          'Failed to save session',
+                                    ),
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.error,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          child: const Text('Save Session'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
-    );
+    ).whenComplete(() {
+      totalPagesController.dispose();
+    });
   }
 
   @override
@@ -330,11 +536,16 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage> {
                   child: FilledButton.icon(
                     onPressed: () {
                       sessionNotifier.pauseTimer();
+                      final effectiveTotal = readingProgress.effectivePageCount;
+                      if (_pageController.text.isEmpty) {
+                        _pageController.text = readingProgress.currentPage
+                            .toString();
+                      }
                       setState(() {});
-                      _showSaveSessionDialog(
+                      _showSaveBottomSheet(
                         context,
                         readingProgress.currentPage,
-                        book.pageCount,
+                        effectiveTotal,
                       );
                     },
                     icon: const Icon(Icons.check),
