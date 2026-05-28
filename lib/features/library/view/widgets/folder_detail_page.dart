@@ -44,28 +44,39 @@ class FolderDetailPage extends ConsumerWidget {
                   } else if (value == 'delete') {
                     final confirm = await showDialog<bool>(
                       context: context,
-                      builder: (_) => AlertDialog(
+                      builder: (dialogContext) => AlertDialog(
                         title: const Text('Delete Folder'),
                         content: Text(
                           'Delete "${folder.name}"? Books inside will not be deleted.',
                         ),
                         actions: [
                           TextButton(
-                            onPressed: () => Navigator.pop(context, false),
+                            onPressed: () =>
+                                Navigator.pop(dialogContext, false),
                             child: const Text('Cancel'),
                           ),
                           FilledButton(
-                            onPressed: () => Navigator.pop(context, true),
+                            onPressed: () => Navigator.pop(dialogContext, true),
                             child: const Text('Delete'),
                           ),
                         ],
                       ),
                     );
                     if (confirm == true) {
-                      ref
-                          .read(libraryNotifierProvider.notifier)
-                          .deleteFolder(folderId);
-                      if (context.mounted) context.pop();
+                      try {
+                        await ref
+                            .read(libraryNotifierProvider.notifier)
+                            .deleteFolder(folderId);
+                        if (context.mounted) context.pop();
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to delete folder: $e'),
+                            ),
+                          );
+                        }
+                      }
                     }
                   }
                 },
