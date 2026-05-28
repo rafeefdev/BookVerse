@@ -6,6 +6,7 @@ class ReadingProgressModel {
   final int totalReadingTimeInSeconds;
   final DateTime? lastRead;
   final Book? book;
+  final int? userPageCount;
 
   const ReadingProgressModel({
     required this.bookId,
@@ -13,7 +14,10 @@ class ReadingProgressModel {
     this.totalReadingTimeInSeconds = 0,
     this.lastRead,
     this.book,
+    this.userPageCount,
   });
+
+  int get effectivePageCount => userPageCount ?? book?.pageCount ?? 0;
 
   ReadingProgressModel copyWith({
     String? bookId,
@@ -21,6 +25,7 @@ class ReadingProgressModel {
     int? totalReadingTimeInSeconds,
     DateTime? lastRead,
     Book? book,
+    int? userPageCount,
   }) {
     return ReadingProgressModel(
       bookId: bookId ?? this.bookId,
@@ -29,6 +34,7 @@ class ReadingProgressModel {
           totalReadingTimeInSeconds ?? this.totalReadingTimeInSeconds,
       lastRead: lastRead ?? this.lastRead,
       book: book ?? this.book,
+      userPageCount: userPageCount ?? this.userPageCount,
     );
   }
 
@@ -41,6 +47,7 @@ class ReadingProgressModel {
       lastRead: json['lastRead'] != null
           ? DateTime.tryParse(json['lastRead'] as String)
           : null,
+      userPageCount: json['userPageCount'] as int?,
     );
   }
 
@@ -50,6 +57,7 @@ class ReadingProgressModel {
       'currentPage': currentPage,
       'totalReadingTimeInSeconds': totalReadingTimeInSeconds,
       'lastRead': lastRead?.toIso8601String(),
+      if (userPageCount != null) 'userPageCount': userPageCount,
     };
   }
 
@@ -61,7 +69,8 @@ class ReadingProgressModel {
         other.currentPage == currentPage &&
         other.totalReadingTimeInSeconds == totalReadingTimeInSeconds &&
         other.lastRead == lastRead &&
-        other.book == book;
+        other.book == book &&
+        other.userPageCount == userPageCount;
   }
 
   @override
@@ -72,11 +81,12 @@ class ReadingProgressModel {
       totalReadingTimeInSeconds,
       lastRead,
       book,
+      userPageCount,
     );
   }
 
   @override
   String toString() {
-    return 'ReadingProgressModel(bookId: $bookId, currentPage: $currentPage, totalReadingTimeInSeconds: $totalReadingTimeInSeconds, lastRead: $lastRead, book: $book)';
+    return 'ReadingProgressModel(bookId: $bookId, currentPage: $currentPage, totalReadingTimeInSeconds: $totalReadingTimeInSeconds, lastRead: $lastRead, book: $book, userPageCount: $userPageCount)';
   }
 }

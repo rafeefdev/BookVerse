@@ -34,11 +34,12 @@ class ReadingTrackerDetailPage extends ConsumerWidget {
           }
           final book = progress.book!;
           final scheme = Theme.of(context).colorScheme;
-          final double progressValue = book.pageCount > 0
-              ? progress.currentPage / book.pageCount
+          final effectiveTotal = progress.effectivePageCount;
+          final double progressValue = effectiveTotal > 0
+              ? progress.currentPage / effectiveTotal
               : 0.0;
           final String progressText =
-              '${progress.currentPage} / ${book.pageCount} pages';
+              '${progress.currentPage} / $effectiveTotal pages';
 
           return SafeArea(
             child: SingleChildScrollView(
@@ -101,7 +102,9 @@ class ReadingTrackerDetailPage extends ConsumerWidget {
                                     style: context.textTheme.bodyMedium,
                                   ),
                                   Text(
-                                    'Total Pages: ${book.pageCount}',
+                                    progress.userPageCount != null
+                                        ? 'Total Pages: ${progress.userPageCount} (adjusted from ${book.pageCount})'
+                                        : 'Total Pages: ${book.pageCount}',
                                     style: context.textTheme.bodyMedium,
                                   ),
                                 ],

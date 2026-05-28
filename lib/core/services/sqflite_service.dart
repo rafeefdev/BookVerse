@@ -23,7 +23,7 @@ class SqfliteService {
       final fullPath = join(dbPath, dbName);
       return await openDatabase(
         fullPath,
-        version: 2,
+        version: 3,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
         onConfigure: (db) async {
@@ -39,7 +39,7 @@ class SqfliteService {
       return await databaseFactory.openDatabase(
         fullPath,
         options: OpenDatabaseOptions(
-          version: 2,
+          version: 3,
           onCreate: _onCreate,
           onUpgrade: _onUpgrade,
           onConfigure: (db) async {
@@ -71,7 +71,8 @@ class SqfliteService {
         bookId TEXT PRIMARY KEY,
         currentPage INTEGER,
         totalReadingTimeInSeconds INTEGER,
-        lastRead TEXT
+        lastRead TEXT,
+        userPageCount INTEGER
       )
     ''');
     await db.execute('''
@@ -158,6 +159,16 @@ class SqfliteService {
           FOREIGN KEY (book_id) REFERENCES bookmarks(id) ON DELETE CASCADE
         )
       ''');
+    }
+
+    if (oldVersion < 3) {
+      try {
+        await db.execute(
+          'ALTER TABLE reading_progress ADD COLUMN userPageCount INTEGER',
+        );
+      } catch (e) {
+        log('Migration v3: column may already exist — $e');
+      }
     }
   }
 
@@ -253,6 +264,20 @@ class SqfliteService {
     } catch (e, stack) {
       log('getAllReadingSessions error: $e\n$stack');
       return [];
+    }
+  }
+
+  Future<void> updateUserPageCount(String bookId, int userPageCount) async {
+    try {
+      final db = await database;
+      await db.update(
+        'reading_progress',
+        {'userPageCount': userPageCount},
+        where: 'bookId = ?',
+        whereArgs: [bookId],
+      );
+    } catch (e, stack) {
+      log('updateUserPageCount error: $e\n$stack');
     }
   }
 
