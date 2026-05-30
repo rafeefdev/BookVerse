@@ -4,6 +4,7 @@ import 'package:book_verse/core/shared/components/bookdetailinfo_component.dart'
 import 'package:book_verse/core/shared/components/icontext_horizontal_component.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_categories.dart';
+import 'package:book_verse/core/shared/helpers/helper/book_description.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_publishdate.dart';
 import 'package:book_verse/core/shared/helpers/helper/book_title.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
@@ -208,16 +209,73 @@ selectedBookId : $selectedBookId\nauthors count : ${selectedBook.authors.length}
               const SizedBox(height: 24),
               _ReadingProgressSection(book: selectedBook),
               const SizedBox(height: 24),
-              Text(
-                selectedBook.description,
-                style: context.textTheme.bodyMedium,
-                textAlign: TextAlign.justify,
+              ..._buildDescription(
+                context,
+                sanitizeDescription(selectedBook.description),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildDescription(BuildContext context, String description) {
+    log(
+      '[_buildDescription] called with: "${description.length > 100 ? "${description.substring(0, 100)}..." : description}"',
+    );
+    log('[_buildDescription] length: ${description.length}');
+
+    if (description == "No Description") {
+      log('[_buildDescription] → fallback No Description');
+      return [
+        Text(
+          description,
+          style: context.textTheme.bodyMedium?.copyWith(
+            fontStyle: FontStyle.italic,
+            color: context.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ];
+    }
+
+    final paragraphs = description
+        .split(RegExp(r'\n\n'))
+        .map((p) => p.trim())
+        .where((p) => p.isNotEmpty)
+        .toList();
+
+    log('[_buildDescription] paragraphs count: ${paragraphs.length}');
+    for (int i = 0; i < paragraphs.length && i < 3; i++) {
+      log(
+        '[_buildDescription] paragraph[$i]: "${paragraphs[i].length > 80 ? "${paragraphs[i].substring(0, 80)}..." : paragraphs[i]}"',
+      );
+    }
+
+    if (paragraphs.isEmpty) {
+      log('[_buildDescription] → fallback (empty after split)');
+      return [
+        Text(
+          "No Description",
+          style: context.textTheme.bodyMedium?.copyWith(
+            fontStyle: FontStyle.italic,
+            color: context.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ];
+    }
+
+    final widgets = <Widget>[];
+    for (int i = 0; i < paragraphs.length; i++) {
+      widgets.add(
+        SelectableText(paragraphs[i], style: context.textTheme.bodyMedium),
+      );
+      if (i < paragraphs.length - 1) {
+        widgets.add(const SizedBox(height: 12));
+      }
+    }
+    log('[_buildDescription] → returning ${widgets.length} widgets');
+    return widgets;
   }
 }
 
