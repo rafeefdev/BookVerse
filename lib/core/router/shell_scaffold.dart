@@ -1,3 +1,4 @@
+import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,8 +12,18 @@ class ShellScaffold extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [const CircleAvatar(child: Icon(Icons.book))],
+          children: [
+            const CircleAvatar(child: Icon(Icons.book)),
+            const SizedBox(width: 12),
+            Text(
+              [
+                'Dashboard',
+                'Explore',
+                'My Library',
+              ][navigationShell.currentIndex],
+              style: context.textTheme.titleLarge,
+            ),
+          ],
         ),
         automaticallyImplyLeading: false,
         actionsPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
