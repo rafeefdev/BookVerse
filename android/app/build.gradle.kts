@@ -4,7 +4,7 @@ plugins {
     // Flutter Gradle Plugin
     id("dev.flutter.flutter-gradle-plugin")
 
-    // id("com.google.gms.google-services")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -43,8 +43,8 @@ dependencies {
 
     implementation("com.google.android.material:material:1.14.0-alpha01")
 
-    // implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
-    // implementation("com.google.firebase:firebase-analytics")
+    implementation(platform("com.google.firebase:firebase-bom:34.14.0"))
+    implementation("com.google.firebase:firebase-analytics")
 }
 
 flutter {

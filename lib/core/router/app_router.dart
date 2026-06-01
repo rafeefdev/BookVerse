@@ -1,3 +1,5 @@
+import 'package:book_verse/core/auth/providers/auth_provider.dart';
+import 'package:book_verse/core/auth/view/login_page.dart';
 import 'package:book_verse/core/router/shell_scaffold.dart';
 import 'package:book_verse/features/dashboard/view/pages/dashboard_page.dart';
 import 'package:book_verse/features/home/view/pages/detail_page.dart';
@@ -21,12 +23,17 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
   final onBoardingStatus = ref.watch(onBoardingServiceProvider);
+  final isAuthenticated = ref.watch(isAuthenticatedProvider);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/dashboard',
     redirect: (context, state) {
-      // Using when to handle async value
+      final isGoingToLogin = state.matchedLocation == '/login';
+
+      if (!isAuthenticated && !isGoingToLogin) return '/login';
+      if (isAuthenticated && isGoingToLogin) return '/dashboard';
+
       return onBoardingStatus.when(
         data: (hasOpened) {
           final isGoingToOnboarding = state.matchedLocation.startsWith(
@@ -50,11 +57,12 @@ final routerProvider = Provider<GoRouter>((ref) {
 
           return null;
         },
-        loading: () => null, // Or show a loading screen
-        error: (err, stack) => '/error', // Or show an error screen
+        loading: () => null,
+        error: (err, stack) => '/error',
       );
     },
     routes: [
+      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => FirstScreen(),

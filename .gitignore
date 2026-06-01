@@ -51,3 +51,4 @@ android/app/google_services.json
 # AI agent custom prompt
 GEMINI.md
 .agent
+android/app/google-services.json

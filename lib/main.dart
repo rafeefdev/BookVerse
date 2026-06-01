@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:book_verse/core/router/app_router.dart';
 import 'package:book_verse/core/services/sqflite_service.dart';
+import 'package:book_verse/core/services/supabase_service.dart';
 import 'package:book_verse/core/theme/providers/thememode_provider.dart';
 import 'package:book_verse/core/shared/app_theme.dart';
 import 'package:device_preview/device_preview.dart';
@@ -27,6 +28,12 @@ Future<void> main() async {
     await dotenv.load();
   } catch (e) {
     log('Failed to load .env file: $e');
+  }
+
+  try {
+    await initSupabase();
+  } catch (e, stack) {
+    log('Failed to initialize Supabase: $e\n$stack');
   }
 
   try {
