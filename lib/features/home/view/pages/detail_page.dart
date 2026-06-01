@@ -538,7 +538,6 @@ Future<void> showLibrarySheet(BuildContext context, Book book) async {
       var saved = isBookmarked;
       var selectedFolderIds = folderIdsForBook.toSet();
       var currentStep = _SheetStep.list;
-      var folderName = '';
       return StatefulBuilder(
         builder: (context, setSheetState) {
           switch (currentStep) {
@@ -554,26 +553,21 @@ Future<void> showLibrarySheet(BuildContext context, Book book) async {
                 onSelectedFolderIdsChanged: (v) => selectedFolderIds = v,
                 onFoldersChanged: (v) => folders = v,
                 onNavigateToCreate: () {
-                  folderName = '';
                   setSheetState(() => currentStep = _SheetStep.create);
                 },
                 setSheetState: setSheetState,
               );
             case _SheetStep.create:
               return _CreateFolderView(
-                folderName: folderName,
-                onFolderNameChanged: (v) => folderName = v,
                 book: book,
                 repo: repo,
                 container: container,
                 onCreated: (updatedFolders) {
                   folders = updatedFolders;
                   currentStep = _SheetStep.list;
-                  folderName = '';
                 },
                 onCancel: () {
                   currentStep = _SheetStep.list;
-                  folderName = '';
                 },
                 setSheetState: setSheetState,
               );
@@ -758,9 +752,7 @@ class _SheetListView extends StatelessWidget {
   }
 }
 
-class _CreateFolderView extends StatelessWidget {
-  final String folderName;
-  final ValueChanged<String> onFolderNameChanged;
+class _CreateFolderView extends StatefulWidget {
   final Book book;
   final LibraryRepo repo;
   final ProviderContainer container;
@@ -769,8 +761,6 @@ class _CreateFolderView extends StatelessWidget {
   final void Function(VoidCallback) setSheetState;
 
   const _CreateFolderView({
-    required this.folderName,
-    required this.onFolderNameChanged,
     required this.book,
     required this.repo,
     required this.container,
@@ -779,8 +769,27 @@ class _CreateFolderView extends StatelessWidget {
     required this.setSheetState,
   });
 
-  void _create(BuildContext context) async {
-    final name = folderName.trim();
+  @override
+  State<_CreateFolderView> createState() => _CreateFolderViewState();
+}
+
+class _CreateFolderViewState extends State<_CreateFolderView> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _create() async {
+    final name = _controller.text.trim();
     if (name.isEmpty) return;
     try {
       final newFolder = LibraryFolder(
@@ -788,12 +797,12 @@ class _CreateFolderView extends StatelessWidget {
         name: name,
         createdAt: DateTime.now(),
       );
-      await repo.createFolder(newFolder);
-      final updatedFolders = await repo.getAllFolders();
-      container.invalidate(libraryNotifierProvider);
-      setSheetState(() => onCreated(updatedFolders));
+      await widget.repo.createFolder(newFolder);
+      final updatedFolders = await widget.repo.getAllFolders();
+      widget.container.invalidate(libraryNotifierProvider);
+      widget.setSheetState(() => widget.onCreated(updatedFolders));
     } catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Failed to create folder: $e')));
@@ -812,7 +821,7 @@ class _CreateFolderView extends StatelessWidget {
             children: [
               IconButton(
                 icon: const Icon(Icons.arrow_back),
-                onPressed: () => setSheetState(onCancel),
+                onPressed: () => widget.setSheetState(widget.onCancel),
               ),
               const SizedBox(width: 8),
               Text(
@@ -825,14 +834,14 @@ class _CreateFolderView extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: TextField(
+            controller: _controller,
             autofocus: true,
             textCapitalization: TextCapitalization.words,
             decoration: const InputDecoration(
               hintText: 'Folder name',
               border: OutlineInputBorder(),
             ),
-            onChanged: onFolderNameChanged,
-            onSubmitted: (_) => _create(context),
+            onSubmitted: (_) => _create(),
           ),
         ),
         Padding(
@@ -841,14 +850,11 @@ class _CreateFolderView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
-                onPressed: () => setSheetState(onCancel),
+                onPressed: () => widget.setSheetState(widget.onCancel),
                 child: const Text('Cancel'),
               ),
               const SizedBox(width: 12),
-              FilledButton(
-                onPressed: () => _create(context),
-                child: const Text('Create'),
-              ),
+              FilledButton(onPressed: _create, child: const Text('Create')),
             ],
           ),
         ),
