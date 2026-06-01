@@ -46,9 +46,8 @@ app.*.map.json
 
 #environtment
 .env
-android/app/google_services.json
+android/app/google-services.json
 
 # AI agent custom prompt
 GEMINI.md
 .agent
-android/app/google-services.json
