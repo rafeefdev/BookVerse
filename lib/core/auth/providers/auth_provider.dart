@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/auth_service.dart';
+import '../../services/supabase_service.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) => AuthService());
 
@@ -10,11 +11,19 @@ final authStateProvider = StreamProvider<AuthState>((ref) {
 });
 
 final isAuthenticatedProvider = Provider<bool>((ref) {
-  return ref.watch(authServiceProvider).currentSession != null;
+  final authState = ref.watch(authStateProvider);
+  return authState.maybeWhen(
+    data: (state) => state.session != null,
+    orElse: () => supabase.auth.currentSession != null,
+  );
 });
 
 final currentUserProvider = Provider<User?>((ref) {
-  return ref.watch(authServiceProvider).currentUser;
+  final authState = ref.watch(authStateProvider);
+  return authState.maybeWhen(
+    data: (state) => state.session?.user,
+    orElse: () => supabase.auth.currentUser,
+  );
 });
 
 final userInitialsProvider = Provider<String>((ref) {

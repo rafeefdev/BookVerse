@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/supabase_service.dart';
+import 'auth_callback_page.dart';
 
 class AuthCancelledException implements Exception {
   const AuthCancelledException();
@@ -67,7 +68,7 @@ class AuthService {
         request.response
           ..statusCode = 200
           ..headers.contentType = ContentType.html
-          ..write('Login successful! Close this tab.')
+          ..write(authCallbackHtml)
           ..close();
       },
       onError: (e) {
