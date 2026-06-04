@@ -48,6 +48,7 @@ class BookmarkRepo {
     try {
       await localBookmarkService.removeBookmark(bookId);
       await _sqfliteService.deleteReadingProgress(bookId);
+      await _sqfliteService.deleteReadingSessions(bookId);
     } catch (e, stack) {
       log('removeBookmark error: $e\n$stack');
     }

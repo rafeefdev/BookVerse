@@ -21,6 +21,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+final bookCacheProvider = StateProvider<Map<String, Book>>((ref) => {});
+
 extension IterableExtension<T> on Iterable<T> {
   T? firstWhereOrNull(bool Function(T element) test) {
     for (var element in this) {
@@ -60,20 +62,33 @@ class DetailPage extends ConsumerWidget {
               .firstWhereOrNull((p) => p.bookId == selectedBookId);
           final Book? book = progress?.book;
 
-          if (book == null) {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text('Detail', style: context.textTheme.titleLarge),
-              ),
-              body: const Center(child: Text('Book not found')),
+          if (book != null) {
+            ref
+                .read(bookCacheProvider.notifier)
+                .update((state) => {...state, book.id: book});
+            return _buildDetailPage(
+              context,
+              book: book,
+              selectedBookId: selectedBookId,
+              ref: ref,
             );
           }
 
-          return _buildDetailPage(
-            context,
-            book: book,
-            selectedBookId: selectedBookId,
-            ref: ref,
+          final cachedBook = ref.read(bookCacheProvider)[selectedBookId];
+          if (cachedBook != null) {
+            return _buildDetailPage(
+              context,
+              book: cachedBook,
+              selectedBookId: selectedBookId,
+              ref: ref,
+            );
+          }
+
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Detail', style: context.textTheme.titleLarge),
+            ),
+            body: const Center(child: Text('Book not found')),
           );
         },
         error: (err, stack) => Scaffold(
@@ -632,6 +647,32 @@ class _SheetListView extends StatelessWidget {
           subtitle: Text(saved ? 'Saved' : 'Not saved'),
           value: saved,
           onChanged: (value) async {
+            if (value == false) {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Remove from Library?'),
+                  content: Text(
+                    'Your reading progress and session history for '
+                    '"${book.title}" will be deleted.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                      child: const Text('Cancel'),
+                    ),
+                    FilledButton(
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                      ),
+                      child: const Text('Remove'),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed != true) return;
+            }
             if (value && selectedFolderIds.isEmpty) {
               onSelectedFolderIdsChanged({
                 ...selectedFolderIds,

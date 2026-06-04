@@ -279,6 +279,19 @@ class SqfliteService {
     }
   }
 
+  Future<void> deleteReadingSessions(String bookId) async {
+    try {
+      final db = await database;
+      await db.delete(
+        'reading_sessions',
+        where: 'bookId = ?',
+        whereArgs: [bookId],
+      );
+    } catch (e, stack) {
+      log('deleteReadingSessions error: $e\n$stack');
+    }
+  }
+
   Future<void> updateUserPageCount(String bookId, int userPageCount) async {
     try {
       final db = await database;
