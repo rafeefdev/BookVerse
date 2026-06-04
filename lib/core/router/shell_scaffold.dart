@@ -1,9 +1,7 @@
 import 'package:book_verse/core/auth/providers/auth_provider.dart';
-import 'package:book_verse/core/services/backup_service.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/core/theme/providers/thememode_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -147,107 +145,6 @@ class _UserProfileSheet extends ConsumerWidget {
                       .changeTheme(v ? ThemeMode.dark : ThemeMode.light);
                 },
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.backup),
-              title: const Text('Backup Progress'),
-              onTap: () async {
-                final confirmed = await showDialog<bool>(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text('Backup'),
-                    content: const Text(
-                      'Export your reading progress and sessions to a JSON file?',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(false),
-                        child: const Text('Cancel'),
-                      ),
-                      FilledButton(
-                        onPressed: () => Navigator.of(ctx).pop(true),
-                        child: const Text('Backup'),
-                      ),
-                    ],
-                  ),
-                );
-                if (confirmed == true && context.mounted) {
-                  try {
-                    final path = await BackupService.instance.backupProgress();
-                    if (context.mounted) {
-                      await showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          title: Row(
-                            children: [
-                              const Icon(
-                                Icons.check_circle,
-                                color: Colors.green,
-                                size: 28,
-                              ),
-                              const SizedBox(width: 12),
-                              const Expanded(child: Text('Backup Complete')),
-                            ],
-                          ),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Your reading progress has been exported.',
-                              ),
-                              const SizedBox(height: 12),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: context
-                                      .colorScheme
-                                      .surfaceContainerHighest,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: SelectableText(
-                                  path,
-                                  style: context.textTheme.bodySmall?.copyWith(
-                                    fontFamily: 'monospace',
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Clipboard.setData(ClipboardData(text: path));
-                                Navigator.of(ctx).pop();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Path copied to clipboard'),
-                                  ),
-                                );
-                              },
-                              child: const Text('Copy Path'),
-                            ),
-                            FilledButton(
-                              onPressed: () => Navigator.of(ctx).pop(),
-                              child: const Text('OK'),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Backup failed: $e')),
-                      );
-                    }
-                  }
-                }
-              },
             ),
             const SizedBox(height: 8),
             const Divider(),
