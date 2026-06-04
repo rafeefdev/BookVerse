@@ -23,7 +23,7 @@ class SqfliteService {
       final fullPath = join(dbPath, dbName);
       return await openDatabase(
         fullPath,
-        version: 3,
+        version: 4,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
         onConfigure: (db) async {
@@ -39,7 +39,7 @@ class SqfliteService {
       return await databaseFactory.openDatabase(
         fullPath,
         options: OpenDatabaseOptions(
-          version: 3,
+          version: 4,
           onCreate: _onCreate,
           onUpgrade: _onUpgrade,
           onConfigure: (db) async {
@@ -81,7 +81,8 @@ class SqfliteService {
         bookId TEXT,
         durationInSeconds INTEGER,
         endPage INTEGER,
-        timestamp TEXT
+        timestamp TEXT,
+        startPage INTEGER
       )
     ''');
     await db.execute('''
@@ -135,7 +136,8 @@ class SqfliteService {
         bookId TEXT,
         durationInSeconds INTEGER,
         endPage INTEGER,
-        timestamp TEXT
+        timestamp TEXT,
+        startPage INTEGER
       )
     ''');
 
@@ -168,6 +170,16 @@ class SqfliteService {
         );
       } catch (e) {
         log('Migration v3: column may already exist — $e');
+      }
+    }
+
+    if (oldVersion < 4) {
+      try {
+        await db.execute(
+          'ALTER TABLE reading_sessions ADD COLUMN startPage INTEGER',
+        );
+      } catch (e) {
+        log('Migration v4: column may already exist — $e');
       }
     }
   }
@@ -264,6 +276,19 @@ class SqfliteService {
     } catch (e, stack) {
       log('getAllReadingSessions error: $e\n$stack');
       return [];
+    }
+  }
+
+  Future<void> deleteReadingSessions(String bookId) async {
+    try {
+      final db = await database;
+      await db.delete(
+        'reading_sessions',
+        where: 'bookId = ?',
+        whereArgs: [bookId],
+      );
+    } catch (e, stack) {
+      log('deleteReadingSessions error: $e\n$stack');
     }
   }
 

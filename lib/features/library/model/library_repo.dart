@@ -115,5 +115,6 @@ class LibraryRepo {
   Future<void> removeBookmark(String bookId) async {
     await _bookmarkService.removeBookmark(bookId);
     await _sqflite.deleteReadingProgress(bookId);
+    await _sqflite.deleteReadingSessions(bookId);
   }
 }

@@ -3,12 +3,14 @@ class ReadingSessionModel {
   final int durationInSeconds;
   final int endPage;
   final DateTime timestamp;
+  final int? startPage;
 
   const ReadingSessionModel({
     required this.bookId,
     required this.durationInSeconds,
     required this.endPage,
     required this.timestamp,
+    this.startPage,
   });
 
   ReadingSessionModel copyWith({
@@ -16,12 +18,14 @@ class ReadingSessionModel {
     int? durationInSeconds,
     int? endPage,
     DateTime? timestamp,
+    int? startPage,
   }) {
     return ReadingSessionModel(
       bookId: bookId ?? this.bookId,
       durationInSeconds: durationInSeconds ?? this.durationInSeconds,
       endPage: endPage ?? this.endPage,
       timestamp: timestamp ?? this.timestamp,
+      startPage: startPage ?? this.startPage,
     );
   }
 
@@ -33,6 +37,7 @@ class ReadingSessionModel {
       timestamp: json['timestamp'] != null
           ? (DateTime.tryParse(json['timestamp'] as String) ?? DateTime.now())
           : DateTime.now(),
+      startPage: json['startPage'] as int?,
     );
   }
 
@@ -42,6 +47,7 @@ class ReadingSessionModel {
       'durationInSeconds': durationInSeconds,
       'endPage': endPage,
       'timestamp': timestamp.toIso8601String(),
+      if (startPage != null) 'startPage': startPage,
     };
   }
 
@@ -52,16 +58,23 @@ class ReadingSessionModel {
         other.bookId == bookId &&
         other.durationInSeconds == durationInSeconds &&
         other.endPage == endPage &&
-        other.timestamp == timestamp;
+        other.timestamp == timestamp &&
+        other.startPage == startPage;
   }
 
   @override
   int get hashCode {
-    return Object.hash(bookId, durationInSeconds, endPage, timestamp);
+    return Object.hash(
+      bookId,
+      durationInSeconds,
+      endPage,
+      timestamp,
+      startPage,
+    );
   }
 
   @override
   String toString() {
-    return 'ReadingSessionModel(bookId: $bookId, durationInSeconds: $durationInSeconds, endPage: $endPage, timestamp: $timestamp)';
+    return 'ReadingSessionModel(bookId: $bookId, durationInSeconds: $durationInSeconds, endPage: $endPage, timestamp: $timestamp, startPage: $startPage)';
   }
 }
