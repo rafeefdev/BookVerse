@@ -69,7 +69,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               child: _statCard(
                 Icons.timer_outlined,
                 '${state.todayMinutes}',
-                'menit',
+                'minutes',
                 colorScheme,
                 textTheme,
               ),
@@ -79,7 +79,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               child: _statCard(
                 Icons.menu_book,
                 '${state.todayPages}',
-                'halaman',
+                'pages',
                 colorScheme,
                 textTheme,
               ),
@@ -132,23 +132,23 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
   String _comparisonText(int todayMin, int yesterdayMin) {
     if (todayMin == 0 && yesterdayMin == 0) {
-      return 'Belum ada aktivitas membaca';
+      return 'No reading activity yet';
     }
     if (todayMin == 0 && yesterdayMin > 0) {
-      return 'Belum membaca hari ini';
+      return "Haven't read today";
     }
     if (todayMin > 0 && yesterdayMin == 0) {
-      return 'Mulai membaca hari ini! (+$todayMin menit)';
+      return 'Started reading today! (+$todayMin minutes)';
     }
     if (todayMin == yesterdayMin) {
-      return 'Sama seperti kemarin ($yesterdayMin menit)';
+      return 'Same as yesterday ($yesterdayMin minutes)';
     }
     if (todayMin > yesterdayMin) {
       final pct = (((todayMin - yesterdayMin) / yesterdayMin) * 100).round();
-      return '↑ $pct% lebih banyak dari kemarin';
+      return '↑ $pct% more than yesterday';
     }
     final pct = (((yesterdayMin - todayMin) / yesterdayMin) * 100).round();
-    return '↓ $pct% lebih sedikit dari kemarin';
+    return '↓ $pct% less than yesterday';
   }
 
   Widget _buildWeeklyChart(
@@ -229,7 +229,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    '${state.streak} hari berturut-turut',
+                    '${state.streak}-day streak',
                     style: textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -248,7 +248,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        _showPages ? 'halaman' : 'durasi',
+                        _showPages ? 'pages' : 'duration',
                         style: textTheme.labelSmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -280,7 +280,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               const SizedBox(height: 16),
               Center(
                 child: Text(
-                  'Belum ada buku yang sedang dibaca',
+                  'No books being read yet',
                   style: textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -301,7 +301,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             Text('Currently Reading', style: textTheme.titleMedium),
             TextButton(
               onPressed: () => context.go('/library'),
-              child: const Text('Lihat Semua'),
+              child: const Text('See All'),
             ),
           ],
         ),
