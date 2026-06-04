@@ -126,7 +126,7 @@ class _UserProfileSheet extends ConsumerWidget {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text('Pengaturan'),
+              title: const Text('Settings'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 final router = GoRouter.of(context);
@@ -136,7 +136,7 @@ class _UserProfileSheet extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.dark_mode),
-              title: const Text('Mode Gelap'),
+              title: const Text('Dark Mode'),
               trailing: Switch(
                 value: isDark,
                 onChanged: (v) {
