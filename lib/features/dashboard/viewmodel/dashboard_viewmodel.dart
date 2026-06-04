@@ -94,7 +94,6 @@ int _pagesInRange(
   for (final entry in byBook.entries) {
     final bookSessions = entry.value
       ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-    final lastPage = bookSessions.last.endPage;
 
     final before =
         allSessions
@@ -103,9 +102,16 @@ int _pagesInRange(
             )
             .toList()
           ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    final prevEndPage = before.isNotEmpty ? before.last.endPage : 0;
 
-    final startPage = before.isNotEmpty ? before.last.endPage : 0;
-    total += (lastPage - startPage).clamp(0, lastPage);
+    int prevPage = prevEndPage;
+    int bookTotal = 0;
+    for (final session in bookSessions) {
+      final start = session.startPage ?? prevPage;
+      bookTotal += (session.endPage - start).clamp(0, session.endPage);
+      prevPage = session.endPage;
+    }
+    total += bookTotal;
   }
   return total;
 }

@@ -17,12 +17,16 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
   bool _isInitialized = false;
   bool _hasError = false;
   String? _errorMessage;
+  int _startPage = 0;
+  bool _needsCatchUp = false;
 
   bool get isInitialized => _isInitialized;
   bool get hasError => _hasError;
   String? get errorMessage => _errorMessage;
   String get bookId => _bookId;
   ReadingProgressModel? get initialProgress => _initialProgress;
+  int get startPage => _startPage;
+  bool get needsCatchUp => _needsCatchUp;
 
   @override
   StopWatchTimer build() {
@@ -54,8 +58,14 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
         return false;
       }
 
+      if (progress!.currentPage == 0) {
+        _needsCatchUp = true;
+      } else {
+        _startPage = progress.currentPage;
+        _stopWatchTimer.onStartTimer();
+      }
+
       _isInitialized = true;
-      _stopWatchTimer.onStartTimer();
 
       return true;
     } catch (e) {
@@ -64,6 +74,21 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
       _isInitialized = true;
       return false;
     }
+  }
+
+  Future<void> setStartPage(int page) async {
+    _startPage = page;
+    _needsCatchUp = false;
+    await ref
+        .read(readingTrackerNotifierProvider(_bookId).notifier)
+        .updateReadingProgress(page);
+    _stopWatchTimer.onStartTimer();
+  }
+
+  void skipCatchUp() {
+    _startPage = 0;
+    _needsCatchUp = false;
+    _stopWatchTimer.onStartTimer();
   }
 
   void startTimer() {
@@ -84,6 +109,8 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     _isInitialized = false;
     _hasError = false;
     _errorMessage = null;
+    _startPage = 0;
+    _needsCatchUp = false;
     _stopWatchTimer.onResetTimer();
   }
 
@@ -108,6 +135,7 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
         durationInSeconds: totalElapsedSeconds,
         endPage: endPage,
         timestamp: DateTime.now(),
+        startPage: _startPage,
       );
       await ref
           .read(readingTrackerNotifierProvider(_bookId).notifier)
