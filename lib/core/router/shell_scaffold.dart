@@ -1,6 +1,7 @@
 import 'package:book_verse/core/auth/providers/auth_provider.dart';
 import 'package:book_verse/core/shared/themes_extension.dart';
 import 'package:book_verse/core/theme/providers/thememode_provider.dart';
+import 'package:book_verse/features/insights/viewmodel/insights_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -123,6 +124,8 @@ class _UserProfileSheet extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 16),
+            _AchievementsSection(),
+            const SizedBox(height: 8),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.settings),
@@ -181,6 +184,68 @@ class _UserProfileSheet extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AchievementsSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final insightsAsync = ref.watch(insightsProvider);
+    final colorScheme = context.colorScheme;
+    final textTheme = context.textTheme;
+
+    return insightsAsync.when(
+      data: (state) {
+        final unlocked = state.achievements.where((a) => a.unlocked).toList();
+        if (unlocked.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text('Achievements', style: textTheme.titleSmall),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 60,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: unlocked.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final a = unlocked[index];
+                  return Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          a.icon,
+                          color: colorScheme.primary,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        a.title,
+                        style: textTheme.labelSmall?.copyWith(fontSize: 9),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
     );
   }
 }
