@@ -468,27 +468,30 @@ class InsightsPage extends ConsumerWidget {
     double cellSize,
     double gap,
   ) {
+    final spans = <_MonthSpan>[];
+    for (int i = 0; i < weeks.length; i++) {
+      final month = weeks[i].first.date.month;
+      if (spans.isNotEmpty && spans.last.month == month) {
+        spans.last.count++;
+      } else {
+        spans.add(_MonthSpan(month, 1));
+      }
+    }
+
     return Row(
-      children: [
-        for (int i = 0; i < weeks.length; i++) ...[
-          if (i > 0) SizedBox(width: gap),
-          SizedBox(
-            width: cellSize,
-            child: i == 0 ||
-                    weeks[i].first.date.month !=
-                        weeks[i - 1].first.date.month
-                ? Text(
-                    _monthLabel(weeks[i].first.date.month),
-                    style: textTheme.labelSmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 10,
-                    ),
-                    textAlign: TextAlign.center,
-                  )
-                : const SizedBox.shrink(),
+      children: spans.map((span) {
+        return SizedBox(
+          width: span.count * cellSize + (span.count - 1) * gap,
+          child: Text(
+            _monthLabel(span.month),
+            style: textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontSize: 10,
+            ),
+            textAlign: TextAlign.center,
           ),
-        ],
-      ],
+        );
+      }).toList(),
     );
   }
 
@@ -919,5 +922,12 @@ class InsightsPage extends ConsumerWidget {
     ];
     return labels[month];
   }
+}
+
+class _MonthSpan {
+  final int month;
+  int count;
+
+  _MonthSpan(this.month, this.count);
 }
 
