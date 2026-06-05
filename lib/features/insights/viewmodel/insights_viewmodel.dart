@@ -26,6 +26,11 @@ final insightsProvider = FutureProvider<InsightsState>((ref) async {
   final longestStreak = _computeLongestStreak(allSessionList);
   final streakHistory = _buildStreakHistory(allSessionList, todayStart);
 
+  final streakStatus = _computeStreakStatus(
+    currentStreak: currentStreak,
+    totalBooks: totalBooks,
+  );
+
   final achievements = _computeAchievements(
     totalPages: totalPages,
     currentStreak: currentStreak,
@@ -63,6 +68,7 @@ final insightsProvider = FutureProvider<InsightsState>((ref) async {
     currentStreak: currentStreak,
     longestStreak: longestStreak,
     streakHistory: streakHistory,
+    streakStatus: streakStatus,
     achievements: achievements,
     genreDistribution: genreDistribution,
     monthlyMinutes: monthlyMinutes,
@@ -70,6 +76,16 @@ final insightsProvider = FutureProvider<InsightsState>((ref) async {
     ytdPages: ytdPages,
   );
 });
+
+StreakStatus _computeStreakStatus({
+  required int currentStreak,
+  required int totalBooks,
+}) {
+  if (totalBooks == 0) return StreakStatus.none;
+  if (currentStreak == 0) return StreakStatus.broken;
+  if (currentStreak < 3) return StreakStatus.atRisk;
+  return StreakStatus.active;
+}
 
 int _computeAllTimePages(List<ReadingSessionModel> allSessions) {
   final byBook = <String, List<ReadingSessionModel>>{};
@@ -142,16 +158,21 @@ List<StreakDay> _buildStreakHistory(
   List<ReadingSessionModel> allSessions,
   DateTime todayStart,
 ) {
-  final activeDays = allSessions
-      .map(
-        (s) => DateTime(s.timestamp.year, s.timestamp.month, s.timestamp.day),
-      )
-      .toSet();
+  final durationByDay = <DateTime, int>{};
+  for (final s in allSessions) {
+    final date = DateTime(s.timestamp.year, s.timestamp.month, s.timestamp.day);
+    durationByDay[date] = (durationByDay[date] ?? 0) + s.durationInSeconds;
+  }
 
   final days = <StreakDay>[];
   for (var i = 89; i >= 0; i--) {
     final date = todayStart.subtract(Duration(days: i));
-    days.add(StreakDay(date: date, hasActivity: activeDays.contains(date)));
+    final durationSeconds = durationByDay[date] ?? 0;
+    days.add(StreakDay(
+      date: date,
+      hasActivity: durationSeconds > 0,
+      durationSeconds: durationSeconds,
+    ));
   }
   return days;
 }
@@ -165,67 +186,94 @@ List<Achievement> _computeAchievements({
   required List<ReadingSessionModel> allSessions,
 }) {
   final totalHours = (totalMinutes / 60).floor();
+  final bestStreak = currentStreak > longestStreak
+      ? currentStreak
+      : longestStreak;
 
   return [
     Achievement(
       id: 'bookworm',
       title: 'Bookworm',
       description: 'Read 100+ pages total',
+      targetDescription: '${totalPages.clamp(0, 100)}/100 pages',
       icon: Icons.auto_stories,
       unlocked: totalPages >= 100,
+      progress: (totalPages / 100).clamp(0.0, 1.0),
     ),
     Achievement(
       id: 'streak_starter',
       title: 'Streak Starter',
       description: '3-day reading streak',
+      targetDescription: '${bestStreak.clamp(0, 3)}/3 days',
       icon: Icons.local_fire_department,
       unlocked: currentStreak >= 3 || longestStreak >= 3,
+      progress: (bestStreak / 3).clamp(0.0, 1.0),
     ),
     Achievement(
       id: 'dedicated',
       title: 'Dedicated Reader',
       description: '7-day reading streak',
+      targetDescription: '${bestStreak.clamp(0, 7)}/7 days',
       icon: Icons.whatshot,
       unlocked: currentStreak >= 7 || longestStreak >= 7,
+      progress: (bestStreak / 7).clamp(0.0, 1.0),
     ),
     Achievement(
       id: 'marathon',
       title: 'Marathon',
       description: '10+ hours total reading',
+      targetDescription: '${totalHours.clamp(0, 10)}/10 hours',
       icon: Icons.directions_run,
       unlocked: totalHours >= 10,
+      progress: (totalHours / 10).clamp(0.0, 1.0),
     ),
     Achievement(
       id: 'explorer',
       title: 'Explorer',
       description: 'Read 5+ different books',
+      targetDescription: '${totalBooks.clamp(0, 5)}/5 books',
       icon: Icons.explore,
       unlocked: totalBooks >= 5,
+      progress: (totalBooks / 5).clamp(0.0, 1.0),
     ),
     Achievement(
       id: 'bibliophile',
       title: 'Bibliophile',
       description: 'Read 10+ different books',
+      targetDescription: '${totalBooks.clamp(0, 10)}/10 books',
       icon: Icons.library_books,
       unlocked: totalBooks >= 10,
+      progress: (totalBooks / 10).clamp(0.0, 1.0),
     ),
     Achievement(
       id: 'century',
       title: 'Century',
       description: 'Read 1,000+ pages total',
+      targetDescription: '${totalPages.clamp(0, 1000)}/1,000 pages',
       icon: Icons.trending_up,
       unlocked: totalPages >= 1000,
+      progress: (totalPages / 1000).clamp(0.0, 1.0),
     ),
     Achievement(
       id: 'night_owl',
       title: 'Night Owl',
       description: 'Read past midnight',
+      targetDescription: 'Read after midnight',
       icon: Icons.dark_mode,
       unlocked: allSessions.any(
         (s) => s.timestamp.hour >= 0 && s.timestamp.hour < 5,
       ),
+      progress: allSessions.any(
+        (s) => s.timestamp.hour >= 0 && s.timestamp.hour < 5,
+      )
+          ? 1.0
+          : 0.0,
     ),
-  ];
+  ]..sort((a, b) {
+    if (a.unlocked && !b.unlocked) return -1;
+    if (!a.unlocked && b.unlocked) return 1;
+    return b.progress.compareTo(a.progress);
+  });
 }
 
 List<GenreStat> _computeGenreDistribution(

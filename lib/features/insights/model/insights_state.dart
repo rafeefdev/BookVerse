@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum StreakStatus { active, atRisk, broken, none }
+
 class InsightsState {
   final int totalMinutes;
   final int totalPages;
@@ -7,6 +9,7 @@ class InsightsState {
   final int currentStreak;
   final int longestStreak;
   final List<StreakDay> streakHistory;
+  final StreakStatus streakStatus;
   final List<Achievement> achievements;
   final List<GenreStat> genreDistribution;
   final List<MonthlySummary> monthlyMinutes;
@@ -20,6 +23,7 @@ class InsightsState {
     required this.currentStreak,
     required this.longestStreak,
     required this.streakHistory,
+    required this.streakStatus,
     required this.achievements,
     required this.genreDistribution,
     required this.monthlyMinutes,
@@ -31,23 +35,32 @@ class InsightsState {
 class StreakDay {
   final DateTime date;
   final bool hasActivity;
+  final int durationSeconds;
 
-  StreakDay({required this.date, required this.hasActivity});
+  StreakDay({
+    required this.date,
+    required this.hasActivity,
+    required this.durationSeconds,
+  });
 }
 
 class Achievement {
   final String id;
   final String title;
   final String description;
+  final String targetDescription;
   final IconData icon;
   final bool unlocked;
+  final double progress;
 
   Achievement({
     required this.id,
     required this.title,
     required this.description,
+    required this.targetDescription,
     required this.icon,
     required this.unlocked,
+    required this.progress,
   });
 }
 
