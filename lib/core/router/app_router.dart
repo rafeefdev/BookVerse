@@ -3,6 +3,7 @@ import 'package:book_verse/core/auth/view/login_page.dart';
 import 'package:book_verse/core/router/shell_scaffold.dart';
 import 'package:book_verse/features/dashboard/view/pages/dashboard_page.dart';
 import 'package:book_verse/features/home/view/pages/detail_page.dart';
+import 'package:book_verse/features/insights/view/insights_page.dart';
 import 'package:book_verse/features/home/view/pages/new_homepage.dart';
 import 'package:book_verse/features/library/view/library_page.dart';
 import 'package:book_verse/features/library/view/widgets/folder_detail_page.dart';
@@ -173,6 +174,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           }
           return ReadingTrackerDetailPage(bookId: id);
         },
+      ),
+      GoRoute(
+        path: '/insights',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const InsightsPage(),
       ),
       GoRoute(
         path: '/record-session/:id',

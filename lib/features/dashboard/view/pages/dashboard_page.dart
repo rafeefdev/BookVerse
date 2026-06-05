@@ -48,6 +48,18 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           _buildWeeklyChart(state, textTheme, colorScheme),
           const SizedBox(height: 16),
           _buildCurrentlyReading(state, textTheme, colorScheme),
+          if (state.todayMinutes > 0 || state.streak > 0)
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => context.push('/insights'),
+                  icon: const Icon(Icons.insights),
+                  label: const Text('See Insights'),
+                ),
+              ),
+            ),
         ],
       ),
     );
