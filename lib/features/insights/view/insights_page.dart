@@ -73,23 +73,23 @@ class InsightsPage extends ConsumerWidget {
 
     if (state.streakStatus == StreakStatus.active) {
       headline =
-          '🔥 ${state.currentStreak}-day streak! Keep reading to maintain it.';
+          ' ${state.currentStreak}-day streak! Keep reading to maintain it.';
       icon = Icons.local_fire_department;
       iconColor = colorScheme.error;
     } else if (state.streakStatus == StreakStatus.atRisk) {
       headline = state.currentStreak == 1
-          ? '📖 Read today to build your streak!'
-          : '📖 ${state.currentStreak}-day streak — read today to keep it going!';
+          ? 'Read today to build your streak!'
+          : '${state.currentStreak}-day streak — read today to keep it going!';
       icon = Icons.timer_outlined;
       iconColor = colorScheme.tertiary;
     } else if (state.streakStatus == StreakStatus.broken) {
       headline = state.totalMinutes > 0
-          ? '✨ Start a new streak today!'
-          : '📚 Start reading to track your progress!';
+          ? 'Start a new streak today!'
+          : 'Start reading to track your progress!';
       icon = Icons.auto_stories;
       iconColor = colorScheme.primary;
     } else {
-      headline = '📚 Start reading to see your insights!';
+      headline = 'Start reading to see your insights!';
       icon = Icons.auto_stories;
       iconColor = colorScheme.primary;
     }

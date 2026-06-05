@@ -26,7 +26,7 @@ Widget bookGridTile({
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           children: [
             _thumbnail(book, colorScheme),
             Padding(
