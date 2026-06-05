@@ -1,164 +1,95 @@
 # BookVerse 📚
 
-A beautifully crafted mobile application for book enthusiasts, built with Flutter. BookVerse allows users to explore millions of books through the Google Books API, providing an intuitive and engaging reading discovery experience.
+A high-performance, feature-rich Flutter application designed for book discovery and reading habit analytics. Built with a modern reactive architecture, it integrates local persistence with cloud synchronization and provides deep insights into user reading patterns.
 
-## ✨ Features
+## 🛠 Technical Stack
 
-### Current Features
-- **📖 Book Discovery**: Browse and explore books from the Google Books API
-- **🔍 Intelligent Search**: Search books by title, author, or ISBN with real-time results
-- **📑 Detailed Book Information**: View comprehensive book details including:
-  - Title, subtitle, and description
-  - Author(s) and publisher information
-  - Publication date and page count
-  - Book categories and thumbnail images
-- **⭐ Bookmark System**: Save and organize your favorite books
-- **🌓 Theme Support**: Light and dark mode toggle for comfortable reading
-- **👀 Flexible View Modes**: Switch between grid and list view for saved books
-- **🎯 Onboarding Experience**: Smooth introduction flow for new users
+- **Framework:** Flutter (Stable)
+- **State Management:** [Riverpod](https://riverpod.dev/) (Reactive caching, dependency injection, and data fetching)
+- **Routing:** [GoRouter](https://pub.dev/packages/go_router) (Declarative, URL-aware routing with shell branches)
+- **Persistence (Local):** [Sqflite](https://pub.dev/packages/sqflite) (Optimized relational storage for reading sessions and tracking)
+- **Backend & Auth:** [Supabase](https://supabase.com/) (PostgreSQL-based backend for real-time synchronization and secure authentication)
+- **Code Push:** [Shorebird](https://shorebird.dev/) (Enterprise-grade OTA updates)
+- **API Integration:** Google Books API for comprehensive metadata retrieval
 
-### Upcoming Features
-- **🤖 AI Chatbot**: Get personalized book recommendations
-- **📊 Reading Analytics**: Track your reading habits and progress
-- **🔖 Advanced Bookmarking**: Create custom reading lists and categories
-- **🔍 Enhanced Search Filters**: Filter by genre, rating, publication year, and more
-- **📱 Improved UI/UX**: Modern, intuitive interface design
-- **🌐 Social Features**: Share recommendations and reading progress
+## 🚀 Core Features
 
-## 📱 Screenshots
+- **Reading Insights Engine:**
+    - Dynamic streak tracking (Active, At Risk, Broken status logic).
+    - 90-day activity heatmap with intensity levels based on daily reading duration.
+    - Automated achievement system with progress tracking and unlock triggers.
+- **Reading Tracker:**
+    - Granular session logging (start/end pages, duration, timestamp).
+    - Real-time progress synchronization with Supabase.
+- **Library Management:**
+    - Local-first architecture with offline support.
+    - Multi-mode display (Grid/List) and complex filtering.
+- **Discovery & Search:**
+    - Real-time search indexing via Google Books API.
+    - Category-based exploration and personalized recommendations.
 
-*Screenshots coming soon - Stay tuned for visual previews of the app interface!*
+## 🏗 Architecture & Project Structure
 
-## 🏗️ Architecture
+The project follows a **Feature-First Modular Architecture**, promoting high cohesion and low coupling.
 
-BookVerse follows clean architecture principles with:
+```text
+lib/
+├── core/                   # Cross-cutting concerns
+│   ├── auth/               # Supabase-based authentication logic
+│   ├── router/             # GoRouter configuration & ShellScaffold
+│   ├── services/           # DB (Sqflite), Supabase, and Backup services
+│   └── shared/             # Theme tokens, extensions, and common components
+└── features/               # Functional modules
+    ├── insights/           # Reading analytics, streaks, and heatmap logic
+    ├── reading_tracker/    # Session logging and progress calculation
+    ├── dashboard/          # Aggregated user stats and summary
+    ├── library/            # Local collection management
+    ├── search/             # API discovery layer
+    ├── onboarding/         # User introduction and setup flow
+    ├── home/               # Featured content and landing views
+    ├── bookmarks/          # Saved and organized favorites
+    └── settings/           # User preferences and app configuration
+```
 
-- **State Management**: Riverpod for reactive state management
-- **Navigation**: Flutter's built-in navigation with custom routing
-- **API Integration**: HTTP client for Google Books API
-- **Local Storage**: Shared preferences for user settings and bookmarks
-- **Theme Management**: Dynamic theming with system theme detection
-
-## 🚀 Getting Started
+## 💻 Development Setup
 
 ### Prerequisites
 
-- Flutter SDK (latest stable version)
-- Dart SDK
-- Android Studio / VS Code with Flutter extensions
-- Git
+- Flutter SDK (latest stable)
+- Supabase account (for backend features)
+- Google Books API Key
 
-### Installation
+### Configuration
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/rafeefdev/BookVerse.git
+1. **Environment Variables:**
+   Create a `.env` file in the root directory. This file is required as it is bundled in the application assets. Add the following keys:
+   ```env
+   SUPABASE_URL=your_project_url
+   SUPABASE_ANON_KEY=your_anon_key
+   GOOGLE_BOOKS_API_KEY=your_google_books_api_key
+   GOOGLE_WEB_CLIENT_ID=your_google_web_client_id
    ```
 
-2. **Navigate to project directory**
-   ```bash
-   cd BookVerse
-   ```
-
-3. **Install dependencies**
+2. **Initialize Dependencies:**
    ```bash
    flutter pub get
    ```
 
-4. **Set up environment variables**
+3. **Code Generation (if applicable):**
    ```bash
-   # Create a .env file in the root directory
-   # Add your Google Books API key (if required)
-   GOOGLE_BOOKS_API_KEY=your_api_key_here
+   dart run build_runner build --delete-conflicting-outputs
    ```
 
-5. **Run the application**
+4. **Run Project:**
    ```bash
    flutter run
    ```
 
-## 📦 Dependencies
+## 🔧 Implementation Details
 
-### Core Dependencies
-- **flutter_riverpod**: State management and dependency injection
-- **http**: HTTP client for API requests
-- **flutter_dotenv**: Environment configuration management
-
-### UI & UX
-- **flutter_chat_ui** & **flutter_chat_core**: Chat interface components
-- **uuid**: Unique identifier generation
-
-### Development Tools
-- **riverpod_generator** (dev): Code generation for Riverpod
-- **build_runner** (dev): Build system for code generation
-
-## 🎨 Design Philosophy
-
-BookVerse is designed with user experience at its core:
-
-- **Minimalist Interface**: Clean, distraction-free design focusing on content
-- **Intuitive Navigation**: Easy-to-understand user flows and interactions
-- **Accessibility First**: Support for different themes and readable typography
-- **Performance Optimized**: Efficient API calls with caching and pagination
-- **Cross-Platform**: Consistent experience across different devices
-
-## 🏗️ Project Structure
-
-```
-lib/
-├── core/
-│   ├── constants/          # Application constants
-│   ├── models/             # Data models for the application
-│   ├── providers/          # Riverpod providers for state management
-│   ├── repositories/       # Data layer handling data sources
-│   ├── services/           # Business logic and services
-│   └── shared/             # Shared widgets and utilities
-├── features/               # Feature-based modules
-│   ├── auth/               # Authentication feature
-│   ├── bookmarks/          # Bookmarks feature
-│   ├── chatbot/            # AI chatbot feature
-│   ├── home/               # Home screen feature
-│   ├── onboarding/         # Onboarding screens
-│   ├── search/             # Search feature
-│   └── settings/           # Settings feature
-└── main.dart               # Main application entry point
-```
-
-## 🤝 Contributing
-
-We welcome contributions to BookVerse! Here's how you can help:
-
-1. **Fork the repository**
-2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Commit your changes** (`git commit -m 'Add some amazing feature'`)
-4. **Push to the branch** (`git push origin feature/amazing-feature`)
-5. **Open a Pull Request**
-
-### Development Guidelines
-
-- Follow Flutter/Dart best practices and conventions
-- Maintain clean, readable code with proper documentation
-- Ensure responsive design across different screen sizes
-- Write meaningful commit messages
-- Test your changes thoroughly before submitting
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Google Books API** for providing comprehensive book data
-- **Flutter Team** for the amazing cross-platform framework
-- **Riverpod** for excellent state management capabilities
-- **Open Source Community** for continuous inspiration and support
-
-## 📞 Contact
-
-**Developer**: [Rafeef](https://github.com/rafeefdev)
-
-**Project Link**: [https://github.com/rafeefdev/BookVerse](https://github.com/rafeefdev/BookVerse)
+- **Heatmap Logic:** The heatmap in `lib/features/insights/view/insights_page.dart` uses a 7xN grid layout representing weeks. Intensity is calculated via duration mapping in the `InsightsViewModel`.
+- **Relational Integrity:** Local Sqflite tables maintain foreign key relationships between `books` and `reading_sessions` to ensure data consistency during offline-first operations.
+- **Sync Strategy:** The `BackupService` manages the reconciliation between local SQLite snapshots and remote Supabase PostgreSQL records.
 
 ---
-
-*Built with ❤️ using Flutter | Empowering readers to discover their next favorite book*
+*Maintained by developers for developers.*

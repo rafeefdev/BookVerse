@@ -63,9 +63,11 @@ class DetailPage extends ConsumerWidget {
           final Book? book = progress?.book;
 
           if (book != null) {
-            ref
-                .read(bookCacheProvider.notifier)
-                .update((state) => {...state, book.id: book});
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ref
+                  .read(bookCacheProvider.notifier)
+                  .update((state) => {...state, book.id: book});
+            });
             return _buildDetailPage(
               context,
               book: book,
