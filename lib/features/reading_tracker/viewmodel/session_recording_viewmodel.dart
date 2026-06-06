@@ -119,6 +119,8 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
       return false;
     }
 
+    _stopWatchTimer.onStopTimer();
+
     try {
       final totalElapsedSeconds = _stopWatchTimer.rawTime.value ~/ 1000;
 
