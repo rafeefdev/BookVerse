@@ -674,7 +674,8 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage>
                               Expanded(
                                 child: _StatCard(
                                   value: _formatDuration(
-                                    stopWatchTimer.rawTime.value ~/ 1000,
+                                    readingProgress.totalReadingTimeInSeconds +
+                                        (stopWatchTimer.rawTime.value ~/ 1000),
                                   ),
                                   label: 'Elapsed',
                                   scheme: scheme,
