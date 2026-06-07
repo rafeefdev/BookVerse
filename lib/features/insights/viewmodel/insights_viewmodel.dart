@@ -3,10 +3,15 @@ import 'package:book_verse/features/insights/model/insights_state.dart';
 import 'package:book_verse/features/library/model/library_repo_di.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final insightsProvider = FutureProvider<InsightsState>((ref) async {
+part 'insights_viewmodel.g.dart';
+
+@Riverpod(keepAlive: true)
+class Insights extends _$Insights {
+  @override
+  Future<InsightsState> build() async {
   final repo = ref.watch(libraryRepoProvider);
   final datasource = ref.watch(readingTrackerDatasourceProvider);
   final sessions = await datasource.getAllReadingSessions();
@@ -76,7 +81,8 @@ final insightsProvider = FutureProvider<InsightsState>((ref) async {
     ytdMinutes: ytdMinutes,
     ytdPages: ytdPages,
   );
-});
+  }
+}
 
 StreakStatus _computeStreakStatus({
   required int currentStreak,

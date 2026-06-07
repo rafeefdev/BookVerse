@@ -10,9 +10,9 @@ class Book {
   final String publishedDate;
   final String description;
   final String thumbnail;
-  bool isFavorite = false;
-  int pageCount = 0;
-  List? categories;
+  final bool isFavorite;
+  final int pageCount;
+  final List<String>? categories;
 
   Book({
     required this.id,
@@ -23,7 +23,7 @@ class Book {
     required this.publishedDate,
     required this.description,
     required this.thumbnail,
-    bool isFavorite = false,
+    this.isFavorite = false,
     required this.pageCount,
     this.categories,
   });

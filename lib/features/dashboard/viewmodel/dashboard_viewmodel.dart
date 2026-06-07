@@ -2,9 +2,14 @@ import 'package:book_verse/features/dashboard/model/dashboard_state.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final dashboardProvider = FutureProvider<DashboardState>((ref) async {
+part 'dashboard_viewmodel.g.dart';
+
+@Riverpod(keepAlive: true)
+class Dashboard extends _$Dashboard {
+  @override
+  Future<DashboardState> build() async {
   final libraryAsync = ref.watch(libraryNotifierProvider);
   final datasource = ref.watch(readingTrackerDatasourceProvider);
   final sessions = await datasource.getAllReadingSessions();
@@ -79,7 +84,8 @@ final dashboardProvider = FutureProvider<DashboardState>((ref) async {
     weeklyReading: weeklyReading,
     currentlyReading: (libraryState?.currentlyReading ?? []).take(5).toList(),
   );
-});
+  }
+}
 
 int _pagesInRange(
   List<ReadingSessionModel> rangeSessions,
