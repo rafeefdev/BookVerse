@@ -1,12 +1,13 @@
-import 'package:book_verse/core/services/sqflite_service.dart';
 import 'package:book_verse/features/dashboard/model/dashboard_state.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
+import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final dashboardProvider = FutureProvider<DashboardState>((ref) async {
   final libraryAsync = ref.watch(libraryNotifierProvider);
-  final sessions = await SqfliteService.instance.getAllReadingSessions();
+  final datasource = ref.watch(readingTrackerDatasourceProvider);
+  final sessions = await datasource.getAllReadingSessions();
 
   final libraryState = libraryAsync.valueOrNull;
   final now = DateTime.now();

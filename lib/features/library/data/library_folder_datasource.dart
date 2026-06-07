@@ -1,24 +1,29 @@
 import 'dart:developer';
-import 'package:book_verse/core/services/sqflite_service.dart';
+import 'package:book_verse/core/database/database_constants.dart';
+import 'package:book_verse/core/database/database_provider.dart';
 import 'package:book_verse/features/library/model/library_folder_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
-class LibraryFolderService {
-  final SqfliteService _sqflite = SqfliteService.instance;
-  static const _foldersTable = 'library_folders';
-  static const _folderBooksTable = 'library_folder_books';
-  static const defaultFolderId = '__default__';
+final libraryFolderDatasourceProvider =
+    Provider<LibraryFolderDatasource>((ref) {
+  return LibraryFolderDatasource(ref.watch(databaseProvider));
+});
+
+class LibraryFolderDatasource {
+  final Database _db;
+
+  LibraryFolderDatasource(this._db);
 
   Future<void> ensureDefaultFolder() async {
     try {
-      final db = await _sqflite.database;
-      final existing = await db.query(
-        _foldersTable,
+      final existing = await _db.query(
+        libraryFoldersTable,
         where: 'id = ?',
         whereArgs: [defaultFolderId],
       );
       if (existing.isEmpty) {
-        await db.insert(_foldersTable, {
+        await _db.insert(libraryFoldersTable, {
           'id': defaultFolderId,
           'name': 'Tanpa Folder',
           'icon': 'inbox',
@@ -41,17 +46,16 @@ class LibraryFolderService {
 
   Future<List<LibraryFolder>> getAllFolders() async {
     try {
-      final db = await _sqflite.database;
-      final folders = await db.query(
-        _foldersTable,
+      final folders = await _db.query(
+        libraryFoldersTable,
         orderBy: 'sort_order ASC, created_at ASC',
       );
 
       final result = <LibraryFolder>[];
       for (final f in folders) {
         final count = Sqflite.firstIntValue(
-          await db.rawQuery(
-            'SELECT COUNT(*) FROM $_folderBooksTable WHERE folder_id = ?',
+          await _db.rawQuery(
+            'SELECT COUNT(*) FROM $libraryFolderBooksTable WHERE folder_id = ?',
             [f['id']],
           ),
         );
@@ -66,17 +70,16 @@ class LibraryFolderService {
 
   Future<LibraryFolder?> getFolder(String folderId) async {
     try {
-      final db = await _sqflite.database;
-      final maps = await db.query(
-        _foldersTable,
+      final maps = await _db.query(
+        libraryFoldersTable,
         where: 'id = ?',
         whereArgs: [folderId],
       );
       if (maps.isEmpty) return null;
 
       final count = Sqflite.firstIntValue(
-        await db.rawQuery(
-          'SELECT COUNT(*) FROM $_folderBooksTable WHERE folder_id = ?',
+        await _db.rawQuery(
+          'SELECT COUNT(*) FROM $libraryFolderBooksTable WHERE folder_id = ?',
           [folderId],
         ),
       );
@@ -89,8 +92,7 @@ class LibraryFolderService {
 
   Future<void> createFolder(LibraryFolder folder) async {
     try {
-      final db = await _sqflite.database;
-      await db.insert(_foldersTable, folder.toMap());
+      await _db.insert(libraryFoldersTable, folder.toMap());
     } catch (e, stack) {
       log('createFolder error: $e\n$stack');
       rethrow;
@@ -99,9 +101,8 @@ class LibraryFolderService {
 
   Future<void> renameFolder(String folderId, String newName) async {
     try {
-      final db = await _sqflite.database;
-      await db.update(
-        _foldersTable,
+      await _db.update(
+        libraryFoldersTable,
         {'name': newName},
         where: 'id = ?',
         whereArgs: [folderId],
@@ -114,13 +115,12 @@ class LibraryFolderService {
 
   Future<void> deleteFolder(String folderId) async {
     try {
-      final db = await _sqflite.database;
-      await db.delete(
-        _folderBooksTable,
+      await _db.delete(
+        libraryFolderBooksTable,
         where: 'folder_id = ?',
         whereArgs: [folderId],
       );
-      await db.delete(_foldersTable, where: 'id = ?', whereArgs: [folderId]);
+      await _db.delete(libraryFoldersTable, where: 'id = ?', whereArgs: [folderId]);
     } catch (e, stack) {
       log('deleteFolder error: $e\n$stack');
       rethrow;
@@ -129,9 +129,8 @@ class LibraryFolderService {
 
   Future<List<String>> getBookIdsInFolder(String folderId) async {
     try {
-      final db = await _sqflite.database;
-      final rows = await db.query(
-        _folderBooksTable,
+      final rows = await _db.query(
+        libraryFolderBooksTable,
         columns: ['book_id'],
         where: 'folder_id = ?',
         whereArgs: [folderId],
@@ -146,10 +145,9 @@ class LibraryFolderService {
 
   Future<bool> isBookInFolder(String folderId, String bookId) async {
     try {
-      final db = await _sqflite.database;
       final count = Sqflite.firstIntValue(
-        await db.rawQuery(
-          'SELECT COUNT(*) FROM $_folderBooksTable WHERE folder_id = ? AND book_id = ?',
+        await _db.rawQuery(
+          'SELECT COUNT(*) FROM $libraryFolderBooksTable WHERE folder_id = ? AND book_id = ?',
           [folderId, bookId],
         ),
       );
@@ -162,9 +160,8 @@ class LibraryFolderService {
 
   Future<List<String>> getFolderIdsForBook(String bookId) async {
     try {
-      final db = await _sqflite.database;
-      final rows = await db.query(
-        _folderBooksTable,
+      final rows = await _db.query(
+        libraryFolderBooksTable,
         columns: ['folder_id'],
         where: 'book_id = ?',
         whereArgs: [bookId],
@@ -178,8 +175,7 @@ class LibraryFolderService {
 
   Future<void> addBookToFolder(String folderId, String bookId) async {
     try {
-      final db = await _sqflite.database;
-      await db.insert(_folderBooksTable, {
+      await _db.insert(libraryFolderBooksTable, {
         'folder_id': folderId,
         'book_id': bookId,
         'added_at': DateTime.now().toIso8601String(),
@@ -192,9 +188,8 @@ class LibraryFolderService {
 
   Future<void> removeBookFromFolder(String folderId, String bookId) async {
     try {
-      final db = await _sqflite.database;
-      await db.delete(
-        _folderBooksTable,
+      await _db.delete(
+        libraryFolderBooksTable,
         where: 'folder_id = ? AND book_id = ?',
         whereArgs: [folderId, bookId],
       );
@@ -206,8 +201,7 @@ class LibraryFolderService {
 
   Future<List<String>> getAllBookIdsInAnyFolder() async {
     try {
-      final db = await _sqflite.database;
-      final rows = await db.query(_folderBooksTable, columns: ['book_id']);
+      final rows = await _db.query(libraryFolderBooksTable, columns: ['book_id']);
       return rows.map((r) => r['book_id'] as String).toList();
     } catch (e, stack) {
       log('getAllBookIdsInAnyFolder error: $e\n$stack');

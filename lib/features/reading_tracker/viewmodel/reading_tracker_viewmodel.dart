@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:book_verse/core/models/book_model.dart';
-import 'package:book_verse/core/services/sqflite_service.dart';
+import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,19 +11,16 @@ part 'reading_tracker_viewmodel.g.dart';
 
 @Riverpod(keepAlive: true)
 class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
-  final SqfliteService _sqfliteService = SqfliteService.instance;
-
   @override
   Future<ReadingProgressModel?> build(String bookId) async {
     try {
-      final progress = await _sqfliteService.getReadingProgress(bookId);
+      final datasource = ref.watch(readingTrackerDatasourceProvider);
+      final progress = await datasource.getReadingProgress(bookId);
       if (progress != null) {
-        final bookData = await _sqfliteService.database.then(
-          (db) => db.query('bookmarks', where: 'id = ?', whereArgs: [bookId]),
-        );
-        if (bookData.isNotEmpty) {
+        final bookData = await datasource.getBookmark(bookId);
+        if (bookData != null) {
           try {
-            final book = Book.fromJson(bookData.first);
+            final book = Book.fromJson(bookData);
             return progress.copyWith(book: book);
           } catch (e) {
             log('Failed to parse book data for $bookId: $e');
@@ -43,9 +40,10 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
     int? userPageCount,
   }) async {
     try {
+      final datasource = ref.read(readingTrackerDatasourceProvider);
       var currentState = state.value;
       if (currentState == null) {
-        final dbProgress = await _sqfliteService.getReadingProgress(bookId);
+        final dbProgress = await datasource.getReadingProgress(bookId);
         if (dbProgress == null) return;
         currentState = dbProgress;
       }
@@ -60,7 +58,7 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
         userPageCount: userPageCount,
       );
 
-      await _sqfliteService.saveReadingProgress(updatedProgress);
+      await datasource.saveReadingProgress(updatedProgress);
       state = AsyncData(updatedProgress);
     } catch (e, stack) {
       log('updateReadingProgress error: $e\n$stack');
@@ -69,7 +67,8 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
 
   Future<void> addReadingSession(ReadingSessionModel session) async {
     try {
-      await _sqfliteService.saveReadingSession(session);
+      final datasource = ref.read(readingTrackerDatasourceProvider);
+      await datasource.saveReadingSession(session);
       log(
         'Reading session saved for book ${session.bookId}: ${session.durationInSeconds} seconds, ended on page ${session.endPage}',
       );
@@ -85,7 +84,8 @@ Future<List<ReadingSessionModel>> bookReadingSessions(
   String bookId,
 ) async {
   try {
-    return SqfliteService.instance.getReadingSessions(bookId);
+    final datasource = ref.watch(readingTrackerDatasourceProvider);
+    return datasource.getReadingSessions(bookId);
   } catch (e, stack) {
     log('bookReadingSessions error: $e\n$stack');
     return [];

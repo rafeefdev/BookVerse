@@ -1,4 +1,4 @@
-import 'package:book_verse/core/services/sqflite_service.dart';
+import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
 import 'package:book_verse/features/insights/model/insights_state.dart';
 import 'package:book_verse/features/library/model/library_repo_di.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 
 final insightsProvider = FutureProvider<InsightsState>((ref) async {
   final repo = ref.watch(libraryRepoProvider);
-  final sessions = await SqfliteService.instance.getAllReadingSessions();
+  final datasource = ref.watch(readingTrackerDatasourceProvider);
+  final sessions = await datasource.getAllReadingSessions();
   final allProgress = await repo.getAllProgressWithBooks();
 
   final allSessionList = sessions.toList();

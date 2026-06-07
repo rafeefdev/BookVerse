@@ -1,7 +1,7 @@
 import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
 import 'package:book_verse/features/library/model/library_folder_model.dart';
-import 'package:book_verse/features/library/model/library_folder_service.dart';
+import 'package:book_verse/core/database/database_constants.dart';
 import 'package:book_verse/features/library/model/library_repo.dart';
 import 'package:book_verse/features/library/model/library_repo_di.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
@@ -181,7 +181,7 @@ class _SheetListView extends StatelessWidget {
             if (value && selectedFolderIds.isEmpty) {
               onSelectedFolderIdsChanged({
                 ...selectedFolderIds,
-                LibraryFolderService.defaultFolderId,
+                defaultFolderId,
               });
             }
             await _coordinateLibraryMutation(
@@ -219,7 +219,7 @@ class _SheetListView extends StatelessWidget {
               style: TextStyle(
                 fontWeight:
                     selectedFolderIds.contains(
-                      LibraryFolderService.defaultFolderId,
+                      defaultFolderId,
                     )
                     ? FontWeight.bold
                     : null,
@@ -227,25 +227,25 @@ class _SheetListView extends StatelessWidget {
             ),
             subtitle: const Text('Default location'),
             value: selectedFolderIds.contains(
-              LibraryFolderService.defaultFolderId,
+              defaultFolderId,
             ),
             onChanged: (checked) async {
               if (checked == true) {
                 await repo.removeBookFromAllFolders(book.id);
                 await repo.addBookToFolder(
-                  LibraryFolderService.defaultFolderId,
+                  defaultFolderId,
                   book.id,
                 );
                 onSelectedFolderIdsChanged({
-                  LibraryFolderService.defaultFolderId,
+                  defaultFolderId,
                 });
               } else {
                 await repo.removeBookFromFolder(
-                  LibraryFolderService.defaultFolderId,
+                  defaultFolderId,
                   book.id,
                 );
                 final updated = Set<String>.from(selectedFolderIds)
-                  ..remove(LibraryFolderService.defaultFolderId);
+                  ..remove(defaultFolderId);
                 onSelectedFolderIdsChanged(updated);
               }
               container.invalidate(libraryNotifierProvider);
@@ -253,7 +253,7 @@ class _SheetListView extends StatelessWidget {
             },
           ),
           ...folders
-              .where((f) => f.id != LibraryFolderService.defaultFolderId)
+              .where((f) => f.id != defaultFolderId)
               .map(
                 (folder) => CheckboxListTile(
                   title: Text(folder.name),
@@ -263,11 +263,11 @@ class _SheetListView extends StatelessWidget {
                     if (checked == true) {
                       await repo.addBookToFolder(folder.id, book.id);
                       await repo.removeBookFromFolder(
-                        LibraryFolderService.defaultFolderId,
+                        defaultFolderId,
                         book.id,
                       );
                       final updated = Set<String>.from(selectedFolderIds)
-                        ..remove(LibraryFolderService.defaultFolderId)
+                        ..remove(defaultFolderId)
                         ..add(folder.id);
                       onSelectedFolderIdsChanged(updated);
                     } else {
@@ -276,10 +276,10 @@ class _SheetListView extends StatelessWidget {
                         ..remove(folder.id);
                       if (updated.isEmpty) {
                         await repo.addBookToFolder(
-                          LibraryFolderService.defaultFolderId,
+                          defaultFolderId,
                           book.id,
                         );
-                        updated.add(LibraryFolderService.defaultFolderId);
+                        updated.add(defaultFolderId);
                       }
                       onSelectedFolderIdsChanged(updated);
                     }
