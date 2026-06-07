@@ -1,22 +1,27 @@
 import 'dart:developer';
 import 'package:book_verse/core/models/book_model.dart';
-import 'package:book_verse/core/services/sqflite_service.dart';
-import 'package:book_verse/features/bookmarks/model/local_bookmark_service.dart';
+import 'package:book_verse/core/utils/reading_cleanup_utils.dart';
+import 'package:book_verse/features/bookmarks/data/bookmark_datasource.dart';
+import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 
 class BookmarkRepo {
-  final LocalBookmarkService localBookmarkService;
-  final SqfliteService _sqfliteService = SqfliteService.instance;
+  final BookmarkDatasource _bookmarkDatasource;
+  final ReadingTrackerDatasource _readingTrackerDatasource;
 
-  BookmarkRepo({required this.localBookmarkService});
+  BookmarkRepo({
+    required BookmarkDatasource bookmarkDatasource,
+    required ReadingTrackerDatasource readingTrackerDatasource,
+  })  : _bookmarkDatasource = bookmarkDatasource,
+        _readingTrackerDatasource = readingTrackerDatasource;
 
   Future<List<ReadingProgressModel>> getReadingProgressWithBooks() async {
     try {
-      final booksMap = await localBookmarkService.getBookmarkedBooks();
-      final progressMap = await _sqfliteService.getAllReadingProgress();
+      final booksMap = await _bookmarkDatasource.getBookmarkedBooks();
+      final progressMap =
+          await _readingTrackerDatasource.getAllReadingProgress();
 
       final List<Book> books = booksMap.map((b) => Book.fromJson(b)).toList();
-
       final bookIds = books.map((b) => b.id).toSet();
       return progressMap
           .where((progress) => bookIds.contains(progress.bookId))
@@ -33,12 +38,11 @@ class BookmarkRepo {
 
   Future<void> addToBookmark(Book book) async {
     try {
-      await localBookmarkService.addToBookmark(book.toMap());
-      final initialProgress = ReadingProgressModel(
-        bookId: book.id,
-        currentPage: 0,
+      await addBookmarkWithProgress(
+        bookmarkDatasource: _bookmarkDatasource,
+        readingTrackerDatasource: _readingTrackerDatasource,
+        book: book,
       );
-      await _sqfliteService.saveReadingProgress(initialProgress);
     } catch (e, stack) {
       log('addToBookmark error: $e\n$stack');
     }
@@ -46,9 +50,11 @@ class BookmarkRepo {
 
   Future<void> removeBookmark(String bookId) async {
     try {
-      await localBookmarkService.removeBookmark(bookId);
-      await _sqfliteService.deleteReadingProgress(bookId);
-      await _sqfliteService.deleteReadingSessions(bookId);
+      await removeBookmarkCascade(
+        bookmarkDatasource: _bookmarkDatasource,
+        readingTrackerDatasource: _readingTrackerDatasource,
+        bookId: bookId,
+      );
     } catch (e, stack) {
       log('removeBookmark error: $e\n$stack');
     }
@@ -56,7 +62,8 @@ class BookmarkRepo {
 
   Future<bool> isBookmarked(String id) async {
     try {
-      final progress = await _sqfliteService.getReadingProgress(id);
+      final progress =
+          await _readingTrackerDatasource.getReadingProgress(id);
       return progress != null;
     } catch (e, stack) {
       log('isBookmarked error: $e\n$stack');

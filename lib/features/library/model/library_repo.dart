@@ -1,20 +1,30 @@
 import 'dart:developer';
 import 'package:book_verse/core/models/book_model.dart';
-import 'package:book_verse/features/bookmarks/model/local_bookmark_service.dart';
+import 'package:book_verse/core/utils/reading_cleanup_utils.dart';
+import 'package:book_verse/features/bookmarks/data/bookmark_datasource.dart';
+import 'package:book_verse/features/library/data/library_folder_datasource.dart';
 import 'package:book_verse/features/library/model/library_folder_model.dart';
-import 'package:book_verse/features/library/model/library_folder_service.dart';
+import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
-import 'package:book_verse/core/services/sqflite_service.dart';
 
 class LibraryRepo {
-  final LocalBookmarkService _bookmarkService = LocalBookmarkService();
-  final LibraryFolderService _folderService = LibraryFolderService();
-  final SqfliteService _sqflite = SqfliteService.instance;
+  final BookmarkDatasource _bookmarkDatasource;
+  final LibraryFolderDatasource _folderDatasource;
+  final ReadingTrackerDatasource _readingTrackerDatasource;
+
+  LibraryRepo({
+    required BookmarkDatasource bookmarkDatasource,
+    required LibraryFolderDatasource libraryFolderDatasource,
+    required ReadingTrackerDatasource readingTrackerDatasource,
+  })  : _bookmarkDatasource = bookmarkDatasource,
+        _folderDatasource = libraryFolderDatasource,
+        _readingTrackerDatasource = readingTrackerDatasource;
 
   Future<List<ReadingProgressModel>> getAllProgressWithBooks() async {
     try {
-      final booksMap = await _bookmarkService.getBookmarkedBooks();
-      final progressMap = await _sqflite.getAllReadingProgress();
+      final booksMap = await _bookmarkDatasource.getBookmarkedBooks();
+      final progressMap =
+          await _readingTrackerDatasource.getAllReadingProgress();
       final books = booksMap.map((b) => Book.fromJson(b)).toList();
 
       return progressMap.map((progress) {
@@ -42,7 +52,7 @@ class LibraryRepo {
 
   Future<List<Book>> getAllBookmarkedBooks() async {
     try {
-      final booksMap = await _bookmarkService.getBookmarkedBooks();
+      final booksMap = await _bookmarkDatasource.getBookmarkedBooks();
       return booksMap.map((b) => Book.fromJson(b)).toList();
     } catch (e, stack) {
       log('getAllBookmarkedBooks error: $e\n$stack');
@@ -51,70 +61,71 @@ class LibraryRepo {
   }
 
   Future<List<LibraryFolder>> getAllFolders() {
-    return _folderService.getAllFolders();
+    return _folderDatasource.getAllFolders();
   }
 
   Future<List<String>> getAllBookIdsInAnyFolder() {
-    return _folderService.getAllBookIdsInAnyFolder();
+    return _folderDatasource.getAllBookIdsInAnyFolder();
   }
 
   Future<List<String>> getBookIdsInFolder(String folderId) {
-    return _folderService.getBookIdsInFolder(folderId);
+    return _folderDatasource.getBookIdsInFolder(folderId);
   }
 
   Future<List<String>> getFolderIdsForBook(String bookId) {
-    return _folderService.getFolderIdsForBook(bookId);
+    return _folderDatasource.getFolderIdsForBook(bookId);
   }
 
   Future<void> createFolder(LibraryFolder folder) {
-    return _folderService.createFolder(folder);
+    return _folderDatasource.createFolder(folder);
   }
 
   Future<void> renameFolder(String folderId, String newName) {
-    return _folderService.renameFolder(folderId, newName);
+    return _folderDatasource.renameFolder(folderId, newName);
   }
 
   Future<void> deleteFolder(String folderId) {
-    return _folderService.deleteFolder(folderId);
+    return _folderDatasource.deleteFolder(folderId);
   }
 
   Future<void> addBookToFolder(String folderId, String bookId) async {
-    await _folderService.addBookToFolder(folderId, bookId);
+    await _folderDatasource.addBookToFolder(folderId, bookId);
   }
 
   Future<void> removeBookFromFolder(String folderId, String bookId) async {
-    await _folderService.removeBookFromFolder(folderId, bookId);
+    await _folderDatasource.removeBookFromFolder(folderId, bookId);
   }
 
   Future<bool> isBookInAnyFolder(String bookId) async {
-    final ids = await _folderService.getFolderIdsForBook(bookId);
+    final ids = await _folderDatasource.getFolderIdsForBook(bookId);
     return ids.isNotEmpty;
   }
 
   Future<void> saveBook(Book book) async {
-    await _bookmarkService.addToBookmark(book.toMap());
-    await _folderService.assignToDefaultFolder(book.id);
-    final initialProgress = ReadingProgressModel(
-      bookId: book.id,
-      currentPage: 0,
+    await addBookmarkWithProgress(
+      bookmarkDatasource: _bookmarkDatasource,
+      readingTrackerDatasource: _readingTrackerDatasource,
+      book: book,
     );
-    await _sqflite.saveReadingProgress(initialProgress);
+    await _folderDatasource.assignToDefaultFolder(book.id);
   }
 
   Future<void> removeBookFromAllFolders(String bookId) async {
-    final ids = await _folderService.getFolderIdsForBook(bookId);
+    final ids = await _folderDatasource.getFolderIdsForBook(bookId);
     for (final folderId in ids) {
-      await _folderService.removeBookFromFolder(folderId, bookId);
+      await _folderDatasource.removeBookFromFolder(folderId, bookId);
     }
   }
 
   Future<void> ensureDefaultFolder() {
-    return _folderService.ensureDefaultFolder();
+    return _folderDatasource.ensureDefaultFolder();
   }
 
   Future<void> removeBookmark(String bookId) async {
-    await _bookmarkService.removeBookmark(bookId);
-    await _sqflite.deleteReadingProgress(bookId);
-    await _sqflite.deleteReadingSessions(bookId);
+    await removeBookmarkCascade(
+      bookmarkDatasource: _bookmarkDatasource,
+      readingTrackerDatasource: _readingTrackerDatasource,
+      bookId: bookId,
+    );
   }
 }

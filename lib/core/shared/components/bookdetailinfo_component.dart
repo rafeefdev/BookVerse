@@ -1,4 +1,4 @@
-import 'package:book_verse/core/shared/themes_extension.dart';
+import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:flutter/material.dart';
 
 Widget bookDetailInfoTile(

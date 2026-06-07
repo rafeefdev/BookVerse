@@ -1,18 +1,16 @@
 import 'dart:developer';
-import 'dart:io';
 
+import 'package:book_verse/core/database/database_provider.dart';
 import 'package:book_verse/core/router/app_router.dart';
-import 'package:book_verse/core/services/sqflite_service.dart';
 import 'package:book_verse/core/services/supabase_service.dart';
 import 'package:book_verse/core/theme/providers/thememode_provider.dart';
-import 'package:book_verse/core/shared/app_theme.dart';
+import 'package:book_verse/core/theme/app_theme.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,13 +35,7 @@ Future<void> main() async {
   }
 
   try {
-    if (Platform.isAndroid || Platform.isIOS) {
-      await SqfliteService.instance.database;
-    } else {
-      sqfliteFfiInit();
-      databaseFactory = databaseFactoryFfi;
-      await SqfliteService.instance.database;
-    }
+    await initDatabase();
   } catch (e, stack) {
     log('Failed to initialize database: $e\n$stack');
   }

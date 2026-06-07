@@ -1,5 +1,5 @@
 import 'package:book_verse/core/models/book_model.dart';
-import 'package:book_verse/core/shared/helpers/helper/book_authors.dart';
+import 'package:book_verse/core/shared/helpers/book_authors.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

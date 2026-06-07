@@ -1,5 +1,5 @@
 import 'package:book_verse/core/auth/providers/auth_provider.dart';
-import 'package:book_verse/core/shared/themes_extension.dart';
+import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:book_verse/core/theme/providers/thememode_provider.dart';
 import 'package:book_verse/features/insights/viewmodel/insights_viewmodel.dart';
 import 'package:flutter/material.dart';

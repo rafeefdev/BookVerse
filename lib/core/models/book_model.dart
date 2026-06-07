@@ -10,9 +10,9 @@ class Book {
   final String publishedDate;
   final String description;
   final String thumbnail;
-  bool isFavorite = false;
-  int pageCount = 0;
-  List? categories;
+  final bool isFavorite;
+  final int pageCount;
+  final List<String>? categories;
 
   Book({
     required this.id,
@@ -23,7 +23,7 @@ class Book {
     required this.publishedDate,
     required this.description,
     required this.thumbnail,
-    bool isFavorite = false,
+    this.isFavorite = false,
     required this.pageCount,
     this.categories,
   });
@@ -34,7 +34,9 @@ class Book {
 
   factory Book.fromJson(Map<String, dynamic> json) {
     // Handles both nested data from Google API ('volumeInfo') and flat data from local DB.
-    final info = json['volumeInfo'] as Map<String, dynamic>? ?? json;
+    final info = (json['volumeInfo'] is Map)
+        ? Map<String, dynamic>.from(json['volumeInfo'] as Map)
+        : json;
 
     // Handles fields that might be Lists or JSON-encoded Strings (from local DB).
     List<String> parseList(dynamic value) {

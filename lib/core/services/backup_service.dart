@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:book_verse/core/services/sqflite_service.dart';
+import 'package:book_verse/core/database/database_provider.dart';
+import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 import 'package:path_provider/path_provider.dart';
@@ -44,12 +45,15 @@ class RestoreResult {
 
 class BackupService {
   static final BackupService instance = BackupService._init();
-  BackupService._init();
+  final ReadingTrackerDatasource _datasource;
+
+  BackupService._init() : _datasource = ReadingTrackerDatasource(db);
+
+  BackupService.withDatasource(this._datasource);
 
   Future<String> backupProgress() async {
-    final db = SqfliteService.instance;
-    final progress = await db.getAllReadingProgress();
-    final sessions = await db.getAllReadingSessions();
+    final progress = await _datasource.getAllReadingProgress();
+    final sessions = await _datasource.getAllReadingSessions();
 
     final data = {
       'version': 1,
@@ -71,7 +75,6 @@ class BackupService {
   }
 
   Future<RestoreResult> restoreProgress() async {
-    final db = SqfliteService.instance;
     final dir = await getApplicationDocumentsDirectory();
     final backupFile = File('${dir.path}/bookverse_backup.json');
 
@@ -83,8 +86,8 @@ class BackupService {
       );
     }
 
-    final currentProgress = await db.getAllReadingProgress();
-    final currentSessions = await db.getAllReadingSessions();
+    final currentProgress = await _datasource.getAllReadingProgress();
+    final currentSessions = await _datasource.getAllReadingSessions();
 
     final snapshot = {
       'version': 1,
@@ -148,25 +151,7 @@ class BackupService {
       );
     }
 
-    final database = await db.database;
-    try {
-      await database.transaction((txn) async {
-        await txn.delete('reading_progress');
-        await txn.delete('reading_sessions');
-        for (final progress in progressList) {
-          await txn.insert('reading_progress', progress.toJson());
-        }
-        for (final session in sessionsList) {
-          await txn.insert('reading_sessions', session.toJson());
-        }
-      });
-    } catch (e) {
-      throw RestoreException(
-        code: RestoreErrorCode.databaseError,
-        message: 'Could not save the restored data to the database.',
-        detail: 'Restart the app or free up storage.',
-      );
-    }
+    await _datasource.replaceAll(progressList, sessionsList);
 
     return RestoreResult(
       progressCount: progressList.length,

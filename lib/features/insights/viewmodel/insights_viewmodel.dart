@@ -1,14 +1,24 @@
-import 'package:book_verse/core/services/sqflite_service.dart';
+import 'package:book_verse/core/utils/clock.dart';
+import 'package:book_verse/core/utils/page_utils.dart';
+import 'package:book_verse/core/utils/streak_utils.dart';
+import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
 import 'package:book_verse/features/insights/model/insights_state.dart';
 import 'package:book_verse/features/library/model/library_repo_di.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final insightsProvider = FutureProvider<InsightsState>((ref) async {
+part 'insights_viewmodel.g.dart';
+
+@Riverpod(keepAlive: true)
+class Insights extends _$Insights {
+  @override
+  Future<InsightsState> build() async {
+  final clock = ref.watch(clockProvider);
   final repo = ref.watch(libraryRepoProvider);
-  final sessions = await SqfliteService.instance.getAllReadingSessions();
+  final datasource = ref.watch(readingTrackerDatasourceProvider);
+  final sessions = await datasource.getAllReadingSessions();
   final allProgress = await repo.getAllProgressWithBooks();
 
   final allSessionList = sessions.toList();
@@ -17,13 +27,13 @@ final insightsProvider = FutureProvider<InsightsState>((ref) async {
       (allSessionList.fold<int>(0, (sum, s) => sum + s.durationInSeconds) / 60)
           .ceil();
 
-  final totalPages = _computeAllTimePages(allSessionList);
+  final totalPages = computeAllTimePages(allSessionList);
   final totalBooks = allSessionList.map((s) => s.bookId).toSet().length;
 
-  final now = DateTime.now();
+  final now = clock.now();
   final todayStart = DateTime(now.year, now.month, now.day);
-  final currentStreak = _computeStreak(allSessionList, todayStart);
-  final longestStreak = _computeLongestStreak(allSessionList);
+  final currentStreak = computeStreak(allSessionList, todayStart);
+  final longestStreak = computeLongestStreak(allSessionList);
   final streakHistory = _buildStreakHistory(allSessionList, todayStart);
 
   final streakStatus = _computeStreakStatus(
@@ -55,10 +65,10 @@ final insightsProvider = FutureProvider<InsightsState>((ref) async {
   final ytdMinutes =
       (ytdSessions.fold<int>(0, (sum, s) => sum + s.durationInSeconds) / 60)
           .ceil();
-  final ytdPages = _computePagesInRange(
+  final ytdPages = computePagesInRange(
+    ytdSessions,
     allSessionList,
     yearStart,
-    todayStart.add(const Duration(days: 1)),
   );
 
   return InsightsState(
@@ -75,7 +85,8 @@ final insightsProvider = FutureProvider<InsightsState>((ref) async {
     ytdMinutes: ytdMinutes,
     ytdPages: ytdPages,
   );
-});
+  }
+}
 
 StreakStatus _computeStreakStatus({
   required int currentStreak,
@@ -85,73 +96,6 @@ StreakStatus _computeStreakStatus({
   if (currentStreak == 0) return StreakStatus.broken;
   if (currentStreak < 3) return StreakStatus.atRisk;
   return StreakStatus.active;
-}
-
-int _computeAllTimePages(List<ReadingSessionModel> allSessions) {
-  final byBook = <String, List<ReadingSessionModel>>{};
-  for (final s in allSessions) {
-    byBook.putIfAbsent(s.bookId, () => []).add(s);
-  }
-
-  int total = 0;
-  for (final entry in byBook.entries) {
-    final bookSessions = entry.value
-      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-
-    int prevPage = 0;
-    int bookTotal = 0;
-    for (final session in bookSessions) {
-      final start = session.startPage ?? prevPage;
-      bookTotal += (session.endPage - start).clamp(0, session.endPage);
-      prevPage = session.endPage;
-    }
-    total += bookTotal;
-  }
-  return total;
-}
-
-int _computeStreak(List<ReadingSessionModel> allSessions, DateTime todayStart) {
-  int streak = 0;
-  for (var i = 0; ; i++) {
-    final dayStart = todayStart.subtract(Duration(days: i));
-    final dayEnd = dayStart.add(const Duration(days: 1));
-    final hasActivity = allSessions.any(
-      (s) => !s.timestamp.isBefore(dayStart) && s.timestamp.isBefore(dayEnd),
-    );
-    if (hasActivity) {
-      streak++;
-    } else {
-      break;
-    }
-  }
-  return streak;
-}
-
-int _computeLongestStreak(List<ReadingSessionModel> allSessions) {
-  if (allSessions.isEmpty) return 0;
-
-  final dates =
-      allSessions
-          .map(
-            (s) =>
-                DateTime(s.timestamp.year, s.timestamp.month, s.timestamp.day),
-          )
-          .toSet()
-          .toList()
-        ..sort();
-
-  int longest = 0;
-  int current = 1;
-  for (var i = 1; i < dates.length; i++) {
-    if (dates[i].difference(dates[i - 1]).inDays == 1) {
-      current++;
-    } else {
-      longest = current > longest ? current : longest;
-      current = 1;
-    }
-  }
-  longest = current > longest ? current : longest;
-  return longest;
 }
 
 List<StreakDay> _buildStreakHistory(
@@ -356,52 +300,13 @@ int _computePagesInMonth(
     monthSessions.first.timestamp.month,
     1,
   );
-  return _computePagesInRange(
-    allSessions,
-    firstDay,
-    DateTime(firstDay.year, firstDay.month + 1, 1),
-  );
-}
-
-int _computePagesInRange(
-  List<ReadingSessionModel> allSessions,
-  DateTime rangeStart,
-  DateTime rangeEnd,
-) {
-  final rangeSessions = allSessions
+  final monthRangeEnd = DateTime(firstDay.year, firstDay.month + 1, 1);
+  final filtered = allSessions
       .where(
         (s) =>
-            !s.timestamp.isBefore(rangeStart) && s.timestamp.isBefore(rangeEnd),
+            !s.timestamp.isBefore(firstDay) &&
+            s.timestamp.isBefore(monthRangeEnd),
       )
       .toList();
-
-  final byBook = <String, List<ReadingSessionModel>>{};
-  for (final s in rangeSessions) {
-    byBook.putIfAbsent(s.bookId, () => []).add(s);
-  }
-
-  int total = 0;
-  for (final entry in byBook.entries) {
-    final bookSessions = entry.value
-      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-
-    final before =
-        allSessions
-            .where(
-              (s) => s.bookId == entry.key && s.timestamp.isBefore(rangeStart),
-            )
-            .toList()
-          ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-    final prevEndPage = before.isNotEmpty ? before.last.endPage : 0;
-
-    int prevPage = prevEndPage;
-    int bookTotal = 0;
-    for (final session in bookSessions) {
-      final start = session.startPage ?? prevPage;
-      bookTotal += (session.endPage - start).clamp(0, session.endPage);
-      prevPage = session.endPage;
-    }
-    total += bookTotal;
-  }
-  return total;
+  return computePagesInRange(filtered, allSessions, firstDay);
 }

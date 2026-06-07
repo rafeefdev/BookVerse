@@ -1,5 +1,5 @@
 import 'package:book_verse/core/shared/components/booklisttile_component.dart';
-import 'package:book_verse/core/shared/themes_extension.dart';
+import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:book_verse/features/library/model/library_folder_model.dart';
 import 'package:book_verse/features/library/view/widgets/create_folder_dialog.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
