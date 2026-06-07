@@ -43,8 +43,12 @@ class ReadingTrackerNotifier extends _$ReadingTrackerNotifier {
     int? userPageCount,
   }) async {
     try {
-      final currentState = state.value;
-      if (currentState == null) return;
+      var currentState = state.value;
+      if (currentState == null) {
+        final dbProgress = await _sqfliteService.getReadingProgress(bookId);
+        if (dbProgress == null) return;
+        currentState = dbProgress;
+      }
 
       int updatedTotalReadingTime =
           currentState.totalReadingTimeInSeconds + (durationInSeconds ?? 0);

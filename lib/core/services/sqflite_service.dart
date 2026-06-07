@@ -185,16 +185,12 @@ class SqfliteService {
   }
 
   Future<void> saveReadingProgress(ReadingProgressModel progress) async {
-    try {
-      final db = await database;
-      await db.insert(
-        'reading_progress',
-        progress.toJson(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    } catch (e, stack) {
-      log('saveReadingProgress error: $e\n$stack');
-    }
+    final db = await database;
+    await db.insert(
+      'reading_progress',
+      progress.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<ReadingProgressModel?> getReadingProgress(String bookId) async {

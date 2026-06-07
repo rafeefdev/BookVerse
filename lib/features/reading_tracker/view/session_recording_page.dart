@@ -450,6 +450,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage>
                                     if (!sheetContext.mounted) return;
                                     setSheetState(() => isSaving = false);
                                     if (success) {
+                                      notifier.resetState();
                                       ref.invalidate(bookmarkNotifierProvider);
                                       ref.invalidate(libraryNotifierProvider);
                                       Navigator.of(sheetContext).pop();
@@ -598,7 +599,9 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage>
     return PopScope(
       canPop: !stopWatchTimer.isRunning,
       onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) {
+        if (didPop) {
+          sessionNotifier.resetState();
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text(
@@ -671,7 +674,8 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage>
                               Expanded(
                                 child: _StatCard(
                                   value: _formatDuration(
-                                    stopWatchTimer.rawTime.value ~/ 1000,
+                                    readingProgress.totalReadingTimeInSeconds +
+                                        (stopWatchTimer.rawTime.value ~/ 1000),
                                   ),
                                   label: 'Elapsed',
                                   scheme: scheme,
