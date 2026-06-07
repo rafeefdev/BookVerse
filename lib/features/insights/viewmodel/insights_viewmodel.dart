@@ -1,3 +1,4 @@
+import 'package:book_verse/core/utils/clock.dart';
 import 'package:book_verse/core/utils/page_utils.dart';
 import 'package:book_verse/core/utils/streak_utils.dart';
 import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
@@ -14,6 +15,7 @@ part 'insights_viewmodel.g.dart';
 class Insights extends _$Insights {
   @override
   Future<InsightsState> build() async {
+  final clock = ref.watch(clockProvider);
   final repo = ref.watch(libraryRepoProvider);
   final datasource = ref.watch(readingTrackerDatasourceProvider);
   final sessions = await datasource.getAllReadingSessions();
@@ -28,7 +30,7 @@ class Insights extends _$Insights {
   final totalPages = computeAllTimePages(allSessionList);
   final totalBooks = allSessionList.map((s) => s.bookId).toSet().length;
 
-  final now = DateTime.now();
+  final now = clock.now();
   final todayStart = DateTime(now.year, now.month, now.day);
   final currentStreak = computeStreak(allSessionList, todayStart);
   final longestStreak = computeLongestStreak(allSessionList);

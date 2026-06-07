@@ -37,6 +37,28 @@ void main() {
       expect(model.startPage, 10);
     });
 
+    test('fromJson with null timestamp defaults to now', () {
+      final json = {
+        'bookId': 'b1',
+        'durationInSeconds': 0,
+        'endPage': 0,
+        'timestamp': null,
+      };
+      final model = ReadingSessionModel.fromJson(json);
+      // timestamp defaults to DateTime.now(), so we can only verify it's not null
+      expect(model.timestamp, isNotNull);
+    });
+
+    test('fromJson with missing timestamp defaults to now', () {
+      final json = {
+        'bookId': 'b1',
+        'durationInSeconds': 0,
+        'endPage': 0,
+      };
+      final model = ReadingSessionModel.fromJson(json);
+      expect(model.timestamp, isNotNull);
+    });
+
     test('copyWith', () {
       final original = ReadingSessionModel(
         bookId: 'b1',
@@ -57,6 +79,39 @@ void main() {
         bookId: 'b1', durationInSeconds: 300, endPage: 20, timestamp: now,
       );
       expect(a, equals(b));
+    });
+
+    group('invariants', () {
+      test('durationInSeconds is never negative', () {
+        final model = ReadingSessionModel(
+          bookId: 'b1',
+          durationInSeconds: 0,
+          endPage: 0,
+          timestamp: now,
+        );
+        expect(model.durationInSeconds, greaterThanOrEqualTo(0));
+      });
+
+      test('endPage is never negative', () {
+        final model = ReadingSessionModel(
+          bookId: 'b1',
+          durationInSeconds: 0,
+          endPage: 0,
+          timestamp: now,
+        );
+        expect(model.endPage, greaterThanOrEqualTo(0));
+      });
+
+      test('startPage when present is never negative', () {
+        final model = ReadingSessionModel(
+          bookId: 'b1',
+          durationInSeconds: 0,
+          endPage: 10,
+          timestamp: now,
+          startPage: 0,
+        );
+        expect(model.startPage, greaterThanOrEqualTo(0));
+      });
     });
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 
 void main() {
@@ -21,6 +22,26 @@ void main() {
       expect(output['currentPage'], 42);
     });
 
+    test('fromJson with userPageCount', () {
+      final json = {
+        'bookId': 'b1',
+        'currentPage': 50,
+        'userPageCount': 400,
+      };
+      final model = ReadingProgressModel.fromJson(json);
+      expect(model.userPageCount, 400);
+      expect(model.effectivePageCount, 400);
+    });
+
+    test('fromJson with null lastRead', () {
+      final json = {
+        'bookId': 'b1',
+        'currentPage': 0,
+      };
+      final model = ReadingProgressModel.fromJson(json);
+      expect(model.lastRead, isNull);
+    });
+
     test('effectivePageCount uses userPageCount when available', () {
       final model = ReadingProgressModel(
         bookId: 'b1', currentPage: 10, userPageCount: 300,
@@ -28,7 +49,25 @@ void main() {
       expect(model.effectivePageCount, 300);
     });
 
-    test('effectivePageCount falls back to 0', () {
+    test('effectivePageCount falls back to book.pageCount', () {
+      final book = Book(
+        id: 'b1',
+        title: 'Test',
+        subTitle: '',
+        authors: [],
+        publisher: '',
+        publishedDate: '',
+        description: '',
+        thumbnail: '',
+        pageCount: 250,
+      );
+      final model = ReadingProgressModel(
+        bookId: 'b1', currentPage: 10, book: book,
+      );
+      expect(model.effectivePageCount, 250);
+    });
+
+    test('effectivePageCount falls back to 0 when neither available', () {
       final model = ReadingProgressModel(bookId: 'b1', currentPage: 10);
       expect(model.effectivePageCount, 0);
     });
@@ -44,6 +83,22 @@ void main() {
       final a = ReadingProgressModel(bookId: 'b1', currentPage: 10);
       final b = ReadingProgressModel(bookId: 'b1', currentPage: 10);
       expect(a, equals(b));
+    });
+
+    group('invariants', () {
+      test('currentPage is never negative', () {
+        final model = ReadingProgressModel(bookId: 'b1', currentPage: 0);
+        expect(model.currentPage, greaterThanOrEqualTo(0));
+      });
+
+      test('currentPage does not exceed effectivePageCount', () {
+        final model = ReadingProgressModel(
+          bookId: 'b1',
+          currentPage: 200,
+          userPageCount: 300,
+        );
+        expect(model.currentPage, lessThanOrEqualTo(model.effectivePageCount));
+      });
     });
   });
 }

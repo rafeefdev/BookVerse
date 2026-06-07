@@ -1,3 +1,4 @@
+import 'package:book_verse/core/utils/clock.dart';
 import 'package:book_verse/core/utils/page_utils.dart';
 import 'package:book_verse/core/utils/streak_utils.dart';
 import 'package:book_verse/features/dashboard/model/dashboard_state.dart';
@@ -12,12 +13,13 @@ part 'dashboard_viewmodel.g.dart';
 class Dashboard extends _$Dashboard {
   @override
   Future<DashboardState> build() async {
+  final clock = ref.watch(clockProvider);
   final libraryAsync = ref.watch(libraryNotifierProvider);
   final datasource = ref.watch(readingTrackerDatasourceProvider);
   final sessions = await datasource.getAllReadingSessions();
 
   final libraryState = libraryAsync.valueOrNull;
-  final now = DateTime.now();
+  final now = clock.now();
   final todayStart = DateTime(now.year, now.month, now.day);
   final yesterdayStart = todayStart.subtract(const Duration(days: 1));
 
