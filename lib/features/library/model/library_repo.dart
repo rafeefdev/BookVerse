@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:book_verse/core/models/book_model.dart';
+import 'package:book_verse/core/utils/reading_cleanup_utils.dart';
 import 'package:book_verse/features/bookmarks/data/bookmark_datasource.dart';
 import 'package:book_verse/features/library/data/library_folder_datasource.dart';
 import 'package:book_verse/features/library/model/library_folder_model.dart';
@@ -101,13 +102,12 @@ class LibraryRepo {
   }
 
   Future<void> saveBook(Book book) async {
-    await _bookmarkDatasource.addToBookmark(book.toMap());
-    await _folderDatasource.assignToDefaultFolder(book.id);
-    final initialProgress = ReadingProgressModel(
-      bookId: book.id,
-      currentPage: 0,
+    await addBookmarkWithProgress(
+      bookmarkDatasource: _bookmarkDatasource,
+      readingTrackerDatasource: _readingTrackerDatasource,
+      book: book,
     );
-    await _readingTrackerDatasource.saveReadingProgress(initialProgress);
+    await _folderDatasource.assignToDefaultFolder(book.id);
   }
 
   Future<void> removeBookFromAllFolders(String bookId) async {
@@ -122,8 +122,10 @@ class LibraryRepo {
   }
 
   Future<void> removeBookmark(String bookId) async {
-    await _bookmarkDatasource.removeBookmark(bookId);
-    await _readingTrackerDatasource.deleteReadingProgress(bookId);
-    await _readingTrackerDatasource.deleteReadingSessions(bookId);
+    await removeBookmarkCascade(
+      bookmarkDatasource: _bookmarkDatasource,
+      readingTrackerDatasource: _readingTrackerDatasource,
+      bookId: bookId,
+    );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:book_verse/features/library/model/library_state.dart';
-import 'package:book_verse/features/library/view/widgets/currently_reading_tab.dart';
-import 'package:book_verse/features/library/view/widgets/finished_tab.dart';
+import 'package:book_verse/features/library/view/widgets/library_book_list_tab.dart';
 import 'package:book_verse/features/library/view/widgets/saved_tab.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -74,8 +73,16 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
           child: TabBarView(
             controller: _tabController,
             children: [
-              CurrentlyReadingTab(state: state),
-              FinishedTab(state: state),
+              LibraryBookListTab(
+                books: state.currentlyReading,
+                emptyIcon: Icons.menu_book_outlined,
+                emptyText: 'No books being read',
+              ),
+              LibraryBookListTab(
+                books: state.finished,
+                emptyIcon: Icons.check_circle_outline,
+                emptyText: 'No finished books yet',
+              ),
               SavedTab(
                 state: state,
                 onCreateFolder: (name) {

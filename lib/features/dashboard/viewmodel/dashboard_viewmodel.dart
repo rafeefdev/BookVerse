@@ -1,3 +1,5 @@
+import 'package:book_verse/core/utils/page_utils.dart';
+import 'package:book_verse/core/utils/streak_utils.dart';
 import 'package:book_verse/features/dashboard/model/dashboard_state.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
@@ -29,7 +31,7 @@ class Dashboard extends _$Dashboard {
     0,
     (sum, s) => sum + s.durationInSeconds,
   );
-  final todayPages = _pagesInRange(todaySessions, allSessionList, todayStart);
+  final todayPages = computePagesInRange(todaySessions, allSessionList, todayStart);
 
   // yesterday
   final yesterdaySeconds = allSessionList
@@ -41,7 +43,7 @@ class Dashboard extends _$Dashboard {
       .fold<int>(0, (sum, s) => sum + s.durationInSeconds);
 
   // streak
-  final streak = _computeStreak(allSessionList, todayStart);
+  final streak = computeStreak(allSessionList, todayStart);
 
   // weekly
   final weekStart = _weekStart(now);
@@ -67,7 +69,7 @@ class Dashboard extends _$Dashboard {
       (sum, s) => sum + s.durationInSeconds,
     );
     final dayDate = weekStart.add(Duration(days: i));
-    final dayPages = _pagesInRange(daySessions, allSessionList, dayDate);
+    final dayPages = computePagesInRange(daySessions, allSessionList, dayDate);
     return DailyReadingMinutes(
       label: labels[i],
       minutes: (daySeconds / 60).ceil(),
@@ -85,59 +87,6 @@ class Dashboard extends _$Dashboard {
     currentlyReading: (libraryState?.currentlyReading ?? []).take(5).toList(),
   );
   }
-}
-
-int _pagesInRange(
-  List<ReadingSessionModel> rangeSessions,
-  List<ReadingSessionModel> allSessions,
-  DateTime rangeStart,
-) {
-  final byBook = <String, List<ReadingSessionModel>>{};
-  for (final s in rangeSessions) {
-    byBook.putIfAbsent(s.bookId, () => []).add(s);
-  }
-
-  int total = 0;
-  for (final entry in byBook.entries) {
-    final bookSessions = entry.value
-      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-
-    final before =
-        allSessions
-            .where(
-              (s) => s.bookId == entry.key && s.timestamp.isBefore(rangeStart),
-            )
-            .toList()
-          ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-    final prevEndPage = before.isNotEmpty ? before.last.endPage : 0;
-
-    int prevPage = prevEndPage;
-    int bookTotal = 0;
-    for (final session in bookSessions) {
-      final start = session.startPage ?? prevPage;
-      bookTotal += (session.endPage - start).clamp(0, session.endPage);
-      prevPage = session.endPage;
-    }
-    total += bookTotal;
-  }
-  return total;
-}
-
-int _computeStreak(List<ReadingSessionModel> allSessions, DateTime todayStart) {
-  int streak = 0;
-  for (var i = 0; ; i++) {
-    final dayStart = todayStart.subtract(Duration(days: i));
-    final dayEnd = dayStart.add(const Duration(days: 1));
-    final hasActivity = allSessions.any(
-      (s) => !s.timestamp.isBefore(dayStart) && s.timestamp.isBefore(dayEnd),
-    );
-    if (hasActivity) {
-      streak++;
-    } else {
-      break;
-    }
-  }
-  return streak;
 }
 
 DateTime _weekStart(DateTime date) {

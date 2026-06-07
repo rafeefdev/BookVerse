@@ -1,31 +1,32 @@
 import 'package:book_verse/core/shared/components/booklisttile_component.dart';
-import 'package:book_verse/features/library/model/library_state.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class FinishedTab extends StatelessWidget {
-  final LibraryState state;
+class LibraryBookListTab extends StatelessWidget {
+  final List<ReadingProgressModel> books;
+  final IconData emptyIcon;
+  final String emptyText;
 
-  const FinishedTab({super.key, required this.state});
+  const LibraryBookListTab({
+    super.key,
+    required this.books,
+    required this.emptyIcon,
+    required this.emptyText,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final books = state.finished;
     final scheme = Theme.of(context).colorScheme;
     if (books.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.check_circle_outline,
-              size: 64,
-              color: scheme.outlineVariant,
-            ),
+            Icon(emptyIcon, size: 64, color: scheme.outlineVariant),
             const SizedBox(height: 16),
             Text(
-              'No finished books yet',
+              emptyText,
               style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
             ),
           ],

@@ -1,3 +1,4 @@
+import 'package:book_verse/core/utils/page_utils.dart';
 import 'package:book_verse/features/insights/model/insights_state.dart';
 import 'package:flutter/material.dart';
 
@@ -292,7 +293,7 @@ Widget _buildMonthLabels(
       return SizedBox(
         width: span.count * cellSize + (span.count - 1) * gap,
         child: Text(
-          _monthLabel(span.month),
+          monthLabel(span.month),
           style: textTheme.labelSmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
             fontSize: 10,
@@ -350,9 +351,9 @@ void _showDayDetail(
   ColorScheme colorScheme,
 ) {
   final minutes = (day.durationSeconds / 60).ceil();
-  final dateStr = '${_monthLabel(day.date.month)} ${day.date.day}';
+  final dateStr = '${monthLabel(day.date.month)} ${day.date.day}';
   final detail = minutes > 0
-      ? '$dateStr — ${_formatDuration(minutes)} read'
+      ? '$dateStr — ${formatMinutes(minutes)} read'
       : '$dateStr — No activity';
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -361,21 +362,6 @@ void _showDayDetail(
       behavior: SnackBarBehavior.floating,
     ),
   );
-}
-
-String _formatDuration(int minutes) {
-  if (minutes < 60) return '${minutes}m';
-  final h = minutes ~/ 60;
-  final m = minutes % 60;
-  return m > 0 ? '${h}h ${m}m' : '${h}h';
-}
-
-String _monthLabel(int month) {
-  const labels = [
-    '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-  ];
-  return labels[month];
 }
 
 class _MonthSpan {

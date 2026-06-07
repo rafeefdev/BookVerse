@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:book_verse/core/models/book_model.dart';
+import 'package:book_verse/core/utils/reading_cleanup_utils.dart';
 import 'package:book_verse/features/bookmarks/data/bookmark_datasource.dart';
 import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
@@ -37,12 +38,11 @@ class BookmarkRepo {
 
   Future<void> addToBookmark(Book book) async {
     try {
-      await _bookmarkDatasource.addToBookmark(book.toMap());
-      final initialProgress = ReadingProgressModel(
-        bookId: book.id,
-        currentPage: 0,
+      await addBookmarkWithProgress(
+        bookmarkDatasource: _bookmarkDatasource,
+        readingTrackerDatasource: _readingTrackerDatasource,
+        book: book,
       );
-      await _readingTrackerDatasource.saveReadingProgress(initialProgress);
     } catch (e, stack) {
       log('addToBookmark error: $e\n$stack');
     }
@@ -50,9 +50,11 @@ class BookmarkRepo {
 
   Future<void> removeBookmark(String bookId) async {
     try {
-      await _bookmarkDatasource.removeBookmark(bookId);
-      await _readingTrackerDatasource.deleteReadingProgress(bookId);
-      await _readingTrackerDatasource.deleteReadingSessions(bookId);
+      await removeBookmarkCascade(
+        bookmarkDatasource: _bookmarkDatasource,
+        readingTrackerDatasource: _readingTrackerDatasource,
+        bookId: bookId,
+      );
     } catch (e, stack) {
       log('removeBookmark error: $e\n$stack');
     }
