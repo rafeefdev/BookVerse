@@ -1,5 +1,5 @@
 import 'package:book_verse/core/models/book_model.dart';
-import 'package:book_verse/core/shared/themes_extension.dart';
+import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:flutter/material.dart';
 
 Widget iconWithTextHorizontal(

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/shared/components/booklisttile_component.dart';
-import 'package:book_verse/core/shared/themes_extension.dart';
+import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:book_verse/features/search/model/entities/searchstate_model.dart';
 import 'package:book_verse/features/search/viewmodel/search_viewmodel.dart';
 import 'package:flutter/material.dart';

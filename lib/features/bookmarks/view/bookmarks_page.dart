@@ -1,16 +1,12 @@
 import 'package:book_verse/core/shared/components/bookgridtile_component.dart';
 import 'package:book_verse/core/shared/components/booklisttile_component.dart';
-import 'package:book_verse/core/shared/themes_extension.dart';
+import 'package:book_verse/core/theme/themes_extension.dart';
+import 'package:book_verse/features/bookmarks/providers/view_mode_provider.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-enum ViewMode { grid, list }
-
-// Provider using Riverpod code generation
-final viewModeProvider = StateProvider<ViewMode>((ref) => ViewMode.list);
 
 class BookmarksPage extends ConsumerWidget {
   const BookmarksPage({super.key});
