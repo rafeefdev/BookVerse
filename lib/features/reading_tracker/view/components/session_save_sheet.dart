@@ -266,6 +266,7 @@ class _SessionSaveSheetState extends State<SessionSaveSheet> {
                             if (success) {
                               widget.notifier.resetState();
                               widget.onSaved();
+                              if (context.mounted) Navigator.of(context).pop();
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
