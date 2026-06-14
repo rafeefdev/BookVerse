@@ -12,7 +12,7 @@ on:
         options:
           - tester-developer
           - user-beta
-        default: tester
+        default: tester-developer
       deploy_shorebird:
         description: Should we also deploy the patch to Shorebird?
         required: true
@@ -149,12 +149,13 @@ jobs:
             --token "${{ secrets.FIREBASE_TOKEN }}" \
             --release-notes "${{ github.event.inputs.release_notes }}"
 
+      - name: Install Shorebird CLI
+        run: dart pub global activate shorebird_cli
+
       - name: Shorebird patch
-        uses: shorebirdtech/shorebird-action@v1
         if: |
           needs.detect.outputs.dart_only == 'true' ||
           (needs.detect.outputs.is_manual == 'true' && github.event.inputs.deploy_shorebird == 'true')
-        with:
-          args: patch android
+        run: shorebird patch android
         env:
           SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
