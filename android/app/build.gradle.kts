@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -7,10 +9,13 @@ plugins {
     id("com.google.gms.google-services")
 }
 
-val keystoreProperties = java.util.Properties()
+val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
+val keystoreStoreFile = if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(keystorePropertiesFile.inputStream())
+    file(keystoreProperties["storeFile"] as String)
+} else {
+    null
 }
 
 android {
@@ -42,9 +47,7 @@ android {
             if (keystorePropertiesFile.exists()) {
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
-                storeFile = keystoreProperties["storeFile"]?.let {
-                    file(it)
-                }
+                storeFile = keystoreStoreFile
                 storePassword = keystoreProperties["storePassword"] as String
             }
         }
