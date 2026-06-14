@@ -154,12 +154,18 @@ jobs:
           curl --proto '=https' --tlsv1.2 \
             https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh \
             -sSf | bash
-          echo "$HOME/.shorebird/bin" >> $GITHUB_PATH
+          echo "/home/runner/.config/shorebird/bin" >> $GITHUB_PATH
+
+      - name: Shorebird login
+        if: |
+          needs.detect.outputs.dart_only == 'true' ||
+          (needs.detect.outputs.is_manual == 'true' && github.event.inputs.deploy_shorebird == 'true')
+        run: shorebird login --ci
+        env:
+          SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
 
       - name: Shorebird patch
         if: |
           needs.detect.outputs.dart_only == 'true' ||
           (needs.detect.outputs.is_manual == 'true' && github.event.inputs.deploy_shorebird == 'true')
         run: shorebird patch android
-        env:
-          SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
