@@ -44,9 +44,13 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-#environtment
+# environment
 .env
 android/app/google-services.json
+
+# Android keystore (sensitive)
+android/key.properties
+android/app/upload-keystore.jks
 
 # AI agent custom prompt
 GEMINI.md
