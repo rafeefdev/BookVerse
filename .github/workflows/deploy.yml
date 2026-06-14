@@ -150,7 +150,11 @@ jobs:
             --release-notes "${{ github.event.inputs.release_notes }}"
 
       - name: Install Shorebird CLI
-        run: dart pub global activate shorebird_cli
+        run: |
+          curl --proto '=https' --tlsv1.2 \
+            https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh \
+            -sSf | bash
+          echo "$HOME/.shorebird/bin" >> $GITHUB_PATH
 
       - name: Shorebird patch
         if: |
