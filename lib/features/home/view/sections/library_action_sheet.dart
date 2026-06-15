@@ -58,15 +58,21 @@ Future<void> showLibrarySheet(BuildContext context, Book book) async {
 
   await showModalBottomSheet(
     context: context,
+    isScrollControlled: true,
     builder: (sheetContext) {
       var saved = isBookmarked;
       var selectedFolderIds = folderIdsForBook.toSet();
       var currentStep = _SheetStep.list;
-      return StatefulBuilder(
-        builder: (context, setSheetState) {
-          switch (currentStep) {
-            case _SheetStep.list:
-              return _SheetListView(
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+        ),
+        child: SingleChildScrollView(
+          child: StatefulBuilder(
+            builder: (context, setSheetState) {
+              switch (currentStep) {
+                case _SheetStep.list:
+                  return _SheetListView(
                 saved: saved,
                 selectedFolderIds: selectedFolderIds,
                 folders: folders,
@@ -97,6 +103,8 @@ Future<void> showLibrarySheet(BuildContext context, Book book) async {
               );
           }
         },
+      ),
+        ),
       );
     },
   );
@@ -420,6 +428,7 @@ void showSetCurrentPageSheet(BuildContext context, WidgetRef ref, Book book) {
 
   showModalBottomSheet(
     context: context,
+    isScrollControlled: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
@@ -429,91 +438,93 @@ void showSetCurrentPageSheet(BuildContext context, WidgetRef ref, Book book) {
           left: 24,
           right: 24,
           top: 12,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: scheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(2),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: scheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Icon(Icons.info_outline, color: scheme.primary, size: 24),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text('Book Saved!', style: textTheme.titleLarge),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Icon(Icons.info_outline, color: scheme.primary, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text('Book Saved!', style: textTheme.titleLarge),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Have you already started reading this book? '
+                'Enter the page you\'re on.',
+                style: textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: 'Current page (optional)',
+                  border: const OutlineInputBorder(),
+                  suffixText: 'pages',
+                  suffixStyle: TextStyle(color: scheme.onSurfaceVariant),
                 ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Have you already started reading this book? '
-              'Enter the page you\'re on.',
-              style: textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: 'Current page (optional)',
-                border: const OutlineInputBorder(),
-                suffixText: 'pages',
-                suffixStyle: TextStyle(color: scheme.onSurfaceVariant),
               ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () async {
-                  final text = controller.text.trim();
-                  final page = int.tryParse(text);
-                  if (text.isNotEmpty && (page == null || page < 1)) {
-                    ScaffoldMessenger.of(sheetContext).showSnackBar(
-                      SnackBar(
-                        content: const Text('Please enter a valid page number'),
-                        backgroundColor: scheme.error,
-                      ),
-                    );
-                    return;
-                  }
-                  if (page != null && page > 0) {
-                    final tracker = ref.read(
-                      readingTrackerNotifierProvider(book.id).notifier,
-                    );
-                    await ref.read(
-                      readingTrackerNotifierProvider(book.id).future,
-                    );
-                    await tracker.updateReadingProgress(page);
-                  }
-                  if (sheetContext.mounted) {
-                    Navigator.of(sheetContext).pop();
-                  }
-                },
-                child: const Text('Done'),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () async {
+                    final text = controller.text.trim();
+                    final page = int.tryParse(text);
+                    if (text.isNotEmpty && (page == null || page < 1)) {
+                      ScaffoldMessenger.of(sheetContext).showSnackBar(
+                        SnackBar(
+                          content: const Text('Please enter a valid page number'),
+                          backgroundColor: scheme.error,
+                        ),
+                      );
+                      return;
+                    }
+                    if (page != null && page > 0) {
+                      final tracker = ref.read(
+                        readingTrackerNotifierProvider(book.id).notifier,
+                      );
+                      await ref.read(
+                        readingTrackerNotifierProvider(book.id).future,
+                      );
+                      await tracker.updateReadingProgress(page);
+                    }
+                    if (sheetContext.mounted) {
+                      Navigator.of(sheetContext).pop();
+                    }
+                  },
+                  child: const Text('Done'),
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: () => Navigator.of(sheetContext).pop(),
-                child: const Text('Skip'),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => Navigator.of(sheetContext).pop(),
+                  child: const Text('Skip'),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     },
