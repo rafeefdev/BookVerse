@@ -72,10 +72,11 @@ class _SessionSaveSheetState extends State<SessionSaveSheet> {
         top: 12,
         bottom: MediaQuery.of(context).viewInsets.bottom + 24,
       ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
@@ -293,6 +294,7 @@ class _SessionSaveSheetState extends State<SessionSaveSheet> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }

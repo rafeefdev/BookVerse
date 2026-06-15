@@ -14,7 +14,7 @@ class FirstScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const Spacer(flex: 2),
-              literaLifeLogo(150, scheme.primary),
+              bookVerseLogo(150, scheme.primary),
               const Spacer(flex: 3),
               FilledButton(
                 onPressed: () {
@@ -36,7 +36,7 @@ class FirstScreen extends StatelessWidget {
   }
 }
 
-Widget literaLifeLogo(double size, Color accentColor) {
+Widget bookVerseLogo(double size, Color accentColor) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
@@ -50,7 +50,7 @@ Widget literaLifeLogo(double size, Color accentColor) {
       ),
       SizedBox(height: 16),
       Text(
-        'LiteraLife',
+        'BookVerse',
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
       ),
     ],

@@ -77,6 +77,7 @@ class ShellScaffold extends ConsumerWidget {
   void _showUserProfileSheet(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (_) => const _UserProfileSheet(),
     );
   }
@@ -99,10 +100,11 @@ class _UserProfileSheet extends ConsumerWidget {
             MediaQuery.platformBrightnessOf(context) == Brightness.dark);
 
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [
@@ -183,6 +185,7 @@ class _UserProfileSheet extends ConsumerWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

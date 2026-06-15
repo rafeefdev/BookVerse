@@ -29,8 +29,9 @@ class _SessionCatchUpSheetState extends State<SessionCatchUpSheet> {
         top: 12,
         bottom: MediaQuery.of(context).viewInsets.bottom + 24,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
@@ -104,7 +105,8 @@ class _SessionCatchUpSheetState extends State<SessionCatchUpSheet> {
               child: const Text('Start from Page 1'),
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }

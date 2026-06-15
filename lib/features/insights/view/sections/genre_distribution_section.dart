@@ -72,11 +72,13 @@ class GenreDistributionSection extends StatelessWidget {
   void _showGenreBooks(String genre, BuildContext context, TextTheme textTheme, ColorScheme colorScheme) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(genre, style: textTheme.titleLarge),
@@ -95,6 +97,7 @@ class GenreDistributionSection extends StatelessWidget {
               ),
             ],
           ),
+        ),
         ),
       ),
     );

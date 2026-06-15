@@ -69,6 +69,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage>
     final notifier = ref.read(sessionRecordingNotifierProvider.notifier);
     await showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
       shape: const RoundedRectangleBorder(
