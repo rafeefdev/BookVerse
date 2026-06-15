@@ -57,13 +57,13 @@ jobs:
 
       - name: Firebase App Distribution
         run: |
-          ARGS=""
+          ARGS=()
           if [ -n "${{ github.event.inputs.release_notes }}" ]; then
-            ARGS="--release-notes \"${{ github.event.inputs.release_notes }}\""
+            ARGS+=(--release-notes "${{ github.event.inputs.release_notes }}")
           fi
           npx firebase-tools appdistribution:distribute \
             build/app/outputs/flutter-apk/app-release.apk \
             --app "${{ secrets.FIREBASE_APP_ID }}" \
             --groups "${{ github.event.inputs.target }}" \
             --token "${{ secrets.FIREBASE_TOKEN }}" \
-            $ARGS
+            "${ARGS[@]}"
