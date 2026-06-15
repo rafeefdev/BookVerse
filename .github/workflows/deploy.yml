@@ -1,9 +1,7 @@
-name: CI/CD Deploy
+name: Deploy to Firebase
 
 on:
-  push:
   workflow_dispatch:
-    branches: [main]
     inputs:
       target:
         description: Distribution target
@@ -12,109 +10,25 @@ on:
         options:
           - tester-developer
           - user-beta
-        default: tester-developer
-      deploy_shorebird:
-        description: Should we also deploy the patch to Shorebird?
-        required: true
-        type: boolean
-        default: false
       release_notes:
-        description: release note (optional)
+        description: Release note (optional)
         required: false
         type: string
         default: ''
 
 jobs:
-  quality:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: '17'
-
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-
-      - name: Decode google-services.json
-        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
-
-      - name: Decode .env
-        run: echo '${{ secrets.ENV_FILE }}' > .env
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Flutter Analyze
-        run: flutter analyze
-
-      - name: Flutter Test
-        run: flutter test --coverage
-
-  detect:
-    runs-on: ubuntu-latest
-    outputs:
-      dart_only: ${{ steps.check.outputs.dart_only }}
-      is_manual: ${{ steps.check.outputs.is_manual }}
-      should_run: ${{ steps.check.outputs.should_run }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - id: check
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "is_manual=true"  >> $GITHUB_OUTPUT
-            echo "dart_only=false"  >> $GITHUB_OUTPUT
-            echo "should_run=true"  >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref }}" != "refs/heads/main" ]; then
-            echo "is_manual=false" >> $GITHUB_OUTPUT
-            echo "dart_only=false" >> $GITHUB_OUTPUT
-            echo "should_run=false" >> $GITHUB_OUTPUT
-          else
-            echo "is_manual=false" >> $GITHUB_OUTPUT
-            changed_files=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
-            if [ -z "$changed_files" ]; then
-              echo "dart_only=false" >> $GITHUB_OUTPUT
-              echo "should_run=false" >> $GITHUB_OUTPUT
-            else
-              dart_only=true
-              while IFS= read -r file; do
-                case "$file" in
-                  *.dart) ;;
-                  *) dart_only=false; break ;;
-                esac
-              done <<< "$changed_files"
-              echo "dart_only=$dart_only"  >> $GITHUB_OUTPUT
-              echo "should_run=$dart_only" >> $GITHUB_OUTPUT
-            fi
-          fi
-
   deploy:
-    needs: [quality, detect]
-    if: needs.detect.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: '17'
-
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
+      - uses: ./.github/actions/setup-flutter
 
       - name: Decode google-services.json
-        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
+        run: echo '${{ secrets.GOOGLE_SERVICES_JSON_B64 }}' | base64 -d > android/app/google-services.json
 
       - name: Decode .env
-        run: echo '${{ secrets.ENV_FILE }}' > .env
+        run: echo '${{ secrets.ENV_FILE_B64 }}' | base64 -d > .env
 
       - name: Restore keystore & key.properties
         run: |
@@ -134,38 +48,22 @@ jobs:
 
       - name: Build APK Release
         run: |
-          flutter pub get
           flutter build apk --release \
             --build-name=${{ steps.version.outputs.BUILD_NAME }} \
             --build-number=${{ steps.version.outputs.BUILD_NUMBER }}
 
+      - name: Verify APK
+        run: test -f build/app/outputs/flutter-apk/app-release.apk || { echo "APK not found!"; exit 1; }
+
       - name: Firebase App Distribution
-        if: needs.detect.outputs.is_manual == 'true'
         run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.release_notes }}" ]; then
+            ARGS="--release-notes \"${{ github.event.inputs.release_notes }}\""
+          fi
           npx firebase-tools appdistribution:distribute \
             build/app/outputs/flutter-apk/app-release.apk \
             --app "${{ secrets.FIREBASE_APP_ID }}" \
             --groups "${{ github.event.inputs.target }}" \
             --token "${{ secrets.FIREBASE_TOKEN }}" \
-            --release-notes "${{ github.event.inputs.release_notes }}"
-
-      - name: Install Shorebird CLI
-        run: |
-          curl --proto '=https' --tlsv1.2 \
-            https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh \
-            -sSf | bash
-          echo "/home/runner/.config/shorebird/bin" >> $GITHUB_PATH
-
-      - name: Shorebird login
-        if: |
-          needs.detect.outputs.dart_only == 'true' ||
-          (needs.detect.outputs.is_manual == 'true' && github.event.inputs.deploy_shorebird == 'true')
-        run: shorebird login --ci
-        env:
-          SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
-
-      - name: Shorebird patch
-        if: |
-          needs.detect.outputs.dart_only == 'true' ||
-          (needs.detect.outputs.is_manual == 'true' && github.event.inputs.deploy_shorebird == 'true')
-        run: shorebird patch android
+            $ARGS

@@ -1,0 +1,31 @@
+name: Setup Flutter
+description: Java 17, Flutter stable, caching, and dependencies
+inputs:
+  flutter-channel:
+    description: Flutter channel
+    required: false
+    default: stable
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v4
+      with:
+        distribution: zulu
+        java-version: '17'
+
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: ${{ inputs.flutter-channel }}
+
+    - uses: actions/cache@v4
+      with:
+        path: |
+          /opt/hostedtoolcache/flutter
+          ~/.gradle/caches
+        key: flutter-${{ hashFiles('pubspec.lock') }}-gradle-${{ hashFiles('android/*.gradle*', 'android/**/*.gradle*') }}
+        restore-keys: |
+          flutter-${{ hashFiles('pubspec.lock') }}-
+          flutter-
+
+    - shell: bash
+      run: flutter pub get
