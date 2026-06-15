@@ -40,10 +40,24 @@ jobs:
           channel: stable
 
       - name: Decode google-services.json
-        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
+        run: echo '${{ secrets.GOOGLE_SERVICES_JSON_B64 }}' | base64 -d > android/app/google-services.json
 
       - name: Decode .env
-        run: echo '${{ secrets.ENV_FILE }}' > .env
+        run: echo '${{ secrets.ENV_FILE_B64 }}' | base64 -d > .env
+
+      - name: Cache Flutter pub
+        uses: actions/cache@v4
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: flutter-${{ hashFiles('pubspec.lock') }}
+          restore-keys: flutter-
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: gradle-${{ hashFiles('android/*.gradle*', 'android/**/*.gradle*') }}
+          restore-keys: gradle-
 
       - name: Install dependencies
         run: flutter pub get
@@ -77,7 +91,7 @@ jobs:
             echo "should_run=false" >> $GITHUB_OUTPUT
           else
             echo "is_manual=false" >> $GITHUB_OUTPUT
-            changed_files=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+            changed_files=$(git diff --name-only @~1 @ 2>/dev/null || git diff --name-only --root @ 2>/dev/null || echo "")
             if [ -z "$changed_files" ]; then
               echo "dart_only=false" >> $GITHUB_OUTPUT
               echo "should_run=false" >> $GITHUB_OUTPUT
@@ -111,10 +125,24 @@ jobs:
           channel: stable
 
       - name: Decode google-services.json
-        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
+        run: echo '${{ secrets.GOOGLE_SERVICES_JSON_B64 }}' | base64 -d > android/app/google-services.json
 
       - name: Decode .env
-        run: echo '${{ secrets.ENV_FILE }}' > .env
+        run: echo '${{ secrets.ENV_FILE_B64 }}' | base64 -d > .env
+
+      - name: Cache Flutter pub
+        uses: actions/cache@v4
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: flutter-${{ hashFiles('pubspec.lock') }}
+          restore-keys: flutter-
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: gradle-${{ hashFiles('android/*.gradle*', 'android/**/*.gradle*') }}
+          restore-keys: gradle-
 
       - name: Restore keystore & key.properties
         run: |
@@ -139,21 +167,30 @@ jobs:
             --build-name=${{ steps.version.outputs.BUILD_NAME }} \
             --build-number=${{ steps.version.outputs.BUILD_NUMBER }}
 
+      - name: Verify APK
+        run: test -f build/app/outputs/flutter-apk/app-release.apk && echo "APK ready" || { echo "APK not found!"; exit 1; }
+
       - name: Firebase App Distribution
         if: needs.detect.outputs.is_manual == 'true'
+        env:
+          RELEASE_NOTES: ${{ github.event.inputs.release_notes }}
         run: |
+          ARGS=""
+          if [ -n "$RELEASE_NOTES" ]; then
+            ARGS="--release-notes \"$RELEASE_NOTES\""
+          fi
           npx firebase-tools appdistribution:distribute \
             build/app/outputs/flutter-apk/app-release.apk \
             --app "${{ secrets.FIREBASE_APP_ID }}" \
             --groups "${{ github.event.inputs.target }}" \
             --token "${{ secrets.FIREBASE_TOKEN }}" \
-            --release-notes "${{ github.event.inputs.release_notes }}"
+            $ARGS
 
       - name: Install Shorebird CLI
         run: |
-          curl --proto '=https' --tlsv1.2 \
-            https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh \
-            -sSf | bash
+          curl -fsSL https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh \
+            -o /tmp/install-shorebird.sh
+          bash /tmp/install-shorebird.sh
           echo "/home/runner/.config/shorebird/bin" >> $GITHUB_PATH
 
       - name: Shorebird login
