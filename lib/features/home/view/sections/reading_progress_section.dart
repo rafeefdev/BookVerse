@@ -3,6 +3,8 @@ import 'package:book_verse/core/extensions/iterable_extensions.dart';
 import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
 import 'package:book_verse/features/home/view/sections/library_action_sheet.dart';
+import 'package:book_verse/features/library/data/library_folder_datasource.dart';
+import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,7 +64,10 @@ class _SaveToLibraryCTA extends ConsumerWidget {
           await ref
               .read(bookmarkNotifierProvider.notifier)
               .toggleBookmark(book);
+          final folderDs = ref.read(libraryFolderDatasourceProvider);
+          await folderDs.assignToDefaultFolder(book.id);
           ref.invalidate(bookmarkNotifierProvider);
+          ref.invalidate(libraryNotifierProvider);
           if (context.mounted) {
             showSetCurrentPageSheet(context, ref, book);
           }
