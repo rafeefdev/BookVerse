@@ -507,6 +507,8 @@ void showSetCurrentPageSheet(BuildContext context, WidgetRef ref, Book book) {
                         readingTrackerNotifierProvider(book.id).future,
                       );
                       await tracker.updateReadingProgress(page);
+                      ref.invalidate(bookmarkNotifierProvider);
+                      ref.invalidate(libraryNotifierProvider);
                     }
                     if (sheetContext.mounted) {
                       Navigator.of(sheetContext).pop();

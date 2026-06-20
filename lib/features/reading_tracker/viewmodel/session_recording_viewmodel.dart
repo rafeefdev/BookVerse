@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
+import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
@@ -82,6 +84,8 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     await ref
         .read(readingTrackerNotifierProvider(_bookId).notifier)
         .updateReadingProgress(page);
+    ref.invalidate(bookmarkNotifierProvider);
+    ref.invalidate(libraryNotifierProvider);
     _stopWatchTimer.onStartTimer();
   }
 

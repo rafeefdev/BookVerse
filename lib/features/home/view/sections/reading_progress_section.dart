@@ -122,8 +122,9 @@ class _ProgressContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasStarted = (readingProgress?.currentPage ?? 0) > 0;
-    final progressValue = hasStarted && book.pageCount > 0
-        ? readingProgress!.currentPage / book.pageCount
+    final effectiveTotal = readingProgress?.effectivePageCount ?? 0;
+    final progressValue = hasStarted && effectiveTotal > 0
+        ? readingProgress!.currentPage / effectiveTotal
         : 0.0;
 
     return Column(
@@ -141,7 +142,7 @@ class _ProgressContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${readingProgress!.currentPage} / ${book.pageCount} pages',
+                '${readingProgress!.currentPage} / $effectiveTotal pages',
                 style: textTheme.bodyLarge,
               ),
               Text(

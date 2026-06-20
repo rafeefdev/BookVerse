@@ -1,6 +1,7 @@
 import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
+import 'package:book_verse/features/insights/viewmodel/insights_viewmodel.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/view/session_helpers.dart';
@@ -100,6 +101,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage>
         onSaved: () {
           ref.invalidate(bookmarkNotifierProvider);
           ref.invalidate(libraryNotifierProvider);
+          ref.invalidate(insightsProvider);
         },
       ),
     );

@@ -13,9 +13,10 @@ Widget bookGridTile({
   double progressValue = 0.0;
   String progressText = 'Not started';
 
-  if (readingProgress != null && book.pageCount > 0) {
-    progressValue = readingProgress.currentPage / book.pageCount;
-    progressText = '${readingProgress.currentPage} / ${book.pageCount} pages';
+  final effectiveTotal = readingProgress?.effectivePageCount ?? 0;
+  if (readingProgress != null && effectiveTotal > 0) {
+    progressValue = readingProgress.currentPage / effectiveTotal;
+    progressText = '${readingProgress.currentPage} / $effectiveTotal pages';
   }
 
   return AspectRatio(

@@ -20,13 +20,13 @@ class LibraryNotifier extends _$LibraryNotifier {
       final currentlyReading = allProgress
           .where((p) {
             final book = p.book;
-            return book != null && p.currentPage < book.pageCount;
+            return book != null && p.currentPage < p.effectivePageCount;
           })
           .toList();
       final finished = allProgress
           .where((p) {
             final book = p.book;
-            return book != null && book.pageCount > 0 && p.currentPage >= book.pageCount;
+            return book != null && p.effectivePageCount > 0 && p.currentPage >= p.effectivePageCount;
           })
           .toList();
 
