@@ -1,35 +1,167 @@
 import 'package:book_verse/core/services/backup_service.dart';
+import 'package:book_verse/features/home/providers/detail_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DataSection extends StatelessWidget {
+class DataSection extends ConsumerWidget {
   const DataSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-          child: Text(
-            'Data',
-            style: textTheme.titleSmall?.copyWith(color: cs.onSurfaceVariant),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+          child: Row(
+            children: [
+              Icon(Icons.backup_outlined, size: 20, color: cs.onSurfaceVariant),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Data',
+                      style: textTheme.titleSmall?.copyWith(color: cs.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Manage data and backups',
+                      style: textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-        ListTile(
-          leading: Icon(Icons.backup, color: cs.onSurfaceVariant),
-          title: const Text('Backup Progress'),
-          onTap: () => _handleBackup(context, cs, textTheme),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.backup, color: cs.onSurfaceVariant),
+                  title: const Text('Backup Progress'),
+                  onTap: () => _handleBackup(context, cs, textTheme),
+                ),
+                ListTile(
+                  leading: Icon(Icons.restore, color: cs.onSurfaceVariant),
+                  title: const Text('Restore Backup'),
+                  onTap: () => _handleRestore(context, cs, textTheme),
+                ),
+                ListTile(
+                  leading: Icon(Icons.cleaning_services_outlined, color: cs.onSurfaceVariant),
+                  title: const Text('Clear Cache'),
+                  subtitle: Text(
+                    'Clear cached book covers and temporary data',
+                    style: textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                  onTap: () => _handleClearCache(context, ref),
+                ),
+                const Divider(indent: 16, endIndent: 16, thickness: 0.5),
+                ListTile(
+                  leading: Icon(Icons.info_outline, color: cs.onSurfaceVariant),
+                  title: const Text('About BookVerse'),
+                  onTap: () => _handleAbout(context, cs, textTheme),
+                ),
+              ],
+            ),
+          ),
         ),
-        ListTile(
-          leading: Icon(Icons.restore, color: cs.onSurfaceVariant),
-          title: const Text('Restore Backup'),
-          onTap: () => _handleRestore(context, cs, textTheme),
-        ),
+        const Divider(),
       ],
+    );
+  }
+
+  Future<void> _handleClearCache(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Clear Cache'),
+        content: const Text(
+          'This will clear cached book covers and temporary data. '
+          'Your reading progress will not be affected.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Clear'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    ref.read(bookCacheProvider.notifier).state = {};
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Cache cleared'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  Future<void> _handleAbout(
+    BuildContext context,
+    ColorScheme cs,
+    TextTheme textTheme,
+  ) async {
+    await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.auto_stories, color: cs.primary, size: 28),
+            const SizedBox(width: 12),
+            const Text('BookVerse'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Version 1.0.0',
+              style: textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+            ),
+            const SizedBox(height: 12),
+            const Text('Track your reading journey.'),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () {},
+              child: Text(
+                'GitHub Repository',
+                style: textTheme.bodyMedium?.copyWith(
+                  color: cs.primary,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -201,9 +333,9 @@ class DataSection extends StatelessWidget {
                 'sessions restored.',
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Previous data saved to:',
-                style: TextStyle(fontSize: 12),
+                style: textTheme.bodySmall,
               ),
               const SizedBox(height: 4),
               Container(
@@ -271,9 +403,9 @@ class DataSection extends StatelessWidget {
                   const SizedBox(height: 12),
                   ExpansionTile(
                     tilePadding: EdgeInsets.zero,
-                    title: const Text(
+                    title: Text(
                       'How to fix this',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: textTheme.titleSmall,
                     ),
                     children: [
                       for (final tip in _tipsFor(code))

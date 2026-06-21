@@ -11,55 +11,80 @@ class AppearanceSection extends ConsumerWidget {
     final themeMode =
         ref.watch(thememodeProviderProvider).value ?? ThemeMode.system;
     final cs = context.colorScheme;
+    final textTheme = context.textTheme;
 
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-          child: Text(
-            'Appearance',
-            style: context.textTheme.titleSmall?.copyWith(
-              color: cs.onSurfaceVariant,
-            ),
+          child: Row(
+            children: [
+              Icon(Icons.palette_outlined, size: 20, color: cs.onSurfaceVariant),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Appearance',
+                      style: textTheme.titleSmall?.copyWith(color: cs.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Customize app appearance',
+                      style: textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ),
-        ListTile(
-          title: const Text('App Theme'),
-          subtitle: const Text('Change app theme'),
-          leading: Icon(Icons.format_paint_rounded, color: cs.onSurfaceVariant),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SizedBox(
-            width: double.infinity,
-            child: SegmentedButton<ThemeMode>(
-              segments: const [
-                ButtonSegment(
-                  value: ThemeMode.light,
-                  icon: Icon(Icons.light_mode),
-                  label: Text('Light'),
-                ),
-                ButtonSegment(
-                  value: ThemeMode.dark,
-                  icon: Icon(Icons.dark_mode),
-                  label: Text('Dark'),
-                ),
-                ButtonSegment(
-                  value: ThemeMode.system,
-                  icon: Icon(Icons.settings_suggest),
-                  label: Text('System'),
-                ),
-              ],
-              selected: {themeMode},
-              onSelectionChanged: (value) {
-                ref
-                    .read(thememodeProviderProvider.notifier)
-                    .changeTheme(value.first);
-              },
+          child: Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: SegmentedButton<ThemeMode>(
+                      segments: const [
+                        ButtonSegment(
+                          value: ThemeMode.light,
+                          icon: Icon(Icons.light_mode),
+                          label: Text('Light'),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.dark,
+                          icon: Icon(Icons.dark_mode),
+                          label: Text('Dark'),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.system,
+                          icon: Icon(Icons.settings_suggest),
+                          label: Text('System'),
+                        ),
+                      ],
+                      selected: {themeMode},
+                      onSelectionChanged: (value) {
+                        ref
+                            .read(thememodeProviderProvider.notifier)
+                            .changeTheme(value.first);
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 8),
         const Divider(),
       ],
     );

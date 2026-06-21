@@ -1,4 +1,6 @@
 import 'package:book_verse/core/theme/themes_extension.dart';
+import 'package:book_verse/features/goals/providers/goal_providers.dart';
+import 'package:book_verse/features/goals/view/components/goal_progress_card.dart';
 import 'package:book_verse/features/insights/model/insights_state.dart';
 import 'package:book_verse/features/insights/view/sections/narrative_header_section.dart';
 import 'package:book_verse/features/insights/view/sections/streak_section.dart';
@@ -26,7 +28,7 @@ class InsightsPage extends ConsumerWidget {
         top: false,
         bottom: true,
         child: insightsAsync.when(
-          data: (state) => _buildContent(state, textTheme, colorScheme),
+          data: (state) => _buildContent(state, ref, textTheme, colorScheme),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('Error: $e')),
         ),
@@ -37,6 +39,7 @@ class InsightsPage extends ConsumerWidget {
 
 Widget _buildContent(
   InsightsState state,
+  WidgetRef ref,
   TextTheme textTheme,
   ColorScheme colorScheme,
 ) {
@@ -46,6 +49,8 @@ Widget _buildContent(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         NarrativeHeaderSection(state, textTheme, colorScheme),
+        const SizedBox(height: 16),
+        _goalCard(ref),
         const SizedBox(height: 20),
         StreakSection(state, textTheme, colorScheme),
         if (state.monthlyMinutes.isNotEmpty) ...[
@@ -70,5 +75,20 @@ Widget _buildContent(
         const SizedBox(height: 20),
       ],
     ),
+  );
+}
+
+Widget _goalCard(WidgetRef ref) {
+  final progressAsync = ref.watch(goalProgressProvider);
+  return progressAsync.when(
+    data: (progress) {
+      if (progress == null) return const SizedBox.shrink();
+      return GoalProgressCard(
+        progress: progress,
+        onTap: () {},
+      );
+    },
+    loading: () => const SizedBox.shrink(),
+    error: (_, __) => const SizedBox.shrink(),
   );
 }

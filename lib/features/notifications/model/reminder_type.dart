@@ -1,4 +1,4 @@
-enum ReminderType { resumeBook, streakProtection, reengagement }
+enum ReminderType { resumeBook, streakProtection, reengagement, goalReminder }
 
 class ReminderDecision {
   final ReminderType type;

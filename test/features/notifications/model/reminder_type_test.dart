@@ -4,11 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('ReminderType', () {
     test('has three values', () {
-      expect(ReminderType.values, hasLength(3));
+      expect(ReminderType.values, hasLength(4));
       expect(ReminderType.values, containsAll([
         ReminderType.resumeBook,
         ReminderType.streakProtection,
         ReminderType.reengagement,
+        ReminderType.goalReminder,
       ]));
     });
   });
