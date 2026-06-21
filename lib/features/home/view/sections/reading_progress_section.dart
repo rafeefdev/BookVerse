@@ -68,8 +68,8 @@ class _SaveToLibraryCTA extends ConsumerWidget {
           await folderDs.assignToDefaultFolder(book.id);
           ref.invalidate(bookmarkNotifierProvider);
           ref.invalidate(libraryNotifierProvider);
-          if (context.mounted) {
-            showSetCurrentPageSheet(context, ref, book);
+          if (context.mounted && book.pageCount == 0) {
+            await showSetTotalPageSheet(context, ref, book);
           }
         },
         child: Padding(

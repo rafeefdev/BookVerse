@@ -421,12 +421,16 @@ class _CreateFolderViewState extends State<_CreateFolderView> {
   }
 }
 
-void showSetCurrentPageSheet(BuildContext context, WidgetRef ref, Book book) {
+Future<void> showSetTotalPageSheet(
+  BuildContext context,
+  WidgetRef ref,
+  Book book,
+) async {
   final scheme = Theme.of(context).colorScheme;
   final textTheme = Theme.of(context).textTheme;
   final controller = TextEditingController();
 
-  showModalBottomSheet(
+  await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
@@ -440,101 +444,102 @@ void showSetCurrentPageSheet(BuildContext context, WidgetRef ref, Book book) {
           top: 12,
           bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: scheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: scheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Icon(Icons.info_outline, color: scheme.primary, size: 24),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text('Book Saved!', style: textTheme.titleLarge),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Have you already started reading this book? '
-                'Enter the page you\'re on.',
-                style: textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: controller,
-                keyboardType: TextInputType.number,
-                autofocus: true,
-                decoration: InputDecoration(
-                  labelText: 'Current page (optional)',
-                  border: const OutlineInputBorder(),
-                  suffixText: 'pages',
-                  suffixStyle: TextStyle(color: scheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Icon(Icons.info_outline, color: scheme.primary, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text('Set Total Pages', style: textTheme.titleLarge),
                 ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'We couldn\'t find the total page count for this book. '
+              'How many pages does your copy have?',
+              style: textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'Total pages',
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 48,
-                      child: TextButton(
-                        onPressed: () => Navigator.of(sheetContext).pop(),
-                        child: const Text('Skip'),
-                      ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 48,
+                    child: TextButton(
+                      onPressed: () => Navigator.of(sheetContext).pop(),
+                      child: const Text('Skip'),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: SizedBox(
-                      height: 48,
-                      child: FilledButton(
-                        onPressed: () async {
-                          final text = controller.text.trim();
-                          final page = int.tryParse(text);
-                          if (text.isNotEmpty && (page == null || page < 1)) {
-                            ScaffoldMessenger.of(sheetContext).showSnackBar(
-                              SnackBar(
-                                content: const Text('Please enter a valid page number'),
-                                backgroundColor: scheme.error,
-                              ),
-                            );
-                            return;
-                          }
-                          if (page != null && page > 0) {
-                            final tracker = ref.read(
-                              readingTrackerNotifierProvider(book.id).notifier,
-                            );
-                            await ref.read(
-                              readingTrackerNotifierProvider(book.id).future,
-                            );
-                            await tracker.updateReadingProgress(page);
-                            ref.invalidate(bookmarkNotifierProvider);
-                            ref.invalidate(libraryNotifierProvider);
-                          }
-                          if (sheetContext.mounted) {
-                            Navigator.of(sheetContext).pop();
-                          }
-                        },
-                        child: const Text('Done'),
-                      ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: SizedBox(
+                    height: 48,
+                    child: FilledButton(
+                      onPressed: () async {
+                        final text = controller.text.trim();
+                        final totalPages = int.tryParse(text);
+                        if (totalPages == null || totalPages < 1) {
+                          ScaffoldMessenger.of(sheetContext).showSnackBar(
+                            SnackBar(
+                              content: const Text('Please enter a valid page number'),
+                              backgroundColor: scheme.error,
+                            ),
+                          );
+                          return;
+                        }
+                        final tracker = ref.read(
+                          readingTrackerNotifierProvider(book.id).notifier,
+                        );
+                        await ref.read(
+                          readingTrackerNotifierProvider(book.id).future,
+                        );
+                        final currentProgress = ref.read(
+                          readingTrackerNotifierProvider(book.id),
+                        );
+                        final currentPage = currentProgress.valueOrNull?.currentPage ?? 0;
+                        await tracker.updateReadingProgress(
+                          currentPage,
+                          userPageCount: totalPages,
+                        );
+                        ref.invalidate(bookmarkNotifierProvider);
+                        ref.invalidate(libraryNotifierProvider);
+                        if (sheetContext.mounted) {
+                          Navigator.of(sheetContext).pop();
+                        }
+                      },
+                      child: const Text('Save'),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       );
     },
