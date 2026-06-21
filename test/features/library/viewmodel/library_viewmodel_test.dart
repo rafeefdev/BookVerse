@@ -1,6 +1,5 @@
 import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/features/library/model/library_repo_di.dart';
-import 'package:book_verse/features/library/model/library_state.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
