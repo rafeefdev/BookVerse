@@ -484,46 +484,54 @@ void showSetCurrentPageSheet(BuildContext context, WidgetRef ref, Book book) {
                 ),
               ),
               const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () async {
-                    final text = controller.text.trim();
-                    final page = int.tryParse(text);
-                    if (text.isNotEmpty && (page == null || page < 1)) {
-                      ScaffoldMessenger.of(sheetContext).showSnackBar(
-                        SnackBar(
-                          content: const Text('Please enter a valid page number'),
-                          backgroundColor: scheme.error,
-                        ),
-                      );
-                      return;
-                    }
-                    if (page != null && page > 0) {
-                      final tracker = ref.read(
-                        readingTrackerNotifierProvider(book.id).notifier,
-                      );
-                      await ref.read(
-                        readingTrackerNotifierProvider(book.id).future,
-                      );
-                      await tracker.updateReadingProgress(page);
-                      ref.invalidate(bookmarkNotifierProvider);
-                      ref.invalidate(libraryNotifierProvider);
-                    }
-                    if (sheetContext.mounted) {
-                      Navigator.of(sheetContext).pop();
-                    }
-                  },
-                  child: const Text('Done'),
-                ),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: () => Navigator.of(sheetContext).pop(),
-                  child: const Text('Skip'),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: TextButton(
+                        onPressed: () => Navigator.of(sheetContext).pop(),
+                        child: const Text('Skip'),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: FilledButton(
+                        onPressed: () async {
+                          final text = controller.text.trim();
+                          final page = int.tryParse(text);
+                          if (text.isNotEmpty && (page == null || page < 1)) {
+                            ScaffoldMessenger.of(sheetContext).showSnackBar(
+                              SnackBar(
+                                content: const Text('Please enter a valid page number'),
+                                backgroundColor: scheme.error,
+                              ),
+                            );
+                            return;
+                          }
+                          if (page != null && page > 0) {
+                            final tracker = ref.read(
+                              readingTrackerNotifierProvider(book.id).notifier,
+                            );
+                            await ref.read(
+                              readingTrackerNotifierProvider(book.id).future,
+                            );
+                            await tracker.updateReadingProgress(page);
+                            ref.invalidate(bookmarkNotifierProvider);
+                            ref.invalidate(libraryNotifierProvider);
+                          }
+                          if (sheetContext.mounted) {
+                            Navigator.of(sheetContext).pop();
+                          }
+                        },
+                        child: const Text('Done'),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
