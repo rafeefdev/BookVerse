@@ -6,7 +6,6 @@ import 'package:book_verse/features/dashboard/view/sections/currently_reading_se
 import 'package:book_verse/features/dashboard/viewmodel/dashboard_viewmodel.dart';
 import 'package:book_verse/features/goals/model/goal_progress.dart';
 import 'package:book_verse/features/goals/providers/goal_providers.dart';
-import 'package:book_verse/features/goals/view/components/goal_progress_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -41,14 +40,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 banner,
               TodaySummarySection(state, textTheme, colorScheme),
               const SizedBox(height: 16),
-              if (goalProgressAsync.valueOrNull != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: GoalProgressCard(
-                    progress: goalProgressAsync.valueOrNull!,
-                    onTap: () => context.push('/settings'),
-                  ),
-                ),
               WeeklyChartSection(
                 state: state,
                 showPages: _showPages,
@@ -191,4 +182,3 @@ class _Banner extends StatelessWidget {
     );
   }
 }
-

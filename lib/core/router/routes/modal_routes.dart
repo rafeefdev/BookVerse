@@ -1,8 +1,10 @@
+import 'package:book_verse/features/goals/view/pages/goal_settings_page.dart';
 import 'package:book_verse/features/home/view/pages/detail_page.dart';
 import 'package:book_verse/features/insights/view/insights_page.dart';
 import 'package:book_verse/features/reading_tracker/view/reading_tracker_detail_page.dart';
 import 'package:book_verse/features/reading_tracker/view/session_recording_page.dart';
 import 'package:book_verse/features/search/view/pages/search_page.dart';
+import 'package:book_verse/features/settings/view/pages/reminder_settings_page.dart';
 import 'package:book_verse/features/settings/view/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -41,6 +43,16 @@ List<RouteBase> get modalRoutes => [
     path: '/settings',
     parentNavigatorKey: _rootNavigatorKey,
     builder: (context, state) => const SettingsPage(),
+  ),
+  GoRoute(
+    path: '/settings/goal',
+    parentNavigatorKey: _rootNavigatorKey,
+    builder: (context, state) => const GoalSettingsPage(),
+  ),
+  GoRoute(
+    path: '/settings/reminder',
+    parentNavigatorKey: _rootNavigatorKey,
+    builder: (context, state) => const ReminderSettingsPage(),
   ),
   GoRoute(
     path: '/search',

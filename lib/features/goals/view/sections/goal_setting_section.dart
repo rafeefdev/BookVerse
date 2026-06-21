@@ -34,12 +34,31 @@ class GoalSettingSection extends ConsumerWidget {
     final minutesCtrl = TextEditingController(text: goal.targetMinutes.toString());
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-          child: Text(
-            'Reading Goal',
-            style: textTheme.titleSmall?.copyWith(color: cs.onSurfaceVariant),
+          child: Row(
+            children: [
+              Icon(Icons.flag_outlined, size: 20, color: cs.onSurfaceVariant),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Reading Goal',
+                      style: textTheme.titleSmall?.copyWith(color: cs.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Set your daily reading targets',
+                      style: textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
         Padding(

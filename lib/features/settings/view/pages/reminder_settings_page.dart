@@ -5,14 +5,14 @@ import 'package:book_verse/features/settings/model/reminder_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class ReminderSection extends StatefulWidget {
-  const ReminderSection({super.key});
+class ReminderSettingsPage extends StatefulWidget {
+  const ReminderSettingsPage({super.key});
 
   @override
-  State<ReminderSection> createState() => _ReminderSectionState();
+  State<ReminderSettingsPage> createState() => _ReminderSettingsPageState();
 }
 
-class _ReminderSectionState extends State<ReminderSection> {
+class _ReminderSettingsPageState extends State<ReminderSettingsPage> {
   ReminderSettings _settings = ReminderSettings.defaults();
   bool _loaded = false;
 
@@ -108,41 +108,27 @@ class _ReminderSectionState extends State<ReminderSection> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_loaded) return const SizedBox.shrink();
+    if (!_loaded) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Reading Reminders')),
+        body: const SizedBox.shrink(),
+      );
+    }
 
     final cs = context.colorScheme;
     final textTheme = context.textTheme;
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-          child: Row(
-            children: [
-              Icon(Icons.notifications_outlined, size: 20, color: cs.onSurfaceVariant),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Reading Reminders',
-                      style: textTheme.titleSmall?.copyWith(color: cs.onSurfaceVariant),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Configure notification schedule',
-                      style: textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Card(
+    return Scaffold(
+      appBar: AppBar(title: const Text('Reading Reminders')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            clipBehavior: Clip.antiAlias,
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -232,9 +218,8 @@ class _ReminderSectionState extends State<ReminderSection> {
               ),
             ),
           ),
-        ),
-        const Divider(),
-      ],
+        ],
+      ),
     );
   }
 
