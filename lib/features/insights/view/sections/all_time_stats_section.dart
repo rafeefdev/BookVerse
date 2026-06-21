@@ -7,7 +7,12 @@ class AllTimeStatsSection extends StatelessWidget {
   final InsightsState state;
   final TextTheme textTheme;
   final ColorScheme colorScheme;
-  const AllTimeStatsSection(this.state, this.textTheme, this.colorScheme, {super.key});
+  const AllTimeStatsSection(
+    this.state,
+    this.textTheme,
+    this.colorScheme, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -7,7 +7,12 @@ class StreakSection extends StatelessWidget {
   final TextTheme textTheme;
   final ColorScheme colorScheme;
 
-  const StreakSection(this.state, this.textTheme, this.colorScheme, {super.key});
+  const StreakSection(
+    this.state,
+    this.textTheme,
+    this.colorScheme, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -172,21 +177,17 @@ Widget _buildHeatmap(
     );
   }
 
-  final activeCount =
-      state.streakHistory.where((d) => d.hasActivity).length;
-  final bestWeek = weeks.fold<int>(
-    0,
-    (max, w) {
-      final count = w.where((d) => d.hasActivity).length;
-      return count > max ? count : max;
-    },
-  );
+  final activeCount = state.streakHistory.where((d) => d.hasActivity).length;
+  final bestWeek = weeks.fold<int>(0, (max, w) {
+    final count = w.where((d) => d.hasActivity).length;
+    return count > max ? count : max;
+  });
 
   return LayoutBuilder(
     builder: (_, constraints) {
-      final cellSize = ((constraints.maxWidth - (weeks.length - 1) * gap) /
-              weeks.length)
-          .floorToDouble();
+      final cellSize =
+          ((constraints.maxWidth - (weeks.length - 1) * gap) / weeks.length)
+              .floorToDouble();
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,8 +226,12 @@ Widget _buildHeatmap(
                         for (int d = 0; d < weeks[w].length; d++) ...[
                           if (d > 0) SizedBox(height: gap),
                           GestureDetector(
-                            onTap: () =>
-                                _showDayDetail(weeks[w][d], context, textTheme, colorScheme),
+                            onTap: () => _showDayDetail(
+                              weeks[w][d],
+                              context,
+                              textTheme,
+                              colorScheme,
+                            ),
                             child: Container(
                               width: cellSize,
                               height: cellSize,
@@ -323,12 +328,12 @@ Widget _buildLegend(ColorScheme colorScheme) {
               level == 0
                   ? 0
                   : level == 1
-                      ? 15 * 60
-                      : level == 2
-                          ? 30 * 60
-                          : level == 3
-                              ? 60 * 60
-                              : 120 * 60,
+                  ? 15 * 60
+                  : level == 2
+                  ? 30 * 60
+                  : level == 3
+                  ? 60 * 60
+                  : 120 * 60,
               colorScheme,
             ),
             borderRadius: BorderRadius.circular(1),

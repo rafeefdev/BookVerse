@@ -5,7 +5,12 @@ class AchievementsSection extends StatelessWidget {
   final InsightsState state;
   final TextTheme textTheme;
   final ColorScheme colorScheme;
-  const AchievementsSection(this.state, this.textTheme, this.colorScheme, {super.key});
+  const AchievementsSection(
+    this.state,
+    this.textTheme,
+    this.colorScheme, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +39,11 @@ class AchievementsSection extends StatelessWidget {
                   itemCount: state.achievements.length,
                   itemBuilder: (context, index) {
                     final achievement = state.achievements[index];
-                    return _achievementItem(achievement, colorScheme, textTheme);
+                    return _achievementItem(
+                      achievement,
+                      colorScheme,
+                      textTheme,
+                    );
                   },
                 );
               },
@@ -45,7 +54,11 @@ class AchievementsSection extends StatelessWidget {
     );
   }
 
-  Widget _achievementItem(Achievement achievement, ColorScheme colorScheme, TextTheme textTheme) {
+  Widget _achievementItem(
+    Achievement achievement,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
     final isUnlocked = achievement.unlocked;
     return Column(
       mainAxisSize: MainAxisSize.min,

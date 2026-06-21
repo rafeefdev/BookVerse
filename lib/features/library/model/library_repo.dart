@@ -16,15 +16,15 @@ class LibraryRepo {
     required BookmarkDatasource bookmarkDatasource,
     required LibraryFolderDatasource libraryFolderDatasource,
     required ReadingTrackerDatasource readingTrackerDatasource,
-  })  : _bookmarkDatasource = bookmarkDatasource,
-        _folderDatasource = libraryFolderDatasource,
-        _readingTrackerDatasource = readingTrackerDatasource;
+  }) : _bookmarkDatasource = bookmarkDatasource,
+       _folderDatasource = libraryFolderDatasource,
+       _readingTrackerDatasource = readingTrackerDatasource;
 
   Future<List<ReadingProgressModel>> getAllProgressWithBooks() async {
     try {
       final booksMap = await _bookmarkDatasource.getBookmarkedBooks();
-      final progressMap =
-          await _readingTrackerDatasource.getAllReadingProgress();
+      final progressMap = await _readingTrackerDatasource
+          .getAllReadingProgress();
       final books = booksMap.map((b) => Book.fromJson(b)).toList();
 
       return progressMap.map((progress) {

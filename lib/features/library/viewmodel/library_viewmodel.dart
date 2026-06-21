@@ -17,18 +17,16 @@ class LibraryNotifier extends _$LibraryNotifier {
       final allProgress = await repo.getAllProgressWithBooks();
       final folders = await repo.getAllFolders();
 
-      final currentlyReading = allProgress
-          .where((p) {
-            final book = p.book;
-            return book != null && p.currentPage < p.effectivePageCount;
-          })
-          .toList();
-      final finished = allProgress
-          .where((p) {
-            final book = p.book;
-            return book != null && p.effectivePageCount > 0 && p.currentPage >= p.effectivePageCount;
-          })
-          .toList();
+      final currentlyReading = allProgress.where((p) {
+        final book = p.book;
+        return book != null && p.currentPage < p.effectivePageCount;
+      }).toList();
+      final finished = allProgress.where((p) {
+        final book = p.book;
+        return book != null &&
+            p.effectivePageCount > 0 &&
+            p.currentPage >= p.effectivePageCount;
+      }).toList();
 
       return LibraryState(
         currentlyReading: currentlyReading,

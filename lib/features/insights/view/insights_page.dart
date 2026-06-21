@@ -22,10 +22,14 @@ class InsightsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Insights')),
-      body: insightsAsync.when(
-        data: (state) => _buildContent(state, textTheme, colorScheme),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+      body: SafeArea(
+        top: false,
+        bottom: true,
+        child: insightsAsync.when(
+          data: (state) => _buildContent(state, textTheme, colorScheme),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('Error: $e')),
+        ),
       ),
     );
   }

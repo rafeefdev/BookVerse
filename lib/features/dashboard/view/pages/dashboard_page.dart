@@ -24,42 +24,40 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     final colorScheme = context.colorScheme;
 
     return Scaffold(
-      body: SafeArea(
-        child: dashboardAsync.when(
-          data: (state) => SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TodaySummarySection(state, textTheme, colorScheme),
-                const SizedBox(height: 16),
-                WeeklyChartSection(
-                  state: state,
-                  showPages: _showPages,
-                  onToggle: () => setState(() => _showPages = !_showPages),
-                  textTheme: textTheme,
-                  colorScheme: colorScheme,
-                ),
-                const SizedBox(height: 16),
-                CurrentlyReadingSection(state, textTheme, colorScheme),
-                if (state.todayMinutes > 0 || state.streak > 0)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () => context.push('/insights'),
-                        icon: const Icon(Icons.insights),
-                        label: const Text('See Insights'),
-                      ),
+      body: dashboardAsync.when(
+        data: (state) => SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TodaySummarySection(state, textTheme, colorScheme),
+              const SizedBox(height: 16),
+              WeeklyChartSection(
+                state: state,
+                showPages: _showPages,
+                onToggle: () => setState(() => _showPages = !_showPages),
+                textTheme: textTheme,
+                colorScheme: colorScheme,
+              ),
+              const SizedBox(height: 16),
+              CurrentlyReadingSection(state, textTheme, colorScheme),
+              if (state.todayMinutes > 0 || state.streak > 0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () => context.push('/insights'),
+                      icon: const Icon(Icons.insights),
+                      label: const Text('See Insights'),
                     ),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
         ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Error: $e')),
       ),
     );
   }

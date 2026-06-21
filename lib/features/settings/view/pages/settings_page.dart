@@ -10,11 +10,10 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: ListView(
-        children: const [
-          AppearanceSection(),
-          DataSection(),
-        ],
+      body: SafeArea(
+        top: false,
+        bottom: true,
+        child: ListView(children: const [AppearanceSection(), DataSection()]),
       ),
     );
   }

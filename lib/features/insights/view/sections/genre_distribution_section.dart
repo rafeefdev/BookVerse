@@ -5,7 +5,12 @@ class GenreDistributionSection extends StatelessWidget {
   final InsightsState state;
   final TextTheme textTheme;
   final ColorScheme colorScheme;
-  const GenreDistributionSection(this.state, this.textTheme, this.colorScheme, {super.key});
+  const GenreDistributionSection(
+    this.state,
+    this.textTheme,
+    this.colorScheme, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +28,12 @@ class GenreDistributionSection extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: InkWell(
-                  onTap: () => _showGenreBooks(genre.genre, context, textTheme, colorScheme),
+                  onTap: () => _showGenreBooks(
+                    genre.genre,
+                    context,
+                    textTheme,
+                    colorScheme,
+                  ),
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2),
@@ -44,7 +54,11 @@ class GenreDistributionSection extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(width: 4),
-                                Icon(Icons.chevron_right, size: 16, color: colorScheme.onSurfaceVariant),
+                                Icon(
+                                  Icons.chevron_right,
+                                  size: 16,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
                               ],
                             ),
                           ],
@@ -69,7 +83,12 @@ class GenreDistributionSection extends StatelessWidget {
     );
   }
 
-  void _showGenreBooks(String genre, BuildContext context, TextTheme textTheme, ColorScheme colorScheme) {
+  void _showGenreBooks(
+    String genre,
+    BuildContext context,
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -79,25 +98,27 @@ class GenreDistributionSection extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(genre, style: textTheme.titleLarge),
-              const SizedBox(height: 8),
-              Text(
-                'Browse your ${genre.toLowerCase()} collection in the Library.',
-                style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Go to Library'),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(genre, style: textTheme.titleLarge),
+                const SizedBox(height: 8),
+                Text(
+                  'Browse your ${genre.toLowerCase()} collection in the Library.',
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Go to Library'),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
         ),
       ),
     );

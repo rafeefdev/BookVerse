@@ -4,7 +4,12 @@ class StatCard extends StatelessWidget {
   final IconData icon;
   final String value;
   final String? unit;
-  const StatCard({required this.icon, required this.value, this.unit, super.key});
+  const StatCard({
+    required this.icon,
+    required this.value,
+    this.unit,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

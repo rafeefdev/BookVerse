@@ -15,76 +15,77 @@ part 'insights_viewmodel.g.dart';
 class Insights extends _$Insights {
   @override
   Future<InsightsState> build() async {
-  final clock = ref.watch(clockProvider);
-  final repo = ref.watch(libraryRepoProvider);
-  final datasource = ref.watch(readingTrackerDatasourceProvider);
-  final sessions = await datasource.getAllReadingSessions();
-  final allProgress = await repo.getAllProgressWithBooks();
+    final clock = ref.watch(clockProvider);
+    final repo = ref.watch(libraryRepoProvider);
+    final datasource = ref.watch(readingTrackerDatasourceProvider);
+    final sessions = await datasource.getAllReadingSessions();
+    final allProgress = await repo.getAllProgressWithBooks();
 
-  final allSessionList = sessions.toList();
+    final allSessionList = sessions.toList();
 
-  final totalMinutes =
-      (allSessionList.fold<int>(0, (sum, s) => sum + s.durationInSeconds) / 60)
-          .ceil();
+    final totalMinutes =
+        (allSessionList.fold<int>(0, (sum, s) => sum + s.durationInSeconds) /
+                60)
+            .ceil();
 
-  final totalPages = computeAllTimePages(allSessionList);
-  final totalBooks = allSessionList.map((s) => s.bookId).toSet().length;
+    final totalPages = computeAllTimePages(allSessionList);
+    final totalBooks = allSessionList.map((s) => s.bookId).toSet().length;
 
-  final now = clock.now();
-  final todayStart = DateTime(now.year, now.month, now.day);
-  final currentStreak = computeStreak(allSessionList, todayStart);
-  final longestStreak = computeLongestStreak(allSessionList);
-  final streakHistory = _buildStreakHistory(allSessionList, todayStart);
+    final now = clock.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final currentStreak = computeStreak(allSessionList, todayStart);
+    final longestStreak = computeLongestStreak(allSessionList);
+    final streakHistory = _buildStreakHistory(allSessionList, todayStart);
 
-  final streakStatus = _computeStreakStatus(
-    currentStreak: currentStreak,
-    totalBooks: totalBooks,
-  );
+    final streakStatus = _computeStreakStatus(
+      currentStreak: currentStreak,
+      totalBooks: totalBooks,
+    );
 
-  final achievements = _computeAchievements(
-    totalPages: totalPages,
-    currentStreak: currentStreak,
-    longestStreak: longestStreak,
-    totalMinutes: totalMinutes,
-    totalBooks: totalBooks,
-    allSessions: allSessionList,
-  );
+    final achievements = _computeAchievements(
+      totalPages: totalPages,
+      currentStreak: currentStreak,
+      longestStreak: longestStreak,
+      totalMinutes: totalMinutes,
+      totalBooks: totalBooks,
+      allSessions: allSessionList,
+    );
 
-  final genreDistribution = _computeGenreDistribution(allProgress);
+    final genreDistribution = _computeGenreDistribution(allProgress);
 
-  final monthlyMinutes = _computeMonthlyMinutes(allSessionList);
+    final monthlyMinutes = _computeMonthlyMinutes(allSessionList);
 
-  final yearStart = DateTime(now.year, 1, 1);
-  final ytdSessions = allSessionList
-      .where(
-        (s) =>
-            !s.timestamp.isBefore(yearStart) &&
-            s.timestamp.isBefore(todayStart.add(const Duration(days: 1))),
-      )
-      .toList();
-  final ytdMinutes =
-      (ytdSessions.fold<int>(0, (sum, s) => sum + s.durationInSeconds) / 60)
-          .ceil();
-  final ytdPages = computePagesInRange(
-    ytdSessions,
-    allSessionList,
-    yearStart,
-  );
+    final yearStart = DateTime(now.year, 1, 1);
+    final ytdSessions = allSessionList
+        .where(
+          (s) =>
+              !s.timestamp.isBefore(yearStart) &&
+              s.timestamp.isBefore(todayStart.add(const Duration(days: 1))),
+        )
+        .toList();
+    final ytdMinutes =
+        (ytdSessions.fold<int>(0, (sum, s) => sum + s.durationInSeconds) / 60)
+            .ceil();
+    final ytdPages = computePagesInRange(
+      ytdSessions,
+      allSessionList,
+      yearStart,
+    );
 
-  return InsightsState(
-    totalMinutes: totalMinutes,
-    totalPages: totalPages,
-    totalBooks: totalBooks,
-    currentStreak: currentStreak,
-    longestStreak: longestStreak,
-    streakHistory: streakHistory,
-    streakStatus: streakStatus,
-    achievements: achievements,
-    genreDistribution: genreDistribution,
-    monthlyMinutes: monthlyMinutes,
-    ytdMinutes: ytdMinutes,
-    ytdPages: ytdPages,
-  );
+    return InsightsState(
+      totalMinutes: totalMinutes,
+      totalPages: totalPages,
+      totalBooks: totalBooks,
+      currentStreak: currentStreak,
+      longestStreak: longestStreak,
+      streakHistory: streakHistory,
+      streakStatus: streakStatus,
+      achievements: achievements,
+      genreDistribution: genreDistribution,
+      monthlyMinutes: monthlyMinutes,
+      ytdMinutes: ytdMinutes,
+      ytdPages: ytdPages,
+    );
   }
 }
 
@@ -112,11 +113,13 @@ List<StreakDay> _buildStreakHistory(
   for (var i = 89; i >= 0; i--) {
     final date = todayStart.subtract(Duration(days: i));
     final durationSeconds = durationByDay[date] ?? 0;
-    days.add(StreakDay(
-      date: date,
-      hasActivity: durationSeconds > 0,
-      durationSeconds: durationSeconds,
-    ));
+    days.add(
+      StreakDay(
+        date: date,
+        hasActivity: durationSeconds > 0,
+        durationSeconds: durationSeconds,
+      ),
+    );
   }
   return days;
 }
@@ -207,9 +210,8 @@ List<Achievement> _computeAchievements({
       unlocked: allSessions.any(
         (s) => s.timestamp.hour >= 0 && s.timestamp.hour < 5,
       ),
-      progress: allSessions.any(
-        (s) => s.timestamp.hour >= 0 && s.timestamp.hour < 5,
-      )
+      progress:
+          allSessions.any((s) => s.timestamp.hour >= 0 && s.timestamp.hour < 5)
           ? 1.0
           : 0.0,
     ),

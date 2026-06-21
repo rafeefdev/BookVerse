@@ -54,14 +54,18 @@ class _SessionTimerSectionState extends State<SessionTimerSection> {
                     height: 8,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isRunning ? Colors.green.shade400 : scheme.tertiary,
+                      color: isRunning
+                          ? Colors.green.shade400
+                          : scheme.tertiary,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     isRunning ? 'Recording' : 'Paused',
                     style: textTheme.labelSmall?.copyWith(
-                      color: isRunning ? Colors.green.shade400 : scheme.tertiary,
+                      color: isRunning
+                          ? Colors.green.shade400
+                          : scheme.tertiary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

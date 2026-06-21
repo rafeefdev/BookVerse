@@ -320,8 +320,7 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage>
                                           _showSaveBottomSheet(
                                             context,
                                             readingProgress.currentPage,
-                                            readingProgress
-                                                .effectivePageCount,
+                                            readingProgress.effectivePageCount,
                                           );
                                         }
                                       : null,
@@ -331,10 +330,12 @@ class _SessionRecordingPageState extends ConsumerState<SessionRecordingPage>
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 14,
                                     ),
-                                    backgroundColor:
-                                        scheme.primaryContainer.withValues(alpha: 0.3),
+                                    backgroundColor: scheme.primaryContainer
+                                        .withValues(alpha: 0.3),
                                     side: BorderSide(
-                                      color: scheme.primary.withValues(alpha: 0.5),
+                                      color: scheme.primary.withValues(
+                                        alpha: 0.5,
+                                      ),
                                     ),
                                   ),
                                 ),

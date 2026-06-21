@@ -25,6 +25,7 @@ class LibraryActionButton extends ConsumerWidget {
 }
 
 enum _SheetStep { list, create }
+
 enum _LibMutation { save, remove }
 
 Future<void> _coordinateLibraryMutation({
@@ -65,7 +66,9 @@ Future<void> showLibrarySheet(BuildContext context, Book book) async {
       var currentStep = _SheetStep.list;
       return Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+          bottom:
+              MediaQuery.of(sheetContext).viewInsets.bottom +
+              MediaQuery.of(sheetContext).padding.bottom,
         ),
         child: SingleChildScrollView(
           child: StatefulBuilder(
@@ -73,37 +76,37 @@ Future<void> showLibrarySheet(BuildContext context, Book book) async {
               switch (currentStep) {
                 case _SheetStep.list:
                   return _SheetListView(
-                saved: saved,
-                selectedFolderIds: selectedFolderIds,
-                folders: folders,
-                book: book,
-                repo: repo,
-                container: container,
-                onSavedChanged: (v) => saved = v,
-                onSelectedFolderIdsChanged: (v) => selectedFolderIds = v,
-                onFoldersChanged: (v) => folders = v,
-                onNavigateToCreate: () {
-                  setSheetState(() => currentStep = _SheetStep.create);
-                },
-                setSheetState: setSheetState,
-              );
-            case _SheetStep.create:
-              return _CreateFolderView(
-                book: book,
-                repo: repo,
-                container: container,
-                onCreated: (updatedFolders) {
-                  folders = updatedFolders;
-                  currentStep = _SheetStep.list;
-                },
-                onCancel: () {
-                  currentStep = _SheetStep.list;
-                },
-                setSheetState: setSheetState,
-              );
-          }
-        },
-      ),
+                    saved: saved,
+                    selectedFolderIds: selectedFolderIds,
+                    folders: folders,
+                    book: book,
+                    repo: repo,
+                    container: container,
+                    onSavedChanged: (v) => saved = v,
+                    onSelectedFolderIdsChanged: (v) => selectedFolderIds = v,
+                    onFoldersChanged: (v) => folders = v,
+                    onNavigateToCreate: () {
+                      setSheetState(() => currentStep = _SheetStep.create);
+                    },
+                    setSheetState: setSheetState,
+                  );
+                case _SheetStep.create:
+                  return _CreateFolderView(
+                    book: book,
+                    repo: repo,
+                    container: container,
+                    onCreated: (updatedFolders) {
+                      folders = updatedFolders;
+                      currentStep = _SheetStep.list;
+                    },
+                    onCancel: () {
+                      currentStep = _SheetStep.list;
+                    },
+                    setSheetState: setSheetState,
+                  );
+              }
+            },
+          ),
         ),
       );
     },
@@ -225,33 +228,20 @@ class _SheetListView extends StatelessWidget {
             title: Text(
               'Tanpa Folder',
               style: TextStyle(
-                fontWeight:
-                    selectedFolderIds.contains(
-                      defaultFolderId,
-                    )
+                fontWeight: selectedFolderIds.contains(defaultFolderId)
                     ? FontWeight.bold
                     : null,
               ),
             ),
             subtitle: const Text('Default location'),
-            value: selectedFolderIds.contains(
-              defaultFolderId,
-            ),
+            value: selectedFolderIds.contains(defaultFolderId),
             onChanged: (checked) async {
               if (checked == true) {
                 await repo.removeBookFromAllFolders(book.id);
-                await repo.addBookToFolder(
-                  defaultFolderId,
-                  book.id,
-                );
-                onSelectedFolderIdsChanged({
-                  defaultFolderId,
-                });
+                await repo.addBookToFolder(defaultFolderId, book.id);
+                onSelectedFolderIdsChanged({defaultFolderId});
               } else {
-                await repo.removeBookFromFolder(
-                  defaultFolderId,
-                  book.id,
-                );
+                await repo.removeBookFromFolder(defaultFolderId, book.id);
                 final updated = Set<String>.from(selectedFolderIds)
                   ..remove(defaultFolderId);
                 onSelectedFolderIdsChanged(updated);
@@ -270,10 +260,7 @@ class _SheetListView extends StatelessWidget {
                   onChanged: (checked) async {
                     if (checked == true) {
                       await repo.addBookToFolder(folder.id, book.id);
-                      await repo.removeBookFromFolder(
-                        defaultFolderId,
-                        book.id,
-                      );
+                      await repo.removeBookFromFolder(defaultFolderId, book.id);
                       final updated = Set<String>.from(selectedFolderIds)
                         ..remove(defaultFolderId)
                         ..add(folder.id);
@@ -283,10 +270,7 @@ class _SheetListView extends StatelessWidget {
                       final updated = Set<String>.from(selectedFolderIds)
                         ..remove(folder.id);
                       if (updated.isEmpty) {
-                        await repo.addBookToFolder(
-                          defaultFolderId,
-                          book.id,
-                        );
+                        await repo.addBookToFolder(defaultFolderId, book.id);
                         updated.add(defaultFolderId);
                       }
                       onSelectedFolderIdsChanged(updated);
@@ -442,7 +426,10 @@ Future<void> showSetTotalPageSheet(
           left: 24,
           right: 24,
           top: 12,
-          bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
+          bottom:
+              MediaQuery.of(sheetContext).viewInsets.bottom +
+              MediaQuery.of(sheetContext).padding.bottom +
+              24,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -507,7 +494,9 @@ Future<void> showSetTotalPageSheet(
                         if (totalPages == null || totalPages < 1) {
                           ScaffoldMessenger.of(sheetContext).showSnackBar(
                             SnackBar(
-                              content: const Text('Please enter a valid page number'),
+                              content: const Text(
+                                'Please enter a valid page number',
+                              ),
                               backgroundColor: scheme.error,
                             ),
                           );
@@ -522,7 +511,8 @@ Future<void> showSetTotalPageSheet(
                         final currentProgress = ref.read(
                           readingTrackerNotifierProvider(book.id),
                         );
-                        final currentPage = currentProgress.valueOrNull?.currentPage ?? 0;
+                        final currentPage =
+                            currentProgress.valueOrNull?.currentPage ?? 0;
                         await tracker.updateReadingProgress(
                           currentPage,
                           userPageCount: totalPages,

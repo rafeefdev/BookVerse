@@ -5,8 +5,9 @@ import 'package:book_verse/features/library/model/library_folder_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
-final libraryFolderDatasourceProvider =
-    Provider<LibraryFolderDatasource>((ref) {
+final libraryFolderDatasourceProvider = Provider<LibraryFolderDatasource>((
+  ref,
+) {
   return LibraryFolderDatasource(ref.watch(databaseProvider));
 });
 
@@ -120,7 +121,11 @@ class LibraryFolderDatasource {
         where: 'folder_id = ?',
         whereArgs: [folderId],
       );
-      await _db.delete(libraryFoldersTable, where: 'id = ?', whereArgs: [folderId]);
+      await _db.delete(
+        libraryFoldersTable,
+        where: 'id = ?',
+        whereArgs: [folderId],
+      );
     } catch (e, stack) {
       log('deleteFolder error: $e\n$stack');
       rethrow;
@@ -201,7 +206,10 @@ class LibraryFolderDatasource {
 
   Future<List<String>> getAllBookIdsInAnyFolder() async {
     try {
-      final rows = await _db.query(libraryFolderBooksTable, columns: ['book_id']);
+      final rows = await _db.query(
+        libraryFolderBooksTable,
+        columns: ['book_id'],
+      );
       return rows.map((r) => r['book_id'] as String).toList();
     } catch (e, stack) {
       log('getAllBookIdsInAnyFolder error: $e\n$stack');

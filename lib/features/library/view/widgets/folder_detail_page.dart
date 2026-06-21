@@ -88,16 +88,28 @@ class FolderDetailPage extends ConsumerWidget {
               ),
             ],
           ),
-          body: _buildBookList(ref, folderId),
+          body: SafeArea(
+            top: false,
+            bottom: true,
+            child: _buildBookList(ref, folderId),
+          ),
         );
       },
       loading: () => Scaffold(
         appBar: AppBar(title: const Text('Folder')),
-        body: const Center(child: CircularProgressIndicator()),
+        body: const SafeArea(
+          top: false,
+          bottom: true,
+          child: Center(child: CircularProgressIndicator()),
+        ),
       ),
       error: (err, _) => Scaffold(
         appBar: AppBar(title: const Text('Folder')),
-        body: Center(child: Text('Error: $err')),
+        body: SafeArea(
+          top: false,
+          bottom: true,
+          child: Center(child: Text('Error: $err')),
+        ),
       ),
     );
   }
@@ -143,19 +155,14 @@ class FolderDetailPage extends ConsumerWidget {
 class _BookListWithProgress extends ConsumerWidget {
   final List books;
 
-  const _BookListWithProgress({
-    required this.books,
-  });
+  const _BookListWithProgress({required this.books});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final progressAsync = ref.watch(libraryNotifierProvider);
     return progressAsync.when(
       data: (state) {
-        final allProgress = [
-          ...state.currentlyReading,
-          ...state.finished,
-        ];
+        final allProgress = [...state.currentlyReading, ...state.finished];
         final progressMap = <String, ReadingProgressModel>{};
         for (final p in allProgress) {
           progressMap[p.bookId] = p;

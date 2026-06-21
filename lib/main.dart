@@ -82,8 +82,7 @@ class MyApp extends ConsumerWidget {
       darkTheme: darkTheme,
       themeMode: appThemeMode,
       builder: DevicePreview.appBuilder,
-      // ignore: deprecated_member_use
-      useInheritedMediaQuery: true,
+
       locale: DevicePreview.locale(context),
       routerConfig: router,
     );
