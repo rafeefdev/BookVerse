@@ -91,8 +91,9 @@ class _MyAppState extends ConsumerState<MyApp> {
           systemNavigationBarDividerColor: Colors.transparent,
           statusBarBrightness: isDark ? Brightness.light : Brightness.dark,
           statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-          systemNavigationBarIconBrightness:
-              isDark ? Brightness.light : Brightness.dark,
+          systemNavigationBarIconBrightness: isDark
+              ? Brightness.light
+              : Brightness.dark,
         ),
       );
     }

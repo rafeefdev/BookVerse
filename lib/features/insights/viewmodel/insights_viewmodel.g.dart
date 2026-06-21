@@ -6,7 +6,7 @@ part of 'insights_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$insightsHash() => r'0299e0ee2fa00607706528a99b9cbf35ad76628d';
+String _$insightsHash() => r'836f0677aa75fc0687484c4c88638268da705e27';
 
 /// See also [Insights].
 @ProviderFor(Insights)

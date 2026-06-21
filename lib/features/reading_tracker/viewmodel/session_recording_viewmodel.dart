@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
+import 'package:book_verse/features/notifications/providers/notification_providers.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 import 'package:book_verse/features/reading_tracker/viewmodel/reading_tracker_viewmodel.dart';
@@ -21,6 +22,8 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
   String? _errorMessage;
   int _startPage = 0;
   bool _needsCatchUp = false;
+  bool _disposed = false;
+  Timer? _notifTimer;
 
   bool get isInitialized => _isInitialized;
   bool get hasError => _hasError;
@@ -34,6 +37,9 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
   StopWatchTimer build() {
     _stopWatchTimer = StopWatchTimer(mode: StopWatchMode.countUp);
     ref.onDispose(() {
+      _disposed = true;
+      _cancelNotifTimer();
+      _cancelNotif();
       _stopWatchTimer.dispose();
     });
     return _stopWatchTimer;
@@ -65,7 +71,11 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
       } else {
         _startPage = progress.currentPage;
         _stopWatchTimer.onStartTimer();
+        _showSessionNotif();
+        _startNotifUpdates();
       }
+
+      _registerSessionActionHandler();
 
       _isInitialized = true;
 
@@ -78,6 +88,27 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     }
   }
 
+  void _registerSessionActionHandler() {
+    final service = ref.read(notificationServiceProvider);
+    service.onSessionAction = (actionId, payload) {
+      if (_disposed) return;
+      if (actionId == 'session_pause_resume') {
+        if (_stopWatchTimer.isRunning) {
+          pauseTimer();
+        } else {
+          startTimer();
+        }
+      } else if (actionId == 'session_finish') {
+        pauseTimer();
+      }
+    };
+  }
+
+  void _unregisterSessionActionHandler() {
+    final service = ref.read(notificationServiceProvider);
+    service.onSessionAction = null;
+  }
+
   Future<void> setStartPage(int page) async {
     _startPage = page;
     _needsCatchUp = false;
@@ -87,25 +118,40 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     ref.invalidate(bookmarkNotifierProvider);
     ref.invalidate(libraryNotifierProvider);
     _stopWatchTimer.onStartTimer();
+    _showSessionNotif();
+    _startNotifUpdates();
   }
 
   void skipCatchUp() {
     _startPage = 0;
     _needsCatchUp = false;
     _stopWatchTimer.onStartTimer();
+    _showSessionNotif();
+    _startNotifUpdates();
   }
 
   void startTimer() {
     if (_isInitialized && !_hasError) {
       _stopWatchTimer.onStartTimer();
+      _updateSessionNotif(isPaused: false);
+      _startNotifUpdates();
     }
   }
 
-  void pauseTimer() => _stopWatchTimer.onStopTimer();
+  void pauseTimer() {
+    _stopWatchTimer.onStopTimer();
+    _cancelNotifTimer();
+    _updateSessionNotif(isPaused: true);
+  }
 
   void resetTimer() => _stopWatchTimer.onResetTimer();
 
-  void disposeTimer() => _stopWatchTimer.dispose();
+  void disposeTimer() {
+    _cancelNotif();
+    _cancelNotifTimer();
+    _unregisterSessionActionHandler();
+    _stopWatchTimer.dispose();
+  }
 
   void resetState() {
     _bookId = '';
@@ -115,6 +161,9 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     _errorMessage = null;
     _startPage = 0;
     _needsCatchUp = false;
+    _cancelNotifTimer();
+    _cancelNotif();
+    _unregisterSessionActionHandler();
     _stopWatchTimer.onResetTimer();
   }
 
@@ -124,6 +173,9 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
     }
 
     _stopWatchTimer.onStopTimer();
+    _cancelNotifTimer();
+    _cancelNotif();
+    _unregisterSessionActionHandler();
 
     try {
       final totalElapsedSeconds = _stopWatchTimer.rawTime.value ~/ 1000;
@@ -155,5 +207,59 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
       _errorMessage = 'Failed to save session: ${e.toString()}';
       return false;
     }
+  }
+
+  // --- Ongoing notification helpers ---
+
+  void _showSessionNotif() {
+    if (_disposed || _initialProgress?.book == null) return;
+    final book = _initialProgress!.book!;
+    final page = _initialProgress!.currentPage;
+    final total = _initialProgress!.effectivePageCount;
+
+    final service = ref.read(notificationServiceProvider);
+    service.showSessionOngoing(
+      bookTitle: book.title,
+      currentPage: page,
+      totalPages: total,
+      elapsedSeconds: 0,
+      payload: _bookId,
+    );
+  }
+
+  void _updateSessionNotif({bool isPaused = false}) {
+    if (_disposed || _initialProgress?.book == null) return;
+    final book = _initialProgress!.book!;
+    final page = _initialProgress!.currentPage;
+    final total = _initialProgress!.effectivePageCount;
+    final elapsed = _stopWatchTimer.rawTime.value ~/ 1000;
+
+    final service = ref.read(notificationServiceProvider);
+    service.showSessionOngoing(
+      bookTitle: book.title,
+      currentPage: page,
+      totalPages: total,
+      elapsedSeconds: elapsed,
+      payload: _bookId,
+      isPaused: isPaused,
+    );
+  }
+
+  void _startNotifUpdates() {
+    _cancelNotifTimer();
+    _notifTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_disposed) return;
+      _updateSessionNotif();
+    });
+  }
+
+  void _cancelNotifTimer() {
+    _notifTimer?.cancel();
+    _notifTimer = null;
+  }
+
+  void _cancelNotif() {
+    final service = ref.read(notificationServiceProvider);
+    service.cancelSessionOngoing();
   }
 }

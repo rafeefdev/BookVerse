@@ -44,20 +44,21 @@ Future<void> scheduleDailyReminderWithServices({
   final sessions = await datasource.getAllReadingSessions();
   final allProgress = await datasource.getAllReadingProgress();
 
-  final currentlyReading = allProgress
-      .where((p) => p.book != null && p.currentPage < p.effectivePageCount)
-      .toList()
-    ..sort(
-      (a, b) => (b.lastRead ?? DateTime(2000)).compareTo(
-        a.lastRead ?? DateTime(2000),
-      ),
-    );
+  final currentlyReading =
+      allProgress
+          .where((p) => p.book != null && p.currentPage < p.effectivePageCount)
+          .toList()
+        ..sort(
+          (a, b) => (b.lastRead ?? DateTime(2000)).compareTo(
+            a.lastRead ?? DateTime(2000),
+          ),
+        );
 
   final allSessionList = sessions.toList();
 
   // compute streak
   int streak = 0;
-  for (var i = 0;; i++) {
+  for (var i = 0; ; i++) {
     final dayStart = todayStart.subtract(Duration(days: i));
     final dayEnd = dayStart.add(const Duration(days: 1));
     final hasActivity = allSessionList.any(
@@ -71,14 +72,15 @@ Future<void> scheduleDailyReminderWithServices({
   }
 
   final lastNotifRaw = prefs.getString(_lastNotificationDateKey);
-  final lastNotificationDate =
-      lastNotifRaw != null ? DateTime.tryParse(lastNotifRaw) : null;
+  final lastNotificationDate = lastNotifRaw != null
+      ? DateTime.tryParse(lastNotifRaw)
+      : null;
 
   // deep inactivity: max 1 per week
   if (allSessionList.isNotEmpty && streak == 0) {
-    final sorted = [...allSessionList]..sort((a, b) => b.timestamp.compareTo(a.timestamp));
-    final daysSinceLastRead =
-        now.difference(sorted.first.timestamp).inDays;
+    final sorted = [...allSessionList]
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    final daysSinceLastRead = now.difference(sorted.first.timestamp).inDays;
     if (daysSinceLastRead > 7 && lastNotificationDate != null) {
       final daysSinceLastNotif = now.difference(lastNotificationDate).inDays;
       if (daysSinceLastNotif < 7) return;

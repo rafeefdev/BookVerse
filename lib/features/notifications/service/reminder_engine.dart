@@ -16,8 +16,7 @@ class ReminderEngine {
 
     // --- cooldown check ---
     if (lastNotificationDate != null) {
-      final hoursSince =
-          now.difference(lastNotificationDate).inHours;
+      final hoursSince = now.difference(lastNotificationDate).inHours;
       if (hoursSince < 4) return null;
     }
 
@@ -161,12 +160,10 @@ class ReminderEngine {
     );
   }
 
-  int _daysSinceLastSession(
-    List<ReadingSessionModel> sessions,
-    DateTime now,
-  ) {
+  int _daysSinceLastSession(List<ReadingSessionModel> sessions, DateTime now) {
     if (sessions.isEmpty) return 999;
-    final sorted = [...sessions]..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    final sorted = [...sessions]
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return now.difference(sorted.first.timestamp).inDays;
   }
 
@@ -188,8 +185,7 @@ class ReminderEngine {
       defaultHour = 18; // inactive: early evening
     }
 
-    final scheduled =
-        DateTime(now.year, now.month, now.day, defaultHour);
+    final scheduled = DateTime(now.year, now.month, now.day, defaultHour);
 
     // If scheduled time is in the past, schedule for tomorrow
     if (scheduled.isBefore(now)) {
