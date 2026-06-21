@@ -166,8 +166,8 @@ class ReminderEngine {
     DateTime now,
   ) {
     if (sessions.isEmpty) return 999;
-    sessions.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-    return now.difference(sessions.first.timestamp).inDays;
+    final sorted = [...sessions]..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    return now.difference(sorted.first.timestamp).inDays;
   }
 
   DateTime bestTime({

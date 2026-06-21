@@ -21,13 +21,14 @@ final reminderEngineProvider = Provider<ReminderEngine>(
 const _lastNotificationDateKey = 'last_notification_date';
 const _disabledUntilKey = 'notifications_disabled_until';
 
-Future<void> scheduleDailyReminder(WidgetRef ref) async {
-  final service = ref.read(notificationServiceProvider);
-  final engine = ref.read(reminderEngineProvider);
-  final clock = ref.read(clockProvider);
-  final datasource = ref.read(readingTrackerDatasourceProvider);
-  final prefs = await SharedPreferences.getInstance();
-
+/// Core scheduling logic — testable directly without WidgetRef.
+Future<void> scheduleDailyReminderWithServices({
+  required NotificationService notificationService,
+  required ReminderEngine engine,
+  required Clock clock,
+  required ReadingTrackerDatasource datasource,
+  required SharedPreferences prefs,
+}) async {
   // Check if notifications are globally disabled
   final disabledUntilRaw = prefs.getString(_disabledUntilKey);
   if (disabledUntilRaw != null) {
@@ -75,9 +76,9 @@ Future<void> scheduleDailyReminder(WidgetRef ref) async {
 
   // deep inactivity: max 1 per week
   if (allSessionList.isNotEmpty && streak == 0) {
-    allSessionList.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    final sorted = [...allSessionList]..sort((a, b) => b.timestamp.compareTo(a.timestamp));
     final daysSinceLastRead =
-        now.difference(allSessionList.first.timestamp).inDays;
+        now.difference(sorted.first.timestamp).inDays;
     if (daysSinceLastRead > 7 && lastNotificationDate != null) {
       final daysSinceLastNotif = now.difference(lastNotificationDate).inDays;
       if (daysSinceLastNotif < 7) return;
@@ -107,7 +108,24 @@ Future<void> scheduleDailyReminder(WidgetRef ref) async {
     lastNotificationDate: lastNotificationDate,
   );
 
-  await service.cancelAll();
-  await service.schedule(decision, at);
+  await notificationService.cancelAll();
+  await notificationService.schedule(decision, at);
   await prefs.setString(_lastNotificationDateKey, at.toIso8601String());
+}
+
+/// Riverpod integration wrapper.
+Future<void> scheduleDailyReminder(WidgetRef ref) async {
+  final service = ref.read(notificationServiceProvider);
+  final engine = ref.read(reminderEngineProvider);
+  final clock = ref.read(clockProvider);
+  final datasource = ref.read(readingTrackerDatasourceProvider);
+  final prefs = await SharedPreferences.getInstance();
+
+  await scheduleDailyReminderWithServices(
+    notificationService: service,
+    engine: engine,
+    clock: clock,
+    datasource: datasource,
+    prefs: prefs,
+  );
 }

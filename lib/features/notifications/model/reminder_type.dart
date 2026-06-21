@@ -12,4 +12,16 @@ class ReminderDecision {
     required this.body,
     this.payload,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ReminderDecision &&
+          type == other.type &&
+          title == other.title &&
+          body == other.body &&
+          payload == other.payload;
+
+  @override
+  int get hashCode => Object.hash(type, title, body, payload);
 }
