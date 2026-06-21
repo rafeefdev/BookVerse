@@ -11,6 +11,8 @@ dependencies:
   flutter_chat_ui: ^2.0.0
   flutter:
     sdk: flutter
+  flutter_local_notifications:
+  timezone:
   flutter_dotenv: ^5.2.1
   flutter_riverpod: ^2.6.1
   http: ^1.3.0
