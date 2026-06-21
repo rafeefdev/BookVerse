@@ -85,7 +85,11 @@ class WeeklyChartSection extends StatelessWidget {
             Row(
               children: [
                 if (state.streak > 0) ...[
-                  Icon(Icons.local_fire_department, color: colorScheme.error, size: 18),
+                  Icon(
+                    Icons.local_fire_department,
+                    color: colorScheme.error,
+                    size: 18,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     '${state.streak}-day streak',
@@ -100,7 +104,11 @@ class WeeklyChartSection extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.swap_horiz, size: 14, color: colorScheme.onSurfaceVariant),
+                      Icon(
+                        Icons.swap_horiz,
+                        size: 14,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         showPages ? 'pages' : 'duration',

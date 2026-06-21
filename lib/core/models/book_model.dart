@@ -87,8 +87,9 @@ class Book {
       'publishedDate': publishedDate,
       'description': description,
       'thumbnail': thumbnail,
-      'isFavorite':
-          isFavorite ? 1 : 0, // simpan sebagai int (SQLite tidak punya bool)
+      'isFavorite': isFavorite
+          ? 1
+          : 0, // simpan sebagai int (SQLite tidak punya bool)
     };
   }
 

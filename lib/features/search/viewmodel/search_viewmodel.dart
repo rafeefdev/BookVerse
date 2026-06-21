@@ -7,7 +7,7 @@ part 'search_viewmodel.g.dart';
 @Riverpod(keepAlive: true)
 class SearchNotifier extends _$SearchNotifier {
   final _playbookService = PlaybookServices();
-  
+
   @override
   SearchState build() {
     return SearchState(query: '', result: [], isLoading: false, error: null);
@@ -20,7 +20,12 @@ class SearchNotifier extends _$SearchNotifier {
 
   Future<void> onQueryChanged(String query) async {
     if (query.isEmpty) {
-      state = SearchState(query: query, result: [], isLoading: false, error: null);
+      state = SearchState(
+        query: query,
+        result: [],
+        isLoading: false,
+        error: null,
+      );
       return;
     }
 

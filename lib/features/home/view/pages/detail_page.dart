@@ -142,10 +142,7 @@ Widget _buildDetailPage(
           children: [
             Align(
               alignment: Alignment.center,
-              child: SizedBox(
-                width: 216,
-                child: BookThumbnail(selectedBook),
-              ),
+              child: SizedBox(width: 216, child: BookThumbnail(selectedBook)),
             ),
             const SizedBox(height: 12),
             Wrap(

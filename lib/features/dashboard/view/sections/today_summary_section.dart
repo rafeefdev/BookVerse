@@ -6,7 +6,12 @@ class TodaySummarySection extends StatelessWidget {
   final DashboardState state;
   final TextTheme textTheme;
   final ColorScheme colorScheme;
-  const TodaySummarySection(this.state, this.textTheme, this.colorScheme, {super.key});
+  const TodaySummarySection(
+    this.state,
+    this.textTheme,
+    this.colorScheme, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

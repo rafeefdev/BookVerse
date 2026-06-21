@@ -54,7 +54,8 @@ android/app/upload-keystore.jks
 
 # AI agent custom prompt
 GEMINI.md
-.agent
+.agent/
+.claude/
 opencode.json
 AGENTS.md
 CLAUDE.md

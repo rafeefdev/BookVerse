@@ -45,8 +45,9 @@ class ShellScaffold extends ConsumerWidget {
           ),
         ],
       ),
-      body: SafeArea(child: navigationShell),
+      body: SafeArea(top: false, bottom: true, child: navigationShell),
       bottomNavigationBar: SafeArea(
+        top: false,
         child: BottomNavigationBar(
           currentIndex: navigationShell.currentIndex,
           onTap: (index) {
@@ -105,87 +106,87 @@ class _UserProfileSheet extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 28,
-                  child: Text(initials, style: const TextStyle(fontSize: 20)),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(name, style: context.textTheme.titleMedium),
-                      if (email.isNotEmpty)
-                        Text(email, style: context.textTheme.bodySmall),
-                    ],
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 28,
+                    child: Text(initials, style: const TextStyle(fontSize: 20)),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _AchievementsSection(),
-            const SizedBox(height: 8),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                final router = GoRouter.of(context);
-                Navigator.of(context).pop();
-                router.push('/settings');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.dark_mode),
-              title: const Text('Dark Mode'),
-              trailing: Switch(
-                value: isDark,
-                onChanged: (v) {
-                  ref
-                      .read(thememodeProviderProvider.notifier)
-                      .changeTheme(v ? ThemeMode.dark : ThemeMode.light);
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Divider(),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.tonalIcon(
-                onPressed: () async {
-                  final confirmed = await showDialog<bool>(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: const Text('Keluar'),
-                      content: const Text('Apakah kamu yakin ingin keluar?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(ctx).pop(false),
-                          child: const Text('Batal'),
-                        ),
-                        FilledButton(
-                          onPressed: () => Navigator.of(ctx).pop(true),
-                          child: const Text('Keluar'),
-                        ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(name, style: context.textTheme.titleMedium),
+                        if (email.isNotEmpty)
+                          Text(email, style: context.textTheme.bodySmall),
                       ],
                     ),
-                  );
-                  if (confirmed == true && context.mounted) {
-                    Navigator.of(context).pop();
-                    await ref.read(authServiceProvider).signOut();
-                  }
-                },
-                icon: const Icon(Icons.logout),
-                label: const Text('Keluar'),
+                  ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              _AchievementsSection(),
+              const SizedBox(height: 8),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  final router = GoRouter.of(context);
+                  Navigator.of(context).pop();
+                  router.push('/settings');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.dark_mode),
+                title: const Text('Dark Mode'),
+                trailing: Switch(
+                  value: isDark,
+                  onChanged: (v) {
+                    ref
+                        .read(thememodeProviderProvider.notifier)
+                        .changeTheme(v ? ThemeMode.dark : ThemeMode.light);
+                  },
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Divider(),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.tonalIcon(
+                  onPressed: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Keluar'),
+                        content: const Text('Apakah kamu yakin ingin keluar?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            child: const Text('Batal'),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.of(ctx).pop(true),
+                            child: const Text('Keluar'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true && context.mounted) {
+                      Navigator.of(context).pop();
+                      await ref.read(authServiceProvider).signOut();
+                    }
+                  },
+                  icon: const Icon(Icons.logout),
+                  label: const Text('Keluar'),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

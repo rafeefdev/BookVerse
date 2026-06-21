@@ -20,11 +20,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       isAuthenticated: isAuthenticated,
       onBoardingStatus: onBoardingStatus,
     ),
-    routes: [
-      ...authRoutes,
-      ...onboardingRoutes,
-      shellRoute,
-      ...modalRoutes,
-    ],
+    routes: [...authRoutes, ...onboardingRoutes, shellRoute, ...modalRoutes],
   );
 });

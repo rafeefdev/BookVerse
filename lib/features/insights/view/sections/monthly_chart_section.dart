@@ -6,7 +6,12 @@ class MonthlyChartSection extends StatelessWidget {
   final InsightsState state;
   final TextTheme textTheme;
   final ColorScheme colorScheme;
-  const MonthlyChartSection(this.state, this.textTheme, this.colorScheme, {super.key});
+  const MonthlyChartSection(
+    this.state,
+    this.textTheme,
+    this.colorScheme, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

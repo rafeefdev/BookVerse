@@ -103,7 +103,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       return const Center(child: Text('No books found'));
     }
 
+    final bottomPadding =
+        MediaQuery.of(context).padding.bottom +
+        MediaQuery.of(context).systemGestureInsets.bottom;
+
     return ListView.builder(
+      padding: EdgeInsets.only(bottom: bottomPadding + 16),
       itemCount: searchState.result.length,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {

@@ -19,9 +19,6 @@ Future<void> addBookmarkWithProgress({
   required Book book,
 }) async {
   await bookmarkDatasource.addToBookmark(book.toMap());
-  final initialProgress = ReadingProgressModel(
-    bookId: book.id,
-    currentPage: 0,
-  );
+  final initialProgress = ReadingProgressModel(bookId: book.id, currentPage: 0);
   await readingTrackerDatasource.saveReadingProgress(initialProgress);
 }

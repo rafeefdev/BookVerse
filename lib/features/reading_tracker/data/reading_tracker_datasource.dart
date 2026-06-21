@@ -6,8 +6,9 @@ import 'package:book_verse/features/reading_tracker/model/reading_session_model.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 
-final readingTrackerDatasourceProvider =
-    Provider<ReadingTrackerDatasource>((ref) {
+final readingTrackerDatasourceProvider = Provider<ReadingTrackerDatasource>((
+  ref,
+) {
   return ReadingTrackerDatasource(ref.watch(databaseProvider));
 });
 

@@ -76,73 +76,78 @@ class BookmarksPage extends ConsumerWidget {
     List<ReadingProgressModel> data,
   ) {
     return Scaffold(
-      body: Column(
-        children: [
-          // Top section - 20% of screen height
-          Container(
-            height: screenHeight * 0.15,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 8,
-              children: [
-                // Title on the left
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Favorite Book List',
-                        style: context.textTheme.titleLarge,
-                      ),
-                      Text(
-                        'Your favorite book will displayed below',
-                        style: context.textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: SizedBox(
-                    width: 180,
-                    child: SegmentedButton<ViewMode>(
-                      segments: const [
-                        ButtonSegment<ViewMode>(
-                          value: ViewMode.grid,
-                          icon: Icon(Icons.grid_view),
-                          label: Text('Grid'),
+      body: SafeArea(
+        top: false,
+        bottom: true,
+        child: Column(
+          children: [
+            // Top section - 20% of screen height
+            Container(
+              height: screenHeight * 0.15,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 8,
+                children: [
+                  // Title on the left
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Favorite Book List',
+                          style: context.textTheme.titleLarge,
                         ),
-                        ButtonSegment<ViewMode>(
-                          value: ViewMode.list,
-                          icon: Icon(Icons.view_list),
-                          label: Text('List'),
+                        Text(
+                          'Your favorite book will displayed below',
+                          style: context.textTheme.bodyMedium,
                         ),
                       ],
-                      selected: {viewMode},
-                      onSelectionChanged: (Set<ViewMode> value) {
-                        ref.read(viewModeProvider.notifier).state = value.first;
-                      },
                     ),
                   ),
-                ),
-              ],
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      width: 180,
+                      child: SegmentedButton<ViewMode>(
+                        segments: const [
+                          ButtonSegment<ViewMode>(
+                            value: ViewMode.grid,
+                            icon: Icon(Icons.grid_view),
+                            label: Text('Grid'),
+                          ),
+                          ButtonSegment<ViewMode>(
+                            value: ViewMode.list,
+                            icon: Icon(Icons.view_list),
+                            label: Text('List'),
+                          ),
+                        ],
+                        selected: {viewMode},
+                        onSelectionChanged: (Set<ViewMode> value) {
+                          ref.read(viewModeProvider.notifier).state =
+                              value.first;
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          data.isEmpty
-              ? Expanded(child: Center(child: Text('Data is empty')))
-              :
-                // Book list/grid view - remaining screen space
-                Expanded(
-                  child: viewMode == ViewMode.grid
-                      ? _buildGridView(data)
-                      : _buildListView(data),
-                ),
-        ],
+            data.isEmpty
+                ? Expanded(child: Center(child: Text('Data is empty')))
+                :
+                  // Book list/grid view - remaining screen space
+                  Expanded(
+                    child: viewMode == ViewMode.grid
+                        ? _buildGridView(data)
+                        : _buildListView(data),
+                  ),
+          ],
+        ),
       ),
     );
   }

@@ -16,9 +16,7 @@ class DataSection extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
           child: Text(
             'Data',
-            style: textTheme.titleSmall?.copyWith(
-              color: cs.onSurfaceVariant,
-            ),
+            style: textTheme.titleSmall?.copyWith(color: cs.onSurfaceVariant),
           ),
         ),
         ListTile(
@@ -117,9 +115,9 @@ class DataSection extends StatelessWidget {
       );
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Backup failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Backup failed: $e')));
       }
     }
   }
@@ -174,8 +172,7 @@ class DataSection extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) =>
-          const Center(child: CircularProgressIndicator()),
+      builder: (ctx) => const Center(child: CircularProgressIndicator()),
     );
     try {
       final result = await BackupService.instance.restoreProgress();
@@ -204,7 +201,10 @@ class DataSection extends StatelessWidget {
                 'sessions restored.',
               ),
               const SizedBox(height: 8),
-              const Text('Previous data saved to:', style: TextStyle(fontSize: 12)),
+              const Text(
+                'Previous data saved to:',
+                style: TextStyle(fontSize: 12),
+              ),
               const SizedBox(height: 4),
               Container(
                 width: double.infinity,
@@ -226,7 +226,9 @@ class DataSection extends StatelessWidget {
                 Clipboard.setData(ClipboardData(text: result.snapshotPath));
                 Navigator.of(ctx).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Snapshot path copied to clipboard')),
+                  const SnackBar(
+                    content: Text('Snapshot path copied to clipboard'),
+                  ),
                 );
               },
               child: const Text('Copy Path'),
@@ -241,9 +243,7 @@ class DataSection extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         Navigator.of(context).pop();
-        final code = e is RestoreException
-            ? e.code
-            : RestoreErrorCode.unknown;
+        final code = e is RestoreException ? e.code : RestoreErrorCode.unknown;
         final message = e is RestoreException
             ? e.message
             : 'Unexpected error occurred.';

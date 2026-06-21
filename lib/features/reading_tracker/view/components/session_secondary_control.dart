@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 class SessionSecondaryControl extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onPressed;
-  const SessionSecondaryControl({super.key, required this.icon, this.onPressed});
+  const SessionSecondaryControl({
+    super.key,
+    required this.icon,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -7,7 +7,12 @@ class CurrentlyReadingSection extends StatelessWidget {
   final DashboardState state;
   final TextTheme textTheme;
   final ColorScheme colorScheme;
-  const CurrentlyReadingSection(this.state, this.textTheme, this.colorScheme, {super.key});
+  const CurrentlyReadingSection(
+    this.state,
+    this.textTheme,
+    this.colorScheme, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

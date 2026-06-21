@@ -19,8 +19,8 @@ Widget bookListTile(
   final effectiveTotal = readingProgress?.effectivePageCount ?? 0;
   if (readingProgress != null && effectiveTotal > 0) {
     progressValue = readingProgress.currentPage / effectiveTotal;
-    final percent =
-        ((readingProgress.currentPage / effectiveTotal) * 100).round();
+    final percent = ((readingProgress.currentPage / effectiveTotal) * 100)
+        .round();
     progressText =
         '${readingProgress.currentPage}/$effectiveTotal hlm  $percent%';
   }

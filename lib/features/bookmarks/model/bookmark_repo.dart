@@ -12,14 +12,14 @@ class BookmarkRepo {
   BookmarkRepo({
     required BookmarkDatasource bookmarkDatasource,
     required ReadingTrackerDatasource readingTrackerDatasource,
-  })  : _bookmarkDatasource = bookmarkDatasource,
-        _readingTrackerDatasource = readingTrackerDatasource;
+  }) : _bookmarkDatasource = bookmarkDatasource,
+       _readingTrackerDatasource = readingTrackerDatasource;
 
   Future<List<ReadingProgressModel>> getReadingProgressWithBooks() async {
     try {
       final booksMap = await _bookmarkDatasource.getBookmarkedBooks();
-      final progressMap =
-          await _readingTrackerDatasource.getAllReadingProgress();
+      final progressMap = await _readingTrackerDatasource
+          .getAllReadingProgress();
 
       final List<Book> books = booksMap.map((b) => Book.fromJson(b)).toList();
       final bookIds = books.map((b) => b.id).toSet();
@@ -62,8 +62,7 @@ class BookmarkRepo {
 
   Future<bool> isBookmarked(String id) async {
     try {
-      final progress =
-          await _readingTrackerDatasource.getReadingProgress(id);
+      final progress = await _readingTrackerDatasource.getReadingProgress(id);
       return progress != null;
     } catch (e, stack) {
       log('isBookmarked error: $e\n$stack');
