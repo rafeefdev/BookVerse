@@ -25,6 +25,9 @@ void main() {
         now: jan15,
         streak: 1,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -45,13 +48,16 @@ void main() {
         allSessions: sessions,
         currentlyReading: progress,
         now: jan15,
-        streak: 2,
+        streak: 1,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
       expect(result!.type, ReminderType.streakProtection);
-      expect(result.title, contains('2-day streak'));
+      expect(result.title, contains('1-day streak'));
     });
 
     test('streak 1 with no book returns generic streakProtection', () {
@@ -65,6 +71,9 @@ void main() {
         now: jan15,
         streak: 1,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -88,6 +97,9 @@ void main() {
         now: jan15,
         streak: 3,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -112,6 +124,9 @@ void main() {
         now: jan15,
         streak: 5,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -130,6 +145,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -149,6 +167,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -167,6 +188,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -185,6 +209,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -201,6 +228,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -225,6 +255,9 @@ void main() {
         now: jan15,
         streak: 1,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNull);
@@ -245,6 +278,9 @@ void main() {
         now: jan15,
         streak: 5,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNull);
@@ -265,6 +301,9 @@ void main() {
         now: jan15,
         streak: 1,
         lastNotificationDate: jan15.subtract(Duration(hours: 2)),
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNull);
@@ -281,6 +320,9 @@ void main() {
         now: jan15,
         streak: 1,
         lastNotificationDate: jan15.subtract(Duration(minutes: 3)),
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNull);
@@ -297,6 +339,9 @@ void main() {
         now: jan15,
         streak: 1,
         lastNotificationDate: jan15.subtract(Duration(hours: 4)),
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -313,6 +358,9 @@ void main() {
         now: jan15,
         streak: 1,
         lastNotificationDate: jan15.subtract(Duration(hours: 6)),
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -329,6 +377,9 @@ void main() {
         now: jan15,
         streak: 1,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -345,6 +396,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNull);
@@ -357,6 +411,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -374,6 +431,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -396,6 +456,9 @@ void main() {
         now: jan15,
         streak: 3,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -419,6 +482,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result!.title, 'Your book is waiting 📖');
@@ -436,6 +502,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result!.title, 'Just 5 minutes today');
@@ -452,6 +521,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result!.title, 'Start with 1 page');
@@ -468,6 +540,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result!.title, 'Start with 1 page');
@@ -484,6 +559,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result!.title, 'Still time to read');
@@ -502,6 +580,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -518,6 +599,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result!.body, 'Continue from page 0.');
@@ -534,6 +618,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
       expect(result, isNull);
     });
@@ -549,6 +636,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result!.type, ReminderType.reengagement);
@@ -570,6 +660,9 @@ void main() {
         now: jan15,
         streak: 365,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(result, isNotNull);
@@ -594,6 +687,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: jan15.subtract(Duration(days: 10)),
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       expect(sessions[0].timestamp, equals(originalOrder[0].timestamp),
@@ -626,6 +722,9 @@ void main() {
         now: now,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
 
       // Because inDays = 0, it doesn't match day-1 (==1), falls to <=3
@@ -642,11 +741,11 @@ void main() {
   group('decide — invariants', () {
     test('title is never empty when result is not null', () {
       final combinations = [
-        engine.decide(allSessions: [], currentlyReading: [], now: jan15, streak: 0, lastNotificationDate: null),
-        engine.decide(allSessions: [], currentlyReading: [createProgress()], now: jan15, streak: 0, lastNotificationDate: null),
-        engine.decide(allSessions: [createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1)))], currentlyReading: [], now: jan15, streak: 1, lastNotificationDate: null),
-        engine.decide(allSessions: [createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1)))], currentlyReading: [createProgress()], now: jan15, streak: 1, lastNotificationDate: null),
-        engine.decide(allSessions: List.generate(3, (i) => createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: i + 1)))), currentlyReading: [createProgress()], now: jan15, streak: 3, lastNotificationDate: null),
+        engine.decide(allSessions: [], currentlyReading: [], now: jan15, streak: 0, lastNotificationDate: null, hasGoal: false, isGoalBehind: false, pagesBehind: 0),
+        engine.decide(allSessions: [], currentlyReading: [createProgress()], now: jan15, streak: 0, lastNotificationDate: null, hasGoal: false, isGoalBehind: false, pagesBehind: 0),
+        engine.decide(allSessions: [createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1)))], currentlyReading: [], now: jan15, streak: 1, lastNotificationDate: null, hasGoal: false, isGoalBehind: false, pagesBehind: 0),
+        engine.decide(allSessions: [createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1)))], currentlyReading: [createProgress()], now: jan15, streak: 1, lastNotificationDate: null, hasGoal: false, isGoalBehind: false, pagesBehind: 0),
+        engine.decide(allSessions: List.generate(3, (i) => createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: i + 1)))), currentlyReading: [createProgress()], now: jan15, streak: 3, lastNotificationDate: null, hasGoal: false, isGoalBehind: false, pagesBehind: 0),
       ];
 
       for (final result in combinations) {
@@ -665,6 +764,9 @@ void main() {
         now: jan15,
         streak: 1,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
       expect(r1!.type, ReminderType.streakProtection);
 
@@ -674,6 +776,9 @@ void main() {
         now: jan15,
         streak: 2,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
       expect(r2!.type, ReminderType.streakProtection);
 
@@ -684,6 +789,9 @@ void main() {
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
       expect(r3!.type, ReminderType.reengagement);
 
@@ -694,6 +802,9 @@ void main() {
         now: jan15,
         streak: 3,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
       expect(r4!.type, ReminderType.resumeBook);
     });
@@ -705,6 +816,9 @@ void main() {
         now: jan15,
         streak: 1,
         lastNotificationDate: null,
+        hasGoal: false,
+        isGoalBehind: false,
+        pagesBehind: 0,
       );
       expect(r!.payload, isNotNull);
     });

@@ -24,7 +24,7 @@ Future<Database> initDatabase() async {
     final fullPath = join(dbPath, 'bookverse.db');
     db = await openDatabase(
       fullPath,
-      version: 4,
+      version: 5,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
       onConfigure: (db) async {
@@ -39,7 +39,7 @@ Future<Database> initDatabase() async {
     db = await databaseFactory.openDatabase(
       fullPath,
       options: OpenDatabaseOptions(
-        version: 4,
+        version: 5,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
         onConfigure: (db) async {
@@ -58,6 +58,7 @@ Future<void> _onCreate(Database db, int version) async {
   await _createReadingSessionsTable(db);
   await _createLibraryFoldersTable(db);
   await _createLibraryFolderBooksTable(db);
+  await _createReadingGoalsTable(db);
 }
 
 Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -88,6 +89,10 @@ Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     } catch (e) {
       log('Migration v4: column may already exist — $e');
     }
+  }
+
+  if (oldVersion < 5) {
+    await _createReadingGoalsTable(db);
   }
 }
 
@@ -166,6 +171,19 @@ Future<void> _createLibraryFolderBooksTable(Database db) async {
       PRIMARY KEY (folder_id, book_id),
       FOREIGN KEY (folder_id) REFERENCES $libraryFoldersTable(id) ON DELETE CASCADE,
       FOREIGN KEY (book_id) REFERENCES $bookmarksTable(id) ON DELETE CASCADE
+    )
+  ''');
+}
+
+Future<void> _createReadingGoalsTable(Database db) async {
+  await db.execute('''
+    CREATE TABLE IF NOT EXISTS $readingGoalsTable (
+      id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+      target_pages INTEGER NOT NULL DEFAULT 30,
+      target_minutes INTEGER NOT NULL DEFAULT 20,
+      enabled INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
     )
   ''');
 }

@@ -1,7 +1,10 @@
 import 'package:book_verse/core/utils/clock.dart';
+import 'package:book_verse/features/goals/data/goals_datasource.dart';
+import 'package:book_verse/features/notifications/model/reminder_type.dart';
 import 'package:book_verse/features/notifications/service/notification_service.dart';
 import 'package:book_verse/features/notifications/service/reminder_engine.dart';
 import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
+import 'package:book_verse/features/settings/model/reminder_settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,24 +22,19 @@ final reminderEngineProvider = Provider<ReminderEngine>(
 );
 
 const _lastNotificationDateKey = 'last_notification_date';
-const _disabledUntilKey = 'notifications_disabled_until';
 
-/// Core scheduling logic — testable directly without WidgetRef.
 Future<void> scheduleDailyReminderWithServices({
   required NotificationService notificationService,
   required ReminderEngine engine,
   required Clock clock,
   required ReadingTrackerDatasource datasource,
   required SharedPreferences prefs,
+  required GoalsDatasource goalsDatasource,
 }) async {
-  // Check if notifications are globally disabled
-  final disabledUntilRaw = prefs.getString(_disabledUntilKey);
-  if (disabledUntilRaw != null) {
-    final disabledUntil = DateTime.tryParse(disabledUntilRaw);
-    if (disabledUntil != null && clock.now().isBefore(disabledUntil)) {
-      return;
-    }
-  }
+  final settings = await ReminderSettings.load();
+
+  // Check if reminders are globally disabled
+  if (!settings.enabled) return;
 
   final now = clock.now();
   final todayStart = DateTime(now.year, now.month, now.day);
@@ -72,9 +70,8 @@ Future<void> scheduleDailyReminderWithServices({
   }
 
   final lastNotifRaw = prefs.getString(_lastNotificationDateKey);
-  final lastNotificationDate = lastNotifRaw != null
-      ? DateTime.tryParse(lastNotifRaw)
-      : null;
+  final lastNotificationDate =
+      lastNotifRaw != null ? DateTime.tryParse(lastNotifRaw) : null;
 
   // deep inactivity: max 1 per week
   if (allSessionList.isNotEmpty && streak == 0) {
@@ -94,20 +91,54 @@ Future<void> scheduleDailyReminderWithServices({
     return;
   }
 
+  // Compute goal data
+  final goal = await goalsDatasource.getGoal();
+  bool hasGoal = false;
+  bool isGoalBehind = false;
+  int pagesBehind = 0;
+  if (goal != null && goal.enabled && settings.typeGoal) {
+    hasGoal = true;
+    final todaySessions = allSessionList
+        .where((s) => !s.timestamp.isBefore(todayStart));
+    int pagesRead = 0;
+    for (final s in todaySessions) {
+      if (s.startPage != null && s.endPage > s.startPage!) {
+        pagesRead += s.endPage - s.startPage!;
+      }
+    }
+    pagesBehind = (goal.targetPages - pagesRead).clamp(0, goal.targetPages);
+    isGoalBehind = pagesBehind > 0;
+  }
+
   final decision = engine.decide(
     allSessions: allSessionList,
     currentlyReading: currentlyReading,
     now: now,
     streak: streak,
     lastNotificationDate: lastNotificationDate,
+    hasGoal: hasGoal && settings.typeGoal,
+    isGoalBehind: isGoalBehind,
+    pagesBehind: pagesBehind,
   );
 
   if (decision == null) return;
+
+  // Filter by enabled type
+  final typeEnabled = switch (decision.type) {
+    ReminderType.resumeBook => settings.typeResumeBook,
+    ReminderType.streakProtection => settings.typeStreakProtection,
+    ReminderType.reengagement => settings.typeReengagement,
+    ReminderType.goalReminder => settings.typeGoal,
+  };
+  if (!typeEnabled) return;
 
   final at = engine.bestTime(
     now: now,
     streak: streak,
     lastNotificationDate: lastNotificationDate,
+    preferredHour: settings.hour,
+    quietStartHour: settings.quietStartHour,
+    quietEndHour: settings.quietEndHour,
   );
 
   await notificationService.cancelAll();
@@ -121,6 +152,7 @@ Future<void> scheduleDailyReminder(WidgetRef ref) async {
   final engine = ref.read(reminderEngineProvider);
   final clock = ref.read(clockProvider);
   final datasource = ref.read(readingTrackerDatasourceProvider);
+  final goalsDatasource = ref.read(goalsDatasourceProvider);
   final prefs = await SharedPreferences.getInstance();
 
   await scheduleDailyReminderWithServices(
@@ -129,5 +161,6 @@ Future<void> scheduleDailyReminder(WidgetRef ref) async {
     clock: clock,
     datasource: datasource,
     prefs: prefs,
+    goalsDatasource: goalsDatasource,
   );
 }

@@ -1,7 +1,9 @@
+import 'package:book_verse/features/goals/view/sections/goal_setting_section.dart';
 import 'package:book_verse/features/settings/view/sections/appearance_section.dart';
 import 'package:book_verse/features/settings/view/sections/data_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:book_verse/features/settings/view/sections/reminder_section.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -13,7 +15,12 @@ class SettingsPage extends ConsumerWidget {
       body: SafeArea(
         top: false,
         bottom: true,
-        child: ListView(children: const [AppearanceSection(), DataSection()]),
+        child: ListView(children: const [
+          GoalSettingSection(),
+          ReminderSection(),
+          AppearanceSection(),
+          DataSection(),
+        ]),
       ),
     );
   }

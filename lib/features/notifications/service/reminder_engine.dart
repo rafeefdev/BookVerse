@@ -11,6 +11,9 @@ class ReminderEngine {
     required DateTime now,
     required int streak,
     required DateTime? lastNotificationDate,
+    required bool hasGoal,
+    required bool isGoalBehind,
+    required int pagesBehind,
   }) {
     final todayStart = DateTime(now.year, now.month, now.day);
 
@@ -30,6 +33,11 @@ class ReminderEngine {
     // --- priority 1: streak protection (at risk: 1-2 days) ---
     if (streak >= 1 && streak < 3) {
       return _buildStreakProtection(streak, currentlyReading);
+    }
+
+    // --- priority 1.5: goal behind (enabled, evening, behind target) ---
+    if (hasGoal && isGoalBehind && now.hour >= 18) {
+      return _buildGoalReminder(pagesBehind, currentlyReading);
     }
 
     // --- priority 2: broken streak (had streak, lost it) ---
@@ -136,6 +144,32 @@ class ReminderEngine {
     );
   }
 
+  ReminderDecision _buildGoalReminder(
+    int pagesBehind,
+    List<ReadingProgressModel> currentlyReading,
+  ) {
+    final book = currentlyReading.isNotEmpty ? currentlyReading.first.book : null;
+    final bookName = book?.title ?? 'your book';
+
+    if (pagesBehind > 0) {
+      return ReminderDecision(
+        type: ReminderType.goalReminder,
+        title: '📋 Daily goal update',
+        body:
+            '$pagesBehind pages behind today\'s goal. 5 min with $bookName is enough to catch up.',
+        payload: currentlyReading.isNotEmpty ? currentlyReading.first.bookId : null,
+      );
+    }
+
+    return ReminderDecision(
+      type: ReminderType.goalReminder,
+      title: '📋 Daily goal update',
+      body:
+          'Almost there! A few more minutes will put you on track with your daily goal.',
+      payload: currentlyReading.isNotEmpty ? currentlyReading.first.bookId : null,
+    );
+  }
+
   ReminderDecision _buildResumeBook(
     List<ReadingProgressModel> currentlyReading,
   ) {
@@ -171,35 +205,33 @@ class ReminderEngine {
     required DateTime now,
     required int streak,
     required DateTime? lastNotificationDate,
+    int preferredHour = 19,
+    int quietStartHour = 22,
+    int quietEndHour = 7,
   }) {
-    // hardcoded quiet hours: 22:00 - 07:00
-    const quietStart = 22;
-    const quietEnd = 7;
-
     int defaultHour;
-    if (streak >= 3) {
-      defaultHour = 20; // active users: later
+    if (preferredHour >= 0 && preferredHour < 24) {
+      defaultHour = preferredHour;
+    } else if (streak >= 3) {
+      defaultHour = 20;
     } else if (streak >= 1) {
-      defaultHour = 19; // at-risk: earlier
+      defaultHour = 19;
     } else {
-      defaultHour = 18; // inactive: early evening
+      defaultHour = 18;
     }
 
     final scheduled = DateTime(now.year, now.month, now.day, defaultHour);
 
-    // If scheduled time is in the past, schedule for tomorrow
     if (scheduled.isBefore(now)) {
       return scheduled.add(const Duration(days: 1));
     }
 
-    // If within quiet hours, move to quietEnd
-    if (defaultHour >= quietStart || defaultHour < quietEnd) {
-      return DateTime(now.year, now.month, now.day, quietEnd);
+    if (defaultHour >= quietStartHour || defaultHour < quietEndHour) {
+      return DateTime(now.year, now.month, now.day, quietEndHour);
     }
 
-    // ensure quiet hours: if scheduled after 22:00, move to next day 07:00
-    if (defaultHour >= quietStart) {
-      return DateTime(now.year, now.month, now.day + 1, quietEnd);
+    if (defaultHour >= quietStartHour) {
+      return DateTime(now.year, now.month, now.day + 1, quietEndHour);
     }
 
     return scheduled;
@@ -209,7 +241,6 @@ class ReminderEngine {
     required DateTime now,
     required DateTime? lastNotificationDate,
   }) {
-    // max 1 notification per day
     if (lastNotificationDate == null) return true;
     final todayStart = DateTime(now.year, now.month, now.day);
     return lastNotificationDate.isBefore(todayStart);

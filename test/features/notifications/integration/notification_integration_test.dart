@@ -1,4 +1,5 @@
 import 'package:book_verse/core/utils/clock.dart';
+import 'package:book_verse/features/goals/data/goals_datasource.dart';
 import 'package:book_verse/features/notifications/providers/notification_providers.dart';
 import 'package:book_verse/features/notifications/service/notification_service.dart';
 import 'package:book_verse/features/notifications/service/reminder_engine.dart';
@@ -15,6 +16,7 @@ import '../../../helpers/test_db.dart';
 void main() {
   late Database db;
   late ReadingTrackerDatasource datasource;
+  late GoalsDatasource goalsDatasource;
   late NotificationService notificationService;
   late SharedPreferences prefs;
   late ReminderEngine engine;
@@ -23,6 +25,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     db = await openTestDb();
     datasource = ReadingTrackerDatasource(db);
+    goalsDatasource = GoalsDatasource(db);
     notificationService = NotificationService(FlutterLocalNotificationsPlugin());
     prefs = await SharedPreferences.getInstance();
     engine = const ReminderEngine();
@@ -42,6 +45,7 @@ void main() {
         clock: FakeClock(now),
         datasource: datasource,
         prefs: prefs,
+        goalsDatasource: goalsDatasource,
       );
 
       final lastDate = await notificationService.getLastNotificationDate();
@@ -67,14 +71,15 @@ void main() {
         clock: FakeClock(now),
         datasource: datasource,
         prefs: prefs,
+        goalsDatasource: goalsDatasource,
       );
 
       final lastDate = await notificationService.getLastNotificationDate();
       expect(lastDate, isNotNull);
 
-      // For streak=0, bestTime defaults to 18:00
-      // Since now is 12:00, 18:00 is in the future so it schedules for 18:00
-      expect(lastDate!.hour, 18);
+      // For streak=0, bestTime defaults to preferredHour=19 (from ReminderSettings)
+      // Since now is 12:00, 19:00 is in the future so it schedules for 19:00
+      expect(lastDate!.hour, 19);
     });
 
     test('has session today → does not schedule', () async {
@@ -95,6 +100,7 @@ void main() {
         clock: FakeClock(now),
         datasource: datasource,
         prefs: prefs,
+        goalsDatasource: goalsDatasource,
       );
 
       final lastDate = await notificationService.getLastNotificationDate();
@@ -127,6 +133,7 @@ void main() {
         clock: FakeClock(now),
         datasource: datasource,
         prefs: prefs,
+        goalsDatasource: goalsDatasource,
       );
 
       final firstDate = await notificationService.getLastNotificationDate();
@@ -139,6 +146,7 @@ void main() {
         clock: FakeClock(now),
         datasource: datasource,
         prefs: prefs,
+        goalsDatasource: goalsDatasource,
       );
 
       final secondDate = await notificationService.getLastNotificationDate();
@@ -181,12 +189,13 @@ void main() {
         clock: FakeClock(now),
         datasource: datasource,
         prefs: prefs,
+        goalsDatasource: goalsDatasource,
       );
 
       final lastDate = await notificationService.getLastNotificationDate();
       expect(lastDate, isNotNull);
-      // No session today → streak=0 in the computation → bestTime=18
-      expect(lastDate!.hour, 18);
+      // No session today → streak=0 in the computation → bestTime=19
+      expect(lastDate!.hour, 19);
     });
   });
 
@@ -207,6 +216,7 @@ void main() {
         clock: FakeClock(now),
         datasource: datasource,
         prefs: prefs,
+        goalsDatasource: goalsDatasource,
       );
 
       final lastDate = await notificationService.getLastNotificationDate();
