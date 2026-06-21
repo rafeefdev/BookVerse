@@ -16,12 +16,13 @@ Widget bookListTile(
   double progressValue = 0.0;
   String progressText = 'Not started';
 
-  if (readingProgress != null && book.pageCount > 0) {
-    progressValue = readingProgress.currentPage / book.pageCount;
-    final percent = ((readingProgress.currentPage / book.pageCount) * 100)
-        .round();
+  final effectiveTotal = readingProgress?.effectivePageCount ?? 0;
+  if (readingProgress != null && effectiveTotal > 0) {
+    progressValue = readingProgress.currentPage / effectiveTotal;
+    final percent =
+        ((readingProgress.currentPage / effectiveTotal) * 100).round();
     progressText =
-        '${readingProgress.currentPage}/${book.pageCount} hlm  $percent%';
+        '${readingProgress.currentPage}/$effectiveTotal hlm  $percent%';
   }
 
   Widget listTileContent = Column(

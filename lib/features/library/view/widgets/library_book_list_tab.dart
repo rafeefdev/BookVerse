@@ -47,13 +47,7 @@ class LibraryBookListTab extends StatelessWidget {
             book,
             isWrappedByCard: true,
             isTemporarySource: false,
-            readingProgress: ReadingProgressModel(
-              bookId: progress.bookId,
-              currentPage: progress.currentPage,
-              totalReadingTimeInSeconds: progress.totalReadingTimeInSeconds,
-              lastRead: progress.lastRead,
-              book: progress.book,
-            ),
+            readingProgress: progress,
             onTap: () {
               context.push('/tracked-book-detail/${progress.bookId}');
             },

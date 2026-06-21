@@ -73,37 +73,45 @@ class _SessionCatchUpSheetState extends State<SessionCatchUpSheet> {
             ),
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: () {
-                final text = _controller.text.trim();
-                final page = int.tryParse(text);
-                if (page == null || page < 1) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Please enter a valid page number'),
-                      backgroundColor: scheme.error,
-                    ),
-                  );
-                  return;
-                }
-                widget.notifier.setStartPage(page);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Set Page'),
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: TextButton(
-              onPressed: () {
-                widget.notifier.skipCatchUp();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Start from Page 1'),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 48,
+                  child: TextButton(
+                    onPressed: () {
+                      widget.notifier.skipCatchUp();
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Start Over'),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: SizedBox(
+                  height: 48,
+                  child: FilledButton(
+                    onPressed: () {
+                      final text = _controller.text.trim();
+                      final page = int.tryParse(text);
+                      if (page == null || page < 1) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text('Please enter a valid page number'),
+                            backgroundColor: scheme.error,
+                          ),
+                        );
+                        return;
+                      }
+                      widget.notifier.setStartPage(page);
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Set Page'),
+                  ),
+                ),
+              ),
+            ],
           ),
           ],
         ),

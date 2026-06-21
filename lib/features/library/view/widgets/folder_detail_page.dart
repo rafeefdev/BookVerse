@@ -3,6 +3,7 @@ import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:book_verse/features/library/model/library_folder_model.dart';
 import 'package:book_verse/features/library/view/widgets/create_folder_dialog.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
+import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -102,7 +103,7 @@ class FolderDetailPage extends ConsumerWidget {
   }
 
   Widget _buildBookList(WidgetRef ref, String folderId) {
-    return FutureBuilder<List<dynamic>>(
+    return FutureBuilder<List>(
       future: ref
           .read(libraryNotifierProvider.notifier)
           .getBooksInFolder(folderId),
@@ -110,6 +111,9 @@ class FolderDetailPage extends ConsumerWidget {
         final scheme = Theme.of(context).colorScheme;
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
         }
         final books = snapshot.data ?? [];
         if (books.isEmpty) {
@@ -130,11 +134,38 @@ class FolderDetailPage extends ConsumerWidget {
             ),
           );
         }
+        return _BookListWithProgress(books: books);
+      },
+    );
+  }
+}
+
+class _BookListWithProgress extends ConsumerWidget {
+  final List books;
+
+  const _BookListWithProgress({
+    required this.books,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final progressAsync = ref.watch(libraryNotifierProvider);
+    return progressAsync.when(
+      data: (state) {
+        final allProgress = [
+          ...state.currentlyReading,
+          ...state.finished,
+        ];
+        final progressMap = <String, ReadingProgressModel>{};
+        for (final p in allProgress) {
+          progressMap[p.bookId] = p;
+        }
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: books.length,
           itemBuilder: (context, index) {
             final book = books[index];
+            final progress = progressMap[book.id];
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: bookListTile(
@@ -142,6 +173,7 @@ class FolderDetailPage extends ConsumerWidget {
                 book,
                 isWrappedByCard: true,
                 isTemporarySource: false,
+                readingProgress: progress,
                 onTap: () {
                   context.push('/detail/${book.id}');
                 },
@@ -150,6 +182,8 @@ class FolderDetailPage extends ConsumerWidget {
           },
         );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, _) => Center(child: Text('Error: $err')),
     );
   }
 }

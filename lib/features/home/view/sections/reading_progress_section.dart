@@ -3,6 +3,8 @@ import 'package:book_verse/core/extensions/iterable_extensions.dart';
 import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
 import 'package:book_verse/features/home/view/sections/library_action_sheet.dart';
+import 'package:book_verse/features/library/data/library_folder_datasource.dart';
+import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,9 +64,12 @@ class _SaveToLibraryCTA extends ConsumerWidget {
           await ref
               .read(bookmarkNotifierProvider.notifier)
               .toggleBookmark(book);
+          final folderDs = ref.read(libraryFolderDatasourceProvider);
+          await folderDs.assignToDefaultFolder(book.id);
           ref.invalidate(bookmarkNotifierProvider);
-          if (context.mounted) {
-            showSetCurrentPageSheet(context, ref, book);
+          ref.invalidate(libraryNotifierProvider);
+          if (context.mounted && book.pageCount == 0) {
+            await showSetTotalPageSheet(context, ref, book);
           }
         },
         child: Padding(
@@ -122,8 +127,9 @@ class _ProgressContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasStarted = (readingProgress?.currentPage ?? 0) > 0;
-    final progressValue = hasStarted && book.pageCount > 0
-        ? readingProgress!.currentPage / book.pageCount
+    final effectiveTotal = readingProgress?.effectivePageCount ?? 0;
+    final progressValue = hasStarted && effectiveTotal > 0
+        ? readingProgress!.currentPage / effectiveTotal
         : 0.0;
 
     return Column(
@@ -141,7 +147,7 @@ class _ProgressContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${readingProgress!.currentPage} / ${book.pageCount} pages',
+                '${readingProgress!.currentPage} / $effectiveTotal pages',
                 style: textTheme.bodyLarge,
               ),
               Text(
