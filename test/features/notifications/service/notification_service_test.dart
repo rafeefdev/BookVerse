@@ -41,7 +41,7 @@ void main() {
   group('onNotificationTap', () {
     test('setter accepts a callback', () {
       expect(() {
-        service.onNotificationTap = (payload) {};
+        service.onNotificationTap = (payload, notificationId) {};
       }, returnsNormally);
     });
   });

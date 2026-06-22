@@ -12,7 +12,7 @@ class NotificationService {
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
-  Future<void> initialize() async {
+  Future<void> initialize({bool requestPermissions = true}) async {
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
@@ -23,9 +23,14 @@ class NotificationService {
       requestSoundPermission: true,
     );
 
+    const linuxSettings = LinuxInitializationSettings(
+      defaultActionName: 'Open',
+    );
+
     const initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
+      linux: linuxSettings,
     );
 
     await _plugin.initialize(
@@ -33,30 +38,34 @@ class NotificationService {
       onDidReceiveNotificationResponse: _onNotificationTap,
     );
 
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.requestNotificationsPermission();
+    if (requestPermissions) {
+      final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+
+      await androidPlugin?.requestNotificationsPermission();
+      await androidPlugin?.requestExactAlarmsPermission();
+    }
   }
 
   void _onNotificationTap(NotificationResponse response) {
     final action = response.actionId;
     if (action == null) {
-      _onTapCallback?.call(response.payload);
+      _onTapCallback?.call(response.payload, response.id);
       return;
     }
     if (action == 'session_pause_resume' || action == 'session_finish') {
       _onSessionActionCallback?.call(action, response.payload);
     } else {
-      _onTapCallback?.call(response.payload);
+      _onTapCallback?.call(response.payload, response.id);
     }
   }
 
-  Function(String?)? _onTapCallback;
+  Function(String? payload, int? notificationId)? _onTapCallback;
   Function(String actionId, String? payload)? _onSessionActionCallback;
 
-  set onNotificationTap(Function(String?)? callback) {
+  set onNotificationTap(
+    Function(String? payload, int? notificationId)? callback,
+  ) {
     _onTapCallback = callback;
   }
 
@@ -74,6 +83,38 @@ class NotificationService {
   Future<void> setLastNotificationDate(DateTime date) async {
     final prefs = await _prefs;
     await prefs.setString(_lastNotificationDateKey, date.toIso8601String());
+  }
+
+  Future<void> show({
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    const androidDetails = AndroidNotificationDetails(
+      'reading_reminder',
+      'Reading Reminder',
+      channelDescription: 'Daily reading reminders and streak alerts',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    const linuxDetails = LinuxNotificationDetails(
+      urgency: LinuxNotificationUrgency.critical,
+    );
+
+    const details = NotificationDetails(
+      android: androidDetails,
+      linux: linuxDetails,
+    );
+
+    final id = DateTime.now().millisecondsSinceEpoch.remainder(100000).abs();
+    await _plugin.show(
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: details,
+      payload: payload,
+    );
   }
 
   Future<void> schedule(ReminderDecision decision, DateTime at) async {
@@ -115,7 +156,7 @@ class NotificationService {
     }
   }
 
-  static const int _sessionOngoingId = 9999;
+  static const int sessionOngoingId = 9999;
   static const String _sessionChannelId = 'session_ongoing';
   static const String _sessionChannelName = 'Session Timer';
   static const String _sessionChannelDesc =
@@ -178,7 +219,7 @@ class NotificationService {
       );
 
       await _plugin.show(
-        id: _sessionOngoingId,
+        id: sessionOngoingId,
         title: bookTitle,
         body: '$timeStr • $progress • $statusBadge',
         notificationDetails: details,
@@ -189,7 +230,7 @@ class NotificationService {
 
   Future<void> cancelSessionOngoing() async {
     try {
-      await _plugin.cancel(id: _sessionOngoingId);
+      await _plugin.cancel(id: sessionOngoingId);
     } catch (_) {}
   }
 
