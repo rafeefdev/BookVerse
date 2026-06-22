@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:book_verse/core/router/app_router.dart';
 import 'package:book_verse/features/bookmarks/viewmodel/bookmark_viewmodel.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/notifications/providers/notification_providers.dart';
@@ -100,6 +101,10 @@ class SessionRecordingNotifier extends _$SessionRecordingNotifier {
         }
       } else if (actionId == 'session_finish') {
         pauseTimer();
+        final router = ref.read(routerProvider);
+        if (payload != null) {
+          router.push('/record-session/$payload');
+        }
       }
     };
   }

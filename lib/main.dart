@@ -6,6 +6,7 @@ import 'package:book_verse/core/services/supabase_service.dart';
 import 'package:book_verse/core/theme/providers/thememode_provider.dart';
 import 'package:book_verse/core/theme/app_theme.dart';
 import 'package:book_verse/features/notifications/providers/notification_providers.dart';
+import 'package:book_verse/features/notifications/service/notification_service.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -72,6 +73,24 @@ class _MyAppState extends ConsumerState<MyApp> {
     try {
       final service = ref.read(notificationServiceProvider);
       await service.initialize();
+      service.onNotificationTap = (payload, notificationId) {
+        final router = ref.read(routerProvider);
+
+        if (notificationId == NotificationService.sessionOngoingId) {
+          if (payload != null) {
+            router.push('/record-session/$payload');
+          } else {
+            router.push('/dashboard');
+          }
+          return;
+        }
+
+        if (payload != null) {
+          router.push('/tracked-book-detail/$payload');
+        } else {
+          router.push('/dashboard');
+        }
+      };
       await scheduleDailyReminder(ref);
     } catch (e, stack) {
       log('Failed to initialize notifications: $e\n$stack');

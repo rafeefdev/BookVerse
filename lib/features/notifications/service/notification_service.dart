@@ -50,20 +50,22 @@ class NotificationService {
   void _onNotificationTap(NotificationResponse response) {
     final action = response.actionId;
     if (action == null) {
-      _onTapCallback?.call(response.payload);
+      _onTapCallback?.call(response.payload, response.id);
       return;
     }
     if (action == 'session_pause_resume' || action == 'session_finish') {
       _onSessionActionCallback?.call(action, response.payload);
     } else {
-      _onTapCallback?.call(response.payload);
+      _onTapCallback?.call(response.payload, response.id);
     }
   }
 
-  Function(String?)? _onTapCallback;
+  Function(String? payload, int? notificationId)? _onTapCallback;
   Function(String actionId, String? payload)? _onSessionActionCallback;
 
-  set onNotificationTap(Function(String?)? callback) {
+  set onNotificationTap(
+    Function(String? payload, int? notificationId)? callback,
+  ) {
     _onTapCallback = callback;
   }
 
@@ -154,7 +156,7 @@ class NotificationService {
     }
   }
 
-  static const int _sessionOngoingId = 9999;
+  static const int sessionOngoingId = 9999;
   static const String _sessionChannelId = 'session_ongoing';
   static const String _sessionChannelName = 'Session Timer';
   static const String _sessionChannelDesc =
@@ -217,7 +219,7 @@ class NotificationService {
       );
 
       await _plugin.show(
-        id: _sessionOngoingId,
+        id: sessionOngoingId,
         title: bookTitle,
         body: '$timeStr • $progress • $statusBadge',
         notificationDetails: details,
@@ -228,7 +230,7 @@ class NotificationService {
 
   Future<void> cancelSessionOngoing() async {
     try {
-      await _plugin.cancel(id: _sessionOngoingId);
+      await _plugin.cancel(id: sessionOngoingId);
     } catch (_) {}
   }
 
