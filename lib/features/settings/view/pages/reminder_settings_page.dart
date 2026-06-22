@@ -1,5 +1,4 @@
 import 'package:book_verse/core/theme/themes_extension.dart';
-import 'package:book_verse/features/notifications/model/reminder_type.dart';
 import 'package:book_verse/features/notifications/service/notification_service.dart';
 import 'package:book_verse/features/settings/model/reminder_settings.dart';
 import 'package:flutter/material.dart';
@@ -84,25 +83,33 @@ class _ReminderSettingsPageState extends State<ReminderSettingsPage> {
   }
 
   Future<void> _testNotification() async {
-    final service = NotificationService(
-      FlutterLocalNotificationsPlugin(),
-    );
-    await service.initialize();
-    await service.schedule(
-      ReminderDecision(
-        type: ReminderType.resumeBook,
+    try {
+      final service = NotificationService(
+        FlutterLocalNotificationsPlugin(),
+      );
+      await service.initialize(requestPermissions: true);
+      await service.show(
         title: 'Test Notification',
         body: 'Reading reminders are working!',
-      ),
-      DateTime.now().add(const Duration(seconds: 3)),
-    );
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Test notification sent (check in 3 seconds)'),
-          behavior: SnackBarBehavior.floating,
-        ),
       );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Test notification sent!'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to send notification: $e'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 

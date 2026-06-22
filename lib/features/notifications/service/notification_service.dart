@@ -12,7 +12,7 @@ class NotificationService {
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
-  Future<void> initialize() async {
+  Future<void> initialize({bool requestPermissions = true}) async {
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
@@ -23,9 +23,14 @@ class NotificationService {
       requestSoundPermission: true,
     );
 
+    const linuxSettings = LinuxInitializationSettings(
+      defaultActionName: 'Open',
+    );
+
     const initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
+      linux: linuxSettings,
     );
 
     await _plugin.initialize(
@@ -33,11 +38,13 @@ class NotificationService {
       onDidReceiveNotificationResponse: _onNotificationTap,
     );
 
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.requestNotificationsPermission();
+    if (requestPermissions) {
+      final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+
+      await androidPlugin?.requestNotificationsPermission();
+      await androidPlugin?.requestExactAlarmsPermission();
+    }
   }
 
   void _onNotificationTap(NotificationResponse response) {
@@ -74,6 +81,38 @@ class NotificationService {
   Future<void> setLastNotificationDate(DateTime date) async {
     final prefs = await _prefs;
     await prefs.setString(_lastNotificationDateKey, date.toIso8601String());
+  }
+
+  Future<void> show({
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    const androidDetails = AndroidNotificationDetails(
+      'reading_reminder',
+      'Reading Reminder',
+      channelDescription: 'Daily reading reminders and streak alerts',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    const linuxDetails = LinuxNotificationDetails(
+      urgency: LinuxNotificationUrgency.critical,
+    );
+
+    const details = NotificationDetails(
+      android: androidDetails,
+      linux: linuxDetails,
+    );
+
+    final id = DateTime.now().millisecondsSinceEpoch.remainder(100000).abs();
+    await _plugin.show(
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: details,
+      payload: payload,
+    );
   }
 
   Future<void> schedule(ReminderDecision decision, DateTime at) async {
