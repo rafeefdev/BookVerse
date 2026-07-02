@@ -1,5 +1,6 @@
 import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:book_verse/features/library/model/library_state.dart';
+import 'package:book_verse/features/library/view/widgets/finished_book_card.dart';
 import 'package:book_verse/features/library/view/widgets/library_book_list_tab.dart';
 import 'package:book_verse/features/library/view/widgets/saved_tab.dart';
 import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
@@ -78,11 +79,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
                 emptyIcon: Icons.menu_book_outlined,
                 emptyText: 'No books being read',
               ),
-              LibraryBookListTab(
-                books: state.finished,
-                emptyIcon: Icons.check_circle_outline,
-                emptyText: 'No finished books yet',
-              ),
+              _FinishedTab(state: state),
               SavedTab(
                 state: state,
                 onCreateFolder: (name) {
@@ -93,6 +90,45 @@ class _LibraryPageState extends ConsumerState<LibraryPage>
           ),
         ),
       ],
+    );
+  }
+}
+
+class _FinishedTab extends StatelessWidget {
+  final LibraryState state;
+  const _FinishedTab({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    if (state.finishedInfo.isEmpty) {
+      final scheme = Theme.of(context).colorScheme;
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.check_circle_outline,
+              size: 64,
+              color: scheme.outlineVariant,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No finished books yet',
+              style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
+            ),
+          ],
+        ),
+      );
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: state.finishedInfo.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: FinishedBookCard(info: state.finishedInfo[index]),
+        );
+      },
     );
   }
 }

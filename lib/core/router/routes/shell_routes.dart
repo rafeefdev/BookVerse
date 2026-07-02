@@ -1,5 +1,6 @@
 import 'package:book_verse/core/router/shell_scaffold.dart';
 import 'package:book_verse/features/dashboard/view/pages/dashboard_page.dart';
+import 'package:book_verse/features/dashboard/view/pages/weekly_report_page.dart';
 import 'package:book_verse/features/home/view/pages/new_homepage.dart';
 import 'package:book_verse/features/library/view/library_page.dart';
 import 'package:book_verse/features/library/view/widgets/folder_detail_page.dart';
@@ -15,6 +16,12 @@ RouteBase get shellRoute => StatefulShellRoute.indexedStack(
         GoRoute(
           path: '/dashboard',
           builder: (context, state) => const DashboardPage(),
+          routes: [
+            GoRoute(
+              path: 'weekly-report',
+              builder: (context, state) => const WeeklyReportPage(),
+            ),
+          ],
         ),
       ],
     ),

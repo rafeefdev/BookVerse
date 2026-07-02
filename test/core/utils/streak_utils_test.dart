@@ -40,13 +40,13 @@ void main() {
     });
 
     test(
-      'session yesterday but not today returns 0 (streak is today-anchored)',
+      'session yesterday but not today returns 1 (streak falls back to yesterday)',
       () {
         final sessions = [
           createSession(bookId: 'b1', timestamp: DateTime(2026, 6, 6, 10, 0)),
         ];
         final result = computeStreak(sessions, DateTime(2026, 6, 7));
-        expect(result, 0);
+        expect(result, 1);
       },
     );
 

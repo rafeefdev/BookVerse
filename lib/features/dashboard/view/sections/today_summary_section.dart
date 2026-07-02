@@ -1,13 +1,17 @@
 import 'package:book_verse/features/dashboard/model/dashboard_state.dart';
 import 'package:book_verse/features/dashboard/view/components/dashboard_stat_card.dart';
+import 'package:book_verse/features/goals/model/goal_progress.dart';
 import 'package:flutter/material.dart';
 
 class TodaySummarySection extends StatelessWidget {
   final DashboardState state;
+  final GoalProgress? goalProgress;
   final TextTheme textTheme;
   final ColorScheme colorScheme;
+
   const TodaySummarySection(
     this.state,
+    this.goalProgress,
     this.textTheme,
     this.colorScheme, {
     super.key,
@@ -20,34 +24,42 @@ class TodaySummarySection extends StatelessWidget {
       children: [
         Text("Today's Summary", style: textTheme.titleMedium),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: DashboardStatCard(
-                icon: Icons.timer_outlined,
-                value: '${state.todayMinutes}',
-                unit: 'minutes',
-                colorScheme: colorScheme,
-                textTheme: textTheme,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: DashboardStatCard(
-                icon: Icons.menu_book,
-                value: '${state.todayPages}',
-                unit: 'pages',
-                colorScheme: colorScheme,
-                textTheme: textTheme,
-              ),
-            ),
-          ],
-        ),
+        _statCards(),
         const SizedBox(height: 8),
         Text(
           _comparisonText(state.todayMinutes, state.yesterdayMinutes),
           style: textTheme.bodySmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _statCards() {
+    return Row(
+      children: [
+        Expanded(
+          child: DashboardStatCard(
+            icon: Icons.timer_outlined,
+            value: goalProgress != null
+                ? '${state.todayMinutes}/${goalProgress!.targetMinutes}'
+                : '${state.todayMinutes}',
+            unit: 'minutes',
+            colorScheme: colorScheme,
+            textTheme: textTheme,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: DashboardStatCard(
+            icon: Icons.menu_book,
+            value: goalProgress != null
+                ? '${state.todayPages}/${goalProgress!.targetPages}'
+                : '${state.todayPages}',
+            unit: 'pages',
+            colorScheme: colorScheme,
+            textTheme: textTheme,
           ),
         ),
       ],

@@ -12,19 +12,25 @@ void main() {
   late MockLibraryRepo mockRepo;
   late MockBookmarkDatasource mockBookmark;
   late MockLibraryFolderDatasource mockFolder;
+  late MockReadingTrackerDatasource mockReadingTracker;
 
   setUp(() {
     mockRepo = MockLibraryRepo();
     mockBookmark = MockBookmarkDatasource();
     mockFolder = MockLibraryFolderDatasource();
+    mockReadingTracker = MockReadingTrackerDatasource();
 
     when(() => mockRepo.getAllFolders()).thenAnswer((_) async => []);
+    when(
+      () => mockReadingTracker.getAllReadingSessions(),
+    ).thenAnswer((_) async => []);
   });
 
   ProviderContainer createContainer() {
     return createTestContainer(
       bookmarkDatasource: mockBookmark,
       libraryFolderDatasource: mockFolder,
+      readingTrackerDatasource: mockReadingTracker,
       additionalOverrides: [libraryRepoProvider.overrideWithValue(mockRepo)],
     );
   }
@@ -84,6 +90,7 @@ void main() {
               currentPage: 320,
               book: book,
               userPageCount: 350,
+              totalReadingTimeInSeconds: 1,
             ),
           ],
         );
@@ -142,6 +149,7 @@ void main() {
               currentPage: 0,
               book: book,
               userPageCount: 250,
+              totalReadingTimeInSeconds: 1,
             ),
           ],
         );
