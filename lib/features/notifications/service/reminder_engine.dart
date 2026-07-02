@@ -148,7 +148,9 @@ class ReminderEngine {
     int pagesBehind,
     List<ReadingProgressModel> currentlyReading,
   ) {
-    final book = currentlyReading.isNotEmpty ? currentlyReading.first.book : null;
+    final book = currentlyReading.isNotEmpty
+        ? currentlyReading.first.book
+        : null;
     final bookName = book?.title ?? 'your book';
 
     if (pagesBehind > 0) {
@@ -157,7 +159,9 @@ class ReminderEngine {
         title: '📋 Daily goal update',
         body:
             '$pagesBehind pages behind today\'s goal. 5 min with $bookName is enough to catch up.',
-        payload: currentlyReading.isNotEmpty ? currentlyReading.first.bookId : null,
+        payload: currentlyReading.isNotEmpty
+            ? currentlyReading.first.bookId
+            : null,
       );
     }
 
@@ -166,7 +170,9 @@ class ReminderEngine {
       title: '📋 Daily goal update',
       body:
           'Almost there! A few more minutes will put you on track with your daily goal.',
-      payload: currentlyReading.isNotEmpty ? currentlyReading.first.bookId : null,
+      payload: currentlyReading.isNotEmpty
+          ? currentlyReading.first.bookId
+          : null,
     );
   }
 

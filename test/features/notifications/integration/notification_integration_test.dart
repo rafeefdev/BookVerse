@@ -26,7 +26,9 @@ void main() {
     db = await openTestDb();
     datasource = ReadingTrackerDatasource(db);
     goalsDatasource = GoalsDatasource(db);
-    notificationService = NotificationService(FlutterLocalNotificationsPlugin());
+    notificationService = NotificationService(
+      FlutterLocalNotificationsPlugin(),
+    );
     prefs = await SharedPreferences.getInstance();
     engine = const ReminderEngine();
   });
@@ -104,8 +106,11 @@ void main() {
       );
 
       final lastDate = await notificationService.getLastNotificationDate();
-      expect(lastDate, isNull,
-          reason: 'should not schedule when already read today');
+      expect(
+        lastDate,
+        isNull,
+        reason: 'should not schedule when already read today',
+      );
     });
 
     test('already notified today → does not schedule again', () async {
@@ -150,53 +155,59 @@ void main() {
       );
 
       final secondDate = await notificationService.getLastNotificationDate();
-      expect(secondDate, equals(firstDate),
-          reason:
-              'should not overwrite last notification date with a different value');
+      expect(
+        secondDate,
+        equals(firstDate),
+        reason:
+            'should not overwrite last notification date with a different value',
+      );
     });
 
-    test('sessions yesterday through 3 days ago → reengagement (no session today)', () async {
-      final now = DateTime(2024, 6, 21, 12, 0, 0);
+    test(
+      'sessions yesterday through 3 days ago → reengagement (no session today)',
+      () async {
+        final now = DateTime(2024, 6, 21, 12, 0, 0);
 
-      await datasource.saveReadingSession(
-        ReadingSessionModel(
-          bookId: 'b1',
-          durationInSeconds: 300,
-          endPage: 15,
-          timestamp: now.subtract(const Duration(days: 1)),
-        ),
-      );
-      await datasource.saveReadingSession(
-        ReadingSessionModel(
-          bookId: 'b1',
-          durationInSeconds: 300,
-          endPage: 10,
-          timestamp: now.subtract(const Duration(days: 2)),
-        ),
-      );
-      await datasource.saveReadingSession(
-        ReadingSessionModel(
-          bookId: 'b1',
-          durationInSeconds: 300,
-          endPage: 5,
-          timestamp: now.subtract(const Duration(days: 3)),
-        ),
-      );
+        await datasource.saveReadingSession(
+          ReadingSessionModel(
+            bookId: 'b1',
+            durationInSeconds: 300,
+            endPage: 15,
+            timestamp: now.subtract(const Duration(days: 1)),
+          ),
+        );
+        await datasource.saveReadingSession(
+          ReadingSessionModel(
+            bookId: 'b1',
+            durationInSeconds: 300,
+            endPage: 10,
+            timestamp: now.subtract(const Duration(days: 2)),
+          ),
+        );
+        await datasource.saveReadingSession(
+          ReadingSessionModel(
+            bookId: 'b1',
+            durationInSeconds: 300,
+            endPage: 5,
+            timestamp: now.subtract(const Duration(days: 3)),
+          ),
+        );
 
-      await scheduleDailyReminderWithServices(
-        notificationService: notificationService,
-        engine: engine,
-        clock: FakeClock(now),
-        datasource: datasource,
-        prefs: prefs,
-        goalsDatasource: goalsDatasource,
-      );
+        await scheduleDailyReminderWithServices(
+          notificationService: notificationService,
+          engine: engine,
+          clock: FakeClock(now),
+          datasource: datasource,
+          prefs: prefs,
+          goalsDatasource: goalsDatasource,
+        );
 
-      final lastDate = await notificationService.getLastNotificationDate();
-      expect(lastDate, isNotNull);
-      // No session today → streak=0 in the computation → bestTime=19
-      expect(lastDate!.hour, 19);
-    });
+        final lastDate = await notificationService.getLastNotificationDate();
+        expect(lastDate, isNotNull);
+        // No session today → streak=0 in the computation → bestTime=19
+        expect(lastDate!.hour, 19);
+      },
+    );
   });
 
   group('book filtering', () {
@@ -204,10 +215,7 @@ void main() {
       final now = DateTime(2024, 6, 22, 12, 0, 0);
 
       await datasource.saveReadingProgress(
-        ReadingProgressModel(
-          bookId: 'b1',
-          currentPage: 50,
-        ),
+        ReadingProgressModel(bookId: 'b1', currentPage: 50),
       );
 
       await scheduleDailyReminderWithServices(
@@ -220,8 +228,11 @@ void main() {
       );
 
       final lastDate = await notificationService.getLastNotificationDate();
-      expect(lastDate, isNull,
-          reason: 'progress without book should be excluded');
+      expect(
+        lastDate,
+        isNull,
+        reason: 'progress without book should be excluded',
+      );
     });
   });
 }

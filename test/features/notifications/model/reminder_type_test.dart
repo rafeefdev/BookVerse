@@ -5,12 +5,15 @@ void main() {
   group('ReminderType', () {
     test('has three values', () {
       expect(ReminderType.values, hasLength(4));
-      expect(ReminderType.values, containsAll([
-        ReminderType.resumeBook,
-        ReminderType.streakProtection,
-        ReminderType.reengagement,
-        ReminderType.goalReminder,
-      ]));
+      expect(
+        ReminderType.values,
+        containsAll([
+          ReminderType.resumeBook,
+          ReminderType.streakProtection,
+          ReminderType.reengagement,
+          ReminderType.goalReminder,
+        ]),
+      );
     });
   });
 

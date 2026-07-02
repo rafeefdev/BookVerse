@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final dailyGoalProvider =
     StateNotifierProvider<DailyGoalNotifier, AsyncValue<DailyGoal>>((ref) {
-  return DailyGoalNotifier(ref);
-});
+      return DailyGoalNotifier(ref);
+    });
 
 class DailyGoalNotifier extends StateNotifier<AsyncValue<DailyGoal>> {
   final Ref _ref;

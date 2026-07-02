@@ -83,10 +83,7 @@ Widget _goalCard(WidgetRef ref) {
   return progressAsync.when(
     data: (progress) {
       if (progress == null) return const SizedBox.shrink();
-      return GoalProgressCard(
-        progress: progress,
-        onTap: () {},
-      );
+      return GoalProgressCard(progress: progress, onTap: () {});
     },
     loading: () => const SizedBox.shrink(),
     error: (_, __) => const SizedBox.shrink(),

@@ -16,7 +16,8 @@ class GoalSettingSection extends ConsumerWidget {
     final textTheme = context.textTheme;
 
     return goalAsync.when(
-      data: (goal) => _buildContent(context, ref, goal, progressAsync, cs, textTheme),
+      data: (goal) =>
+          _buildContent(context, ref, goal, progressAsync, cs, textTheme),
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
     );
@@ -31,7 +32,9 @@ class GoalSettingSection extends ConsumerWidget {
     TextTheme textTheme,
   ) {
     final pagesCtrl = TextEditingController(text: goal.targetPages.toString());
-    final minutesCtrl = TextEditingController(text: goal.targetMinutes.toString());
+    final minutesCtrl = TextEditingController(
+      text: goal.targetMinutes.toString(),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,12 +51,16 @@ class GoalSettingSection extends ConsumerWidget {
                   children: [
                     Text(
                       'Reading Goal',
-                      style: textTheme.titleSmall?.copyWith(color: cs.onSurfaceVariant),
+                      style: textTheme.titleSmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Set your daily reading targets',
-                      style: textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                      style: textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -187,10 +194,17 @@ class GoalSettingSection extends ConsumerWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              Icon(statusText.isNotEmpty ? Icons.circle : null, size: 10, color: statusColor),
+              Icon(
+                statusText.isNotEmpty ? Icons.circle : null,
+                size: 10,
+                color: statusColor,
+              ),
               if (statusText.isNotEmpty) ...[
                 const SizedBox(width: 6),
-                Text(statusText, style: textTheme.bodySmall?.copyWith(color: statusColor)),
+                Text(
+                  statusText,
+                  style: textTheme.bodySmall?.copyWith(color: statusColor),
+                ),
               ],
             ],
           ),
@@ -221,7 +235,10 @@ class GoalSettingSection extends ConsumerWidget {
                 Text('$label: $current / $target', style: textTheme.bodySmall),
               ],
             ),
-            Text('${(progress * 100).toStringAsFixed(0)}%', style: textTheme.labelSmall),
+            Text(
+              '${(progress * 100).toStringAsFixed(0)}%',
+              style: textTheme.labelSmall,
+            ),
           ],
         ),
         const SizedBox(height: 4),

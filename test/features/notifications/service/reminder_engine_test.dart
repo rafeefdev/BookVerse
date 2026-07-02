@@ -7,17 +7,32 @@ import '../../../helpers/notification_factories.dart';
 void main() {
   final engine = const ReminderEngine();
 
-  final jan15 =
-      DateTime(2024, 1, 15, 12, 0, 0); // Monday noon — arbitrary stable date
+  final jan15 = DateTime(
+    2024,
+    1,
+    15,
+    12,
+    0,
+    0,
+  ); // Monday noon — arbitrary stable date
 
   // --------------- Happy Path ---------------
 
   group('decide — happy path', () {
     test('streak 1 with book returns streakProtection', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
       ];
-      final progress = [createProgress(bookId: 'b1', book: createBook(title: 'Deep Work'), currentPage: 42)];
+      final progress = [
+        createProgress(
+          bookId: 'b1',
+          book: createBook(title: 'Deep Work'),
+          currentPage: 42,
+        ),
+      ];
 
       final result = engine.decide(
         allSessions: sessions,
@@ -39,10 +54,21 @@ void main() {
 
     test('streak 2 with book returns streakProtection', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 2))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 2)),
+        ),
       ];
-      final progress = [createProgress(bookId: 'b1', book: createBook(title: 'Deep Work'))];
+      final progress = [
+        createProgress(
+          bookId: 'b1',
+          book: createBook(title: 'Deep Work'),
+        ),
+      ];
 
       final result = engine.decide(
         allSessions: sessions,
@@ -62,7 +88,10 @@ void main() {
 
     test('streak 1 with no book returns generic streakProtection', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -78,7 +107,10 @@ void main() {
 
       expect(result, isNotNull);
       expect(result!.type, ReminderType.streakProtection);
-      expect(result.body, 'Read just 5 minutes today to keep your streak alive.');
+      expect(
+        result.body,
+        'Read just 5 minutes today to keep your streak alive.',
+      );
       expect(result.payload, isNull);
     });
 
@@ -89,7 +121,13 @@ void main() {
           timestamp: jan15.subtract(Duration(days: i + 1)),
         );
       });
-      final progress = [createProgress(bookId: 'b1', book: createBook(title: 'Atomic Habits'), currentPage: 147)];
+      final progress = [
+        createProgress(
+          bookId: 'b1',
+          book: createBook(title: 'Atomic Habits'),
+          currentPage: 147,
+        ),
+      ];
 
       final result = engine.decide(
         allSessions: sessions,
@@ -116,7 +154,12 @@ void main() {
           timestamp: jan15.subtract(Duration(days: i + 1)),
         );
       });
-      final progress = [createProgress(bookId: 'b1', book: createBook(title: 'Deep Work'))];
+      final progress = [
+        createProgress(
+          bookId: 'b1',
+          book: createBook(title: 'Deep Work'),
+        ),
+      ];
 
       final result = engine.decide(
         allSessions: sessions,
@@ -135,9 +178,17 @@ void main() {
 
     test('streak 0 with recent history returns reengagement day-1', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
       ];
-      final progress = [createProgress(bookId: 'b1', book: createBook(title: 'Deep Work'))];
+      final progress = [
+        createProgress(
+          bookId: 'b1',
+          book: createBook(title: 'Deep Work'),
+        ),
+      ];
 
       final result = engine.decide(
         allSessions: sessions,
@@ -158,12 +209,20 @@ void main() {
 
     test('streak 0 with 3 days gap returns day-2-3 reengagement', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 3))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 3)),
+        ),
       ];
 
       final result = engine.decide(
         allSessions: sessions,
-        currentlyReading: [createProgress(bookId: 'b1', book: createBook(title: 'Deep Work'))],
+        currentlyReading: [
+          createProgress(
+            bookId: 'b1',
+            book: createBook(title: 'Deep Work'),
+          ),
+        ],
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
@@ -179,7 +238,10 @@ void main() {
 
     test('streak 0 with 5 days gap returns page-1 reengagement', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 5))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 5)),
+        ),
       ];
 
       final result = engine.decide(
@@ -200,7 +262,10 @@ void main() {
 
     test('streak 0 with 10 days gap returns deep reengagement', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 10))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 10)),
+        ),
       ];
 
       final result = engine.decide(
@@ -220,7 +285,13 @@ void main() {
     });
 
     test('streak 0 no history with books returns resumeBook fallback', () {
-      final progress = [createProgress(bookId: 'b1', book: createBook(title: 'New Book'), currentPage: 0)];
+      final progress = [
+        createProgress(
+          bookId: 'b1',
+          book: createBook(title: 'New Book'),
+          currentPage: 0,
+        ),
+      ];
 
       final result = engine.decide(
         allSessions: [],
@@ -245,9 +316,17 @@ void main() {
   group('decide — already read today', () {
     test('has session today returns null regardless of streak', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(hours: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(hours: 1)),
+        ),
       ];
-      final progress = [createProgress(bookId: 'b1', book: createBook(title: 'Test'))];
+      final progress = [
+        createProgress(
+          bookId: 'b1',
+          book: createBook(title: 'Test'),
+        ),
+      ];
 
       final result = engine.decide(
         allSessions: sessions,
@@ -265,11 +344,26 @@ void main() {
 
     test('has session today even with streak 5 returns null', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(hours: 2))),
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 2))),
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 3))),
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 4))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(hours: 2)),
+        ),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 2)),
+        ),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 3)),
+        ),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 4)),
+        ),
       ];
 
       final result = engine.decide(
@@ -292,7 +386,10 @@ void main() {
   group('decide — cooldown check', () {
     test('last notification 2 hours ago returns null', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -311,7 +408,10 @@ void main() {
 
     test('last notification 3 minutes ago returns null', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -330,7 +430,10 @@ void main() {
 
     test('last notification exactly 4 hours ago allows notification', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -349,7 +452,10 @@ void main() {
 
     test('last notification 6 hours ago allows notification', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -368,7 +474,10 @@ void main() {
 
     test('last notification null allows notification', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -422,7 +531,10 @@ void main() {
 
     test('streak 0, has history, no books returns generic reengagement', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -473,12 +585,20 @@ void main() {
   group('decide — re-engagement day boundaries', () {
     test('1 day gap uses day-1 message with book', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1, hours: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1, hours: 1)),
+        ),
       ];
 
       final result = engine.decide(
         allSessions: sessions,
-        currentlyReading: [createProgress(bookId: 'b1', book: createBook(title: 'Deep Work'))],
+        currentlyReading: [
+          createProgress(
+            bookId: 'b1',
+            book: createBook(title: 'Deep Work'),
+          ),
+        ],
         now: jan15,
         streak: 0,
         lastNotificationDate: null,
@@ -493,7 +613,10 @@ void main() {
 
     test('2 day gap uses day-2-3 message', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 2, hours: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 2, hours: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -512,7 +635,10 @@ void main() {
 
     test('4 day gap uses day-4-7 message', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 4, hours: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 4, hours: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -531,7 +657,10 @@ void main() {
 
     test('7 day gap uses day-4-7 message', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 7, hours: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 7, hours: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -550,7 +679,10 @@ void main() {
 
     test('8 day gap uses deep reengagement message', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 8, hours: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 8, hours: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -572,7 +704,13 @@ void main() {
 
   group('decide — resume book edge cases', () {
     test('book with null title fallback to "your book"', () {
-      final progress = [createProgress(bookId: 'b1', book: createBook(title: ''), currentPage: 10)];
+      final progress = [
+        createProgress(
+          bookId: 'b1',
+          book: createBook(title: ''),
+          currentPage: 10,
+        ),
+      ];
 
       final result = engine.decide(
         allSessions: [],
@@ -591,7 +729,13 @@ void main() {
     });
 
     test('book with page 0', () {
-      final progress = [createProgress(bookId: 'b1', book: createBook(title: 'New Book'), currentPage: 0)];
+      final progress = [
+        createProgress(
+          bookId: 'b1',
+          book: createBook(title: 'New Book'),
+          currentPage: 0,
+        ),
+      ];
 
       final result = engine.decide(
         allSessions: [],
@@ -627,7 +771,10 @@ void main() {
 
     test('streak 0 with history but gap uses reengagement', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
       ];
 
       final result = engine.decide(
@@ -644,30 +791,38 @@ void main() {
       expect(result!.type, ReminderType.reengagement);
     });
 
-    test('streak 365 (1 year but no session today) returns resumeBook', () async {
-      final sessions = List.generate(365, (i) {
-        // i=0 → yesterday, i=364 → 365 days ago
-        return createSession(
-          bookId: 'b1',
-          timestamp: jan15.subtract(Duration(days: i + 1)),
+    test(
+      'streak 365 (1 year but no session today) returns resumeBook',
+      () async {
+        final sessions = List.generate(365, (i) {
+          // i=0 → yesterday, i=364 → 365 days ago
+          return createSession(
+            bookId: 'b1',
+            timestamp: jan15.subtract(Duration(days: i + 1)),
+          );
+        });
+        final progress = [
+          createProgress(
+            bookId: 'b1',
+            book: createBook(title: 'War and Peace'),
+          ),
+        ];
+
+        final result = engine.decide(
+          allSessions: sessions,
+          currentlyReading: progress,
+          now: jan15,
+          streak: 365,
+          lastNotificationDate: null,
+          hasGoal: false,
+          isGoalBehind: false,
+          pagesBehind: 0,
         );
-      });
-      final progress = [createProgress(bookId: 'b1', book: createBook(title: 'War and Peace'))];
 
-      final result = engine.decide(
-        allSessions: sessions,
-        currentlyReading: progress,
-        now: jan15,
-        streak: 365,
-        lastNotificationDate: null,
-        hasGoal: false,
-        isGoalBehind: false,
-        pagesBehind: 0,
-      );
-
-      expect(result, isNotNull);
-      expect(result!.type, ReminderType.resumeBook);
-    });
+        expect(result, isNotNull);
+        expect(result!.type, ReminderType.resumeBook);
+      },
+    );
   });
 
   // --------------- Bug Regression ---------------
@@ -675,9 +830,18 @@ void main() {
   group('decide — bug regression', () {
     test('B1: no side-effect sort on input list', () {
       final sessions = [
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 3))),
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1))),
-        createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 2))),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 3)),
+        ),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 1)),
+        ),
+        createSession(
+          bookId: 'b1',
+          timestamp: jan15.subtract(Duration(days: 2)),
+        ),
       ];
       final originalOrder = [...sessions];
 
@@ -692,12 +856,21 @@ void main() {
         pagesBehind: 0,
       );
 
-      expect(sessions[0].timestamp, equals(originalOrder[0].timestamp),
-          reason: 'element 0 must not be moved');
-      expect(sessions[1].timestamp, equals(originalOrder[1].timestamp),
-          reason: 'element 1 must not be moved');
-      expect(sessions[2].timestamp, equals(originalOrder[2].timestamp),
-          reason: 'element 2 must not be moved');
+      expect(
+        sessions[0].timestamp,
+        equals(originalOrder[0].timestamp),
+        reason: 'element 0 must not be moved',
+      );
+      expect(
+        sessions[1].timestamp,
+        equals(originalOrder[1].timestamp),
+        reason: 'element 1 must not be moved',
+      );
+      expect(
+        sessions[2].timestamp,
+        equals(originalOrder[2].timestamp),
+        reason: 'element 2 must not be moved',
+      );
     });
 
     test('B2: midnight boundary — 1 minute gap does not count as 1 day', () {
@@ -741,11 +914,72 @@ void main() {
   group('decide — invariants', () {
     test('title is never empty when result is not null', () {
       final combinations = [
-        engine.decide(allSessions: [], currentlyReading: [], now: jan15, streak: 0, lastNotificationDate: null, hasGoal: false, isGoalBehind: false, pagesBehind: 0),
-        engine.decide(allSessions: [], currentlyReading: [createProgress()], now: jan15, streak: 0, lastNotificationDate: null, hasGoal: false, isGoalBehind: false, pagesBehind: 0),
-        engine.decide(allSessions: [createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1)))], currentlyReading: [], now: jan15, streak: 1, lastNotificationDate: null, hasGoal: false, isGoalBehind: false, pagesBehind: 0),
-        engine.decide(allSessions: [createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1)))], currentlyReading: [createProgress()], now: jan15, streak: 1, lastNotificationDate: null, hasGoal: false, isGoalBehind: false, pagesBehind: 0),
-        engine.decide(allSessions: List.generate(3, (i) => createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: i + 1)))), currentlyReading: [createProgress()], now: jan15, streak: 3, lastNotificationDate: null, hasGoal: false, isGoalBehind: false, pagesBehind: 0),
+        engine.decide(
+          allSessions: [],
+          currentlyReading: [],
+          now: jan15,
+          streak: 0,
+          lastNotificationDate: null,
+          hasGoal: false,
+          isGoalBehind: false,
+          pagesBehind: 0,
+        ),
+        engine.decide(
+          allSessions: [],
+          currentlyReading: [createProgress()],
+          now: jan15,
+          streak: 0,
+          lastNotificationDate: null,
+          hasGoal: false,
+          isGoalBehind: false,
+          pagesBehind: 0,
+        ),
+        engine.decide(
+          allSessions: [
+            createSession(
+              bookId: 'b1',
+              timestamp: jan15.subtract(Duration(days: 1)),
+            ),
+          ],
+          currentlyReading: [],
+          now: jan15,
+          streak: 1,
+          lastNotificationDate: null,
+          hasGoal: false,
+          isGoalBehind: false,
+          pagesBehind: 0,
+        ),
+        engine.decide(
+          allSessions: [
+            createSession(
+              bookId: 'b1',
+              timestamp: jan15.subtract(Duration(days: 1)),
+            ),
+          ],
+          currentlyReading: [createProgress()],
+          now: jan15,
+          streak: 1,
+          lastNotificationDate: null,
+          hasGoal: false,
+          isGoalBehind: false,
+          pagesBehind: 0,
+        ),
+        engine.decide(
+          allSessions: List.generate(
+            3,
+            (i) => createSession(
+              bookId: 'b1',
+              timestamp: jan15.subtract(Duration(days: i + 1)),
+            ),
+          ),
+          currentlyReading: [createProgress()],
+          now: jan15,
+          streak: 3,
+          lastNotificationDate: null,
+          hasGoal: false,
+          isGoalBehind: false,
+          pagesBehind: 0,
+        ),
       ];
 
       for (final result in combinations) {
@@ -759,7 +993,12 @@ void main() {
     test('type matches priority order', () {
       // streak 1-2 → streakProtection
       final r1 = engine.decide(
-        allSessions: [createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1)))],
+        allSessions: [
+          createSession(
+            bookId: 'b1',
+            timestamp: jan15.subtract(Duration(days: 1)),
+          ),
+        ],
         currentlyReading: [createProgress()],
         now: jan15,
         streak: 1,
@@ -771,7 +1010,12 @@ void main() {
       expect(r1!.type, ReminderType.streakProtection);
 
       final r2 = engine.decide(
-        allSessions: [createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1)))],
+        allSessions: [
+          createSession(
+            bookId: 'b1',
+            timestamp: jan15.subtract(Duration(days: 1)),
+          ),
+        ],
         currentlyReading: [createProgress()],
         now: jan15,
         streak: 2,
@@ -784,7 +1028,12 @@ void main() {
 
       // streak 0 with history → reengagement
       final r3 = engine.decide(
-        allSessions: [createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1)))],
+        allSessions: [
+          createSession(
+            bookId: 'b1',
+            timestamp: jan15.subtract(Duration(days: 1)),
+          ),
+        ],
         currentlyReading: [createProgress()],
         now: jan15,
         streak: 0,
@@ -797,7 +1046,13 @@ void main() {
 
       // streak >= 3 → resumeBook
       final r4 = engine.decide(
-        allSessions: List.generate(3, (i) => createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: i + 1)))),
+        allSessions: List.generate(
+          3,
+          (i) => createSession(
+            bookId: 'b1',
+            timestamp: jan15.subtract(Duration(days: i + 1)),
+          ),
+        ),
         currentlyReading: [createProgress()],
         now: jan15,
         streak: 3,
@@ -809,18 +1064,26 @@ void main() {
       expect(r4!.type, ReminderType.resumeBook);
     });
 
-    test('payload is present when currentlyReading has books and result has a book reference', () {
-      final r = engine.decide(
-        allSessions: [createSession(bookId: 'b1', timestamp: jan15.subtract(Duration(days: 1)))],
-        currentlyReading: [createProgress(bookId: 'b1', book: createBook())],
-        now: jan15,
-        streak: 1,
-        lastNotificationDate: null,
-        hasGoal: false,
-        isGoalBehind: false,
-        pagesBehind: 0,
-      );
-      expect(r!.payload, isNotNull);
-    });
+    test(
+      'payload is present when currentlyReading has books and result has a book reference',
+      () {
+        final r = engine.decide(
+          allSessions: [
+            createSession(
+              bookId: 'b1',
+              timestamp: jan15.subtract(Duration(days: 1)),
+            ),
+          ],
+          currentlyReading: [createProgress(bookId: 'b1', book: createBook())],
+          now: jan15,
+          streak: 1,
+          lastNotificationDate: null,
+          hasGoal: false,
+          isGoalBehind: false,
+          pagesBehind: 0,
+        );
+        expect(r!.payload, isNotNull);
+      },
+    );
   });
 }

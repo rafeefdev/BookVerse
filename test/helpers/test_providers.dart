@@ -29,13 +29,15 @@ ProviderContainer createTestContainer({
     overrides: [
       if (clock != null) clockProvider.overrideWithValue(clock),
       if (readingTrackerDatasource != null)
-        readingTrackerDatasourceProvider
-            .overrideWithValue(readingTrackerDatasource),
+        readingTrackerDatasourceProvider.overrideWithValue(
+          readingTrackerDatasource,
+        ),
       if (bookmarkDatasource != null)
         bookmarkDatasourceProvider.overrideWithValue(bookmarkDatasource),
       if (libraryFolderDatasource != null)
-        libraryFolderDatasourceProvider
-            .overrideWithValue(libraryFolderDatasource),
+        libraryFolderDatasourceProvider.overrideWithValue(
+          libraryFolderDatasource,
+        ),
       ...additionalOverrides,
     ],
   );

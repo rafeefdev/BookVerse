@@ -105,10 +105,7 @@ class _GoalSettingsPageState extends ConsumerState<GoalSettingsPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Target',
-                                style: textTheme.titleMedium,
-                              ),
+                              Text('Target', style: textTheme.titleMedium),
                               const SizedBox(height: 16),
                               TextFormField(
                                 controller: _pagesCtrl,

@@ -35,7 +35,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (_buildBanner(state, goalProgressAsync.valueOrNull, colorScheme)
+              if (_buildBanner(
+                    state,
+                    goalProgressAsync.valueOrNull,
+                    colorScheme,
+                  )
                   case final banner?)
                 banner,
               TodaySummarySection(state, textTheme, colorScheme),
@@ -87,12 +91,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       return _Banner(
         icon: Icons.local_fire_department,
         color: Colors.orange,
-        message: '${state.streak}-day streak at risk! '
+        message:
+            '${state.streak}-day streak at risk! '
             'Read just 5 min today to keep it alive.',
         actionLabel: 'Start Reading',
         onAction: () {
           if (state.currentlyReading.isNotEmpty) {
-            context.push('/tracked-book-detail/${state.currentlyReading.first.bookId}');
+            context.push(
+              '/tracked-book-detail/${state.currentlyReading.first.bookId}',
+            );
           } else {
             context.push('/library');
           }
@@ -107,12 +114,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       return _Banner(
         icon: Icons.library_books,
         color: colorScheme.error,
-        message: '${goalProgress.pagesRemaining} pages behind today\'s goal. '
+        message:
+            '${goalProgress.pagesRemaining} pages behind today\'s goal. '
             'Just 5 minutes to catch up.',
         actionLabel: 'Read Now',
         onAction: () {
           if (state.currentlyReading.isNotEmpty) {
-            context.push('/tracked-book-detail/${state.currentlyReading.first.bookId}');
+            context.push(
+              '/tracked-book-detail/${state.currentlyReading.first.bookId}',
+            );
           } else {
             context.push('/library');
           }
@@ -159,9 +169,9 @@ class _Banner extends StatelessWidget {
               Expanded(
                 child: Text(
                   message,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: cs.onSurface,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: cs.onSurface),
                 ),
               ),
               const SizedBox(width: 8),

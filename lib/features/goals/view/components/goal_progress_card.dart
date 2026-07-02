@@ -6,11 +6,7 @@ class GoalProgressCard extends StatelessWidget {
   final GoalProgress progress;
   final VoidCallback? onTap;
 
-  const GoalProgressCard({
-    super.key,
-    required this.progress,
-    this.onTap,
-  });
+  const GoalProgressCard({super.key, required this.progress, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -118,8 +114,10 @@ class GoalProgressCard extends StatelessWidget {
                 Text('$label: $current / $target', style: textTheme.bodySmall),
               ],
             ),
-            Text('${(pct * 100).toStringAsFixed(0)}%',
-                style: textTheme.labelSmall),
+            Text(
+              '${(pct * 100).toStringAsFixed(0)}%',
+              style: textTheme.labelSmall,
+            ),
           ],
         ),
         const SizedBox(height: 4),

@@ -50,11 +50,7 @@ void main() {
     });
 
     test('fromJson with missing timestamp defaults to now', () {
-      final json = {
-        'bookId': 'b1',
-        'durationInSeconds': 0,
-        'endPage': 0,
-      };
+      final json = {'bookId': 'b1', 'durationInSeconds': 0, 'endPage': 0};
       final model = ReadingSessionModel.fromJson(json);
       expect(model.timestamp, isNotNull);
     });
@@ -73,10 +69,16 @@ void main() {
 
     test('equality', () {
       final a = ReadingSessionModel(
-        bookId: 'b1', durationInSeconds: 300, endPage: 20, timestamp: now,
+        bookId: 'b1',
+        durationInSeconds: 300,
+        endPage: 20,
+        timestamp: now,
       );
       final b = ReadingSessionModel(
-        bookId: 'b1', durationInSeconds: 300, endPage: 20, timestamp: now,
+        bookId: 'b1',
+        durationInSeconds: 300,
+        endPage: 20,
+        timestamp: now,
       );
       expect(a, equals(b));
     });

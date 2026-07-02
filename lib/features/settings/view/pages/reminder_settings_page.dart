@@ -84,9 +84,7 @@ class _ReminderSettingsPageState extends State<ReminderSettingsPage> {
 
   Future<void> _testNotification() async {
     try {
-      final service = NotificationService(
-        FlutterLocalNotificationsPlugin(),
-      );
+      final service = NotificationService(FlutterLocalNotificationsPlugin());
       await service.initialize(requestPermissions: true);
       await service.show(
         title: 'Test Notification',
@@ -278,9 +276,9 @@ class _ReminderSettingsPageState extends State<ReminderSettingsPage> {
       title: Text(label, style: Theme.of(context).textTheme.bodySmall),
       subtitle: Text(
         subtitle,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: cs.onSurfaceVariant,
-            ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
       ),
       value: value,
       onChanged: onChanged,

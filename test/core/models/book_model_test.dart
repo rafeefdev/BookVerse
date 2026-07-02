@@ -72,12 +72,12 @@ void main() {
       expect(book.isFavorite, false);
     });
 
-    test('null id in json throws TypeError (code assumes id always present)', () {
-      expect(
-        () => Book.fromJson({'id': null}),
-        throwsA(isA<TypeError>()),
-      );
-    });
+    test(
+      'null id in json throws TypeError (code assumes id always present)',
+      () {
+        expect(() => Book.fromJson({'id': null}), throwsA(isA<TypeError>()));
+      },
+    );
 
     test('authors as malformed JSON string returns empty list', () {
       final json = {
@@ -109,10 +109,7 @@ void main() {
     });
 
     test('no volumeInfo key uses flat json directly', () {
-      final json = {
-        'id': 'b1',
-        'thumbnail': 'http://example.com/thumb.jpg',
-      };
+      final json = {'id': 'b1', 'thumbnail': 'http://example.com/thumb.jpg'};
       final book = Book.fromJson(json);
       expect(book.thumbnail, 'http://example.com/thumb.jpg');
     });

@@ -6,8 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('LibraryBookListTab', () {
-    testWidgets('passes readingProgress with userPageCount to bookListTile',
-        (tester) async {
+    testWidgets('passes readingProgress with userPageCount to bookListTile', (
+      tester,
+    ) async {
       final book = Book(
         id: 'b1',
         title: 'Test Book',
@@ -43,8 +44,9 @@ void main() {
       expect(find.text('200/300 hlm  67%'), findsNothing);
     });
 
-    testWidgets('shows fallback page count when userPageCount is null',
-        (tester) async {
+    testWidgets('shows fallback page count when userPageCount is null', (
+      tester,
+    ) async {
       final book = Book(
         id: 'b1',
         title: 'Test Book',

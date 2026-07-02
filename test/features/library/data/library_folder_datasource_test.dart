@@ -26,7 +26,10 @@ void main() {
 
     test('createFolder and getAllFolders', () async {
       final folder = LibraryFolder(
-        id: 'f1', name: 'Fiction', icon: 'book', sortOrder: 0,
+        id: 'f1',
+        name: 'Fiction',
+        icon: 'book',
+        sortOrder: 0,
         createdAt: DateTime.now(),
       );
       await datasource.createFolder(folder);
@@ -35,40 +38,60 @@ void main() {
     });
 
     test('renameFolder', () async {
-      await datasource.createFolder(LibraryFolder(
-        id: 'f1', name: 'Old', icon: 'folder', sortOrder: 0,
-        createdAt: DateTime.now(),
-      ));
+      await datasource.createFolder(
+        LibraryFolder(
+          id: 'f1',
+          name: 'Old',
+          icon: 'folder',
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
       await datasource.renameFolder('f1', 'New Name');
       final folder = await datasource.getFolder('f1');
       expect(folder?.name, 'New Name');
     });
 
     test('deleteFolder', () async {
-      await datasource.createFolder(LibraryFolder(
-        id: 'f1', name: 'Temp', icon: 'folder', sortOrder: 0,
-        createdAt: DateTime.now(),
-      ));
+      await datasource.createFolder(
+        LibraryFolder(
+          id: 'f1',
+          name: 'Temp',
+          icon: 'folder',
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
       await datasource.deleteFolder('f1');
       final folder = await datasource.getFolder('f1');
       expect(folder, isNull);
     });
 
     test('addBookToFolder and getBookIdsInFolder', () async {
-      await datasource.createFolder(LibraryFolder(
-        id: 'f1', name: 'Test', icon: 'folder', sortOrder: 0,
-        createdAt: DateTime.now(),
-      ));
+      await datasource.createFolder(
+        LibraryFolder(
+          id: 'f1',
+          name: 'Test',
+          icon: 'folder',
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
       await datasource.addBookToFolder('f1', 'b1');
       final ids = await datasource.getBookIdsInFolder('f1');
       expect(ids, ['b1']);
     });
 
     test('removeBookFromFolder', () async {
-      await datasource.createFolder(LibraryFolder(
-        id: 'f1', name: 'Test', icon: 'folder', sortOrder: 0,
-        createdAt: DateTime.now(),
-      ));
+      await datasource.createFolder(
+        LibraryFolder(
+          id: 'f1',
+          name: 'Test',
+          icon: 'folder',
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
       await datasource.addBookToFolder('f1', 'b1');
       await datasource.removeBookFromFolder('f1', 'b1');
       final ids = await datasource.getBookIdsInFolder('f1');
@@ -76,10 +99,15 @@ void main() {
     });
 
     test('isBookInFolder', () async {
-      await datasource.createFolder(LibraryFolder(
-        id: 'f1', name: 'Test', icon: 'folder', sortOrder: 0,
-        createdAt: DateTime.now(),
-      ));
+      await datasource.createFolder(
+        LibraryFolder(
+          id: 'f1',
+          name: 'Test',
+          icon: 'folder',
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
       await datasource.addBookToFolder('f1', 'b1');
       expect(await datasource.isBookInFolder('f1', 'b1'), isTrue);
       expect(await datasource.isBookInFolder('f1', 'b2'), isFalse);

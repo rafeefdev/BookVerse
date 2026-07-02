@@ -69,13 +69,25 @@ void main() {
 
     test('does not affect other books', () async {
       final book1 = Book(
-        id: 'b1', title: 'Book 1', authors: [], description: '',
-        thumbnail: '', publishedDate: '', pageCount: 100, publisher: '',
+        id: 'b1',
+        title: 'Book 1',
+        authors: [],
+        description: '',
+        thumbnail: '',
+        publishedDate: '',
+        pageCount: 100,
+        publisher: '',
         subTitle: '',
       );
       final book2 = Book(
-        id: 'b2', title: 'Book 2', authors: [], description: '',
-        thumbnail: '', publishedDate: '', pageCount: 200, publisher: '',
+        id: 'b2',
+        title: 'Book 2',
+        authors: [],
+        description: '',
+        thumbnail: '',
+        publishedDate: '',
+        pageCount: 200,
+        publisher: '',
         subTitle: '',
       );
 

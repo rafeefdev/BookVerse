@@ -84,9 +84,7 @@ class _ReminderSectionState extends State<ReminderSection> {
 
   Future<void> _testNotification() async {
     try {
-      final service = NotificationService(
-        FlutterLocalNotificationsPlugin(),
-      );
+      final service = NotificationService(FlutterLocalNotificationsPlugin());
       await service.initialize(requestPermissions: true);
       await service.show(
         title: 'Test Notification',
@@ -126,7 +124,11 @@ class _ReminderSectionState extends State<ReminderSection> {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
           child: Row(
             children: [
-              Icon(Icons.notifications_outlined, size: 20, color: cs.onSurfaceVariant),
+              Icon(
+                Icons.notifications_outlined,
+                size: 20,
+                color: cs.onSurfaceVariant,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(
@@ -134,12 +136,16 @@ class _ReminderSectionState extends State<ReminderSection> {
                   children: [
                     Text(
                       'Reading Reminders',
-                      style: textTheme.titleSmall?.copyWith(color: cs.onSurfaceVariant),
+                      style: textTheme.titleSmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Configure notification schedule',
-                      style: textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                      style: textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -293,9 +299,9 @@ class _ReminderSectionState extends State<ReminderSection> {
       title: Text(label, style: Theme.of(context).textTheme.bodySmall),
       subtitle: Text(
         subtitle,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: cs.onSurfaceVariant,
-            ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
       ),
       value: value,
       onChanged: onChanged,

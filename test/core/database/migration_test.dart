@@ -152,15 +152,17 @@ void main() {
       final progressColumns = await v4Db.rawQuery(
         'PRAGMA table_info($readingProgressTable)',
       );
-      final progressNames =
-          progressColumns.map((c) => c['name'] as String).toSet();
+      final progressNames = progressColumns
+          .map((c) => c['name'] as String)
+          .toSet();
       expect(progressNames, contains('userPageCount'));
 
       final sessionColumns = await v4Db.rawQuery(
         'PRAGMA table_info($readingSessionsTable)',
       );
-      final sessionNames =
-          sessionColumns.map((c) => c['name'] as String).toSet();
+      final sessionNames = sessionColumns
+          .map((c) => c['name'] as String)
+          .toSet();
       expect(sessionNames, contains('startPage'));
 
       // Verify v4 has all tables

@@ -208,8 +208,12 @@ void main() {
                 isAuthenticated: isAuth,
                 onBoardingStatus: AsyncData(hasOpened),
               );
-              expect(chain, isNull,
-                  reason: '$label starting at $loc: cycle detected in chain $chain');
+              expect(
+                chain,
+                isNull,
+                reason:
+                    '$label starting at $loc: cycle detected in chain $chain',
+              );
             }
           });
         }
