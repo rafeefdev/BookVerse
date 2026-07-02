@@ -79,14 +79,14 @@ class LibraryNotifier extends _$LibraryNotifier {
           'Feb',
           'Mar',
           'Apr',
-          'Mei',
+          'May',
           'Jun',
           'Jul',
-          'Agu',
+          'Aug',
           'Sep',
-          'Okt',
+          'Oct',
           'Nov',
-          'Des',
+          'Dec',
         ];
         formattedDate =
             '${completionDate.day} ${months[completionDate.month]} ${completionDate.year}, '
@@ -98,7 +98,7 @@ class LibraryNotifier extends _$LibraryNotifier {
       if (firstSession != null && lastSession != null) {
         final days = lastSession.difference(firstSession).inDays + 1;
         if (days >= 1) {
-          formattedDays = '$days hari';
+          formattedDays = '$days days';
         }
       }
 

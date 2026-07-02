@@ -77,7 +77,7 @@ class FinishedBookCard extends StatelessWidget {
                       _infoRow(
                         Icons.check_circle,
                         Colors.green,
-                        'Selesai: ${info.formattedCompletionDate}',
+                        'Completed: ${info.formattedCompletionDate}',
                         textTheme,
                         scheme,
                       ),
@@ -85,14 +85,14 @@ class FinishedBookCard extends StatelessWidget {
                       _infoRow(
                         Icons.calendar_today,
                         scheme.onSurfaceVariant,
-                        '${info.formattedDaysSpent} membaca',
+                        '${info.formattedDaysSpent} of reading',
                         textTheme,
                         scheme,
                       ),
                     _infoRow(
                       Icons.timer_outlined,
                       scheme.onSurfaceVariant,
-                      'Total: ${info.formattedTotalTime}',
+                      'Total time: ${info.formattedTotalTime}',
                       textTheme,
                       scheme,
                     ),

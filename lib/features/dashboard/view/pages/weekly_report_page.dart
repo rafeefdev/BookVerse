@@ -1,8 +1,10 @@
+import 'package:book_verse/core/shared/helpers/book_authors.dart';
 import 'package:book_verse/core/theme/themes_extension.dart';
 import 'package:book_verse/features/dashboard/model/weekly_report_state.dart';
 import 'package:book_verse/features/dashboard/viewmodel/weekly_report_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class WeeklyReportPage extends ConsumerStatefulWidget {
   const WeeklyReportPage({super.key});
@@ -71,8 +73,96 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
           ),
           const SizedBox(height: 20),
           _buildInsightCards(reportState, textTheme, colorScheme),
+          if (reportState.booksRead.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            Text('Books Read This Week', style: textTheme.titleMedium),
+            const SizedBox(height: 8),
+            ...reportState.booksRead.map((summary) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _bookRow(summary, textTheme, colorScheme),
+              );
+            }),
+          ],
         ],
       ),
+    );
+  }
+
+  Widget _bookRow(
+    dynamic summary,
+    TextTheme textTheme,
+    ColorScheme colorScheme,
+  ) {
+    final book = summary.book as dynamic;
+    return Card(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => context.push('/tracked-book-detail/${book.id}'),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: book.thumbnail.isNotEmpty
+                    ? Image.network(
+                        book.thumbnail,
+                        width: 40,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                            _placeholderIcon(colorScheme),
+                      )
+                    : _placeholderIcon(colorScheme),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      book.title,
+                      style: textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      bookAuthors(book),
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${summary.totalSessions} sessions  •  '
+                      '${_formatMinutes(summary.totalDurationSeconds ~/ 60)}  •  '
+                      '${summary.totalPages} pages',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _placeholderIcon(ColorScheme colorScheme) {
+    return Container(
+      width: 40,
+      height: 56,
+      color: colorScheme.surfaceContainerHighest,
+      child: Icon(Icons.book, size: 20, color: colorScheme.onSurfaceVariant),
     );
   }
 
@@ -89,14 +179,14 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
       'Feb',
       'Mar',
       'Apr',
-      'Mei',
+      'May',
       'Jun',
       'Jul',
-      'Agu',
+      'Aug',
       'Sep',
-      'Okt',
+      'Oct',
       'Nov',
-      'Des',
+      'Dec',
     ];
 
     String weekLabel;
@@ -218,7 +308,7 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
             textTheme,
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         Expanded(
           child: _insightCard(
             Icons.timer_outlined,
@@ -228,7 +318,7 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
             textTheme,
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         Expanded(
           child: _insightCard(
             Icons.read_more,
@@ -238,7 +328,7 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
             textTheme,
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         Expanded(
           child: _insightCard(
             Icons.local_fire_department,
@@ -291,7 +381,7 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
     final hours = minutes ~/ 60;
     final mins = minutes % 60;
     if (hours > 0) {
-      return '${hours}j ${mins}m';
+      return '${hours}h ${mins}m';
     }
     return '${mins}m';
   }

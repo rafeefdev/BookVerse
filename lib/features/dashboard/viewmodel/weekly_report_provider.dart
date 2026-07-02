@@ -1,6 +1,9 @@
+import 'package:book_verse/core/models/book_model.dart';
 import 'package:book_verse/core/utils/clock.dart';
 import 'package:book_verse/core/utils/page_utils.dart';
+import 'package:book_verse/features/bookmarks/data/bookmark_datasource.dart';
 import 'package:book_verse/features/dashboard/model/dashboard_state.dart';
+import 'package:book_verse/features/dashboard/model/weekly_book_summary.dart';
 import 'package:book_verse/features/dashboard/model/weekly_report_state.dart';
 import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
@@ -12,6 +15,7 @@ final weeklyReportProvider = FutureProvider.family<WeeklyReportState, int>((
 ) async {
   final clock = ref.watch(clockProvider);
   final datasource = ref.watch(readingTrackerDatasourceProvider);
+  final bookmarkDatasource = ref.watch(bookmarkDatasourceProvider);
   final sessions = await datasource.getAllReadingSessions();
 
   final now = clock.now();
@@ -54,6 +58,51 @@ final weeklyReportProvider = FutureProvider.family<WeeklyReportState, int>((
   final totalSessions = weekSessions.length;
   final activeDays = weeklyReading.where((d) => d.minutes > 0).length;
 
+  // Books read this week
+  final bookMaps = await bookmarkDatasource.getBookmarkedBooks();
+  final bookMap = <String, Book>{};
+  for (final b in bookMaps) {
+    final book = Book.fromJson(b);
+    bookMap[book.id] = book;
+  }
+
+  final byBook = <String, List<ReadingSessionModel>>{};
+  for (final s in weekSessions) {
+    byBook.putIfAbsent(s.bookId, () => []).add(s);
+  }
+
+  final booksRead = byBook.entries.map((entry) {
+    final bookSessions = entry.value;
+    final book = bookMap[entry.key];
+    final totalDur = bookSessions.fold<int>(
+      0,
+      (s, s2) => s + s2.durationInSeconds,
+    );
+    final bookPages = computePagesInRange(bookSessions, sessions, weekStart);
+    return WeeklyBookSummary(
+      book:
+          book ??
+          Book(
+            id: entry.key,
+            title: 'Unknown Book',
+            authors: [],
+            subTitle: '',
+            publisher: '',
+            publishedDate: '',
+            description: '',
+            thumbnail: '',
+            pageCount: 0,
+          ),
+      totalSessions: bookSessions.length,
+      totalDurationSeconds: totalDur,
+      totalPages: bookPages,
+    );
+  }).toList();
+
+  booksRead.sort(
+    (a, b) => b.totalDurationSeconds.compareTo(a.totalDurationSeconds),
+  );
+
   return WeeklyReportState(
     weeklyReading: weeklyReading,
     totalPages: totalPages,
@@ -62,6 +111,7 @@ final weeklyReportProvider = FutureProvider.family<WeeklyReportState, int>((
     activeDays: activeDays,
     weekStart: weekStart,
     weekEnd: weekEnd,
+    booksRead: booksRead,
   );
 });
 

@@ -1,3 +1,4 @@
+import 'package:book_verse/features/dashboard/view/pages/weekly_report_page.dart';
 import 'package:book_verse/features/goals/view/pages/goal_settings_page.dart';
 import 'package:book_verse/features/home/view/pages/detail_page.dart';
 import 'package:book_verse/features/insights/view/insights_page.dart';
@@ -101,5 +102,10 @@ List<RouteBase> get modalRoutes => [
       }
       return SessionRecordingPage(bookId: id);
     },
+  ),
+  GoRoute(
+    path: '/dashboard/weekly-report',
+    parentNavigatorKey: _rootNavigatorKey,
+    builder: (context, state) => const WeeklyReportPage(),
   ),
 ];
