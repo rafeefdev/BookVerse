@@ -117,9 +117,7 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
       children: [
         IconButton(
           icon: const Icon(Icons.chevron_left),
-          onPressed: _weekOffset < 0
-              ? () => setState(() => _weekOffset++)
-              : null,
+          onPressed: () => setState(() => _weekOffset--),
           tooltip: 'Previous week',
         ),
         const SizedBox(width: 8),
@@ -130,7 +128,9 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
         const SizedBox(width: 8),
         IconButton(
           icon: const Icon(Icons.chevron_right),
-          onPressed: () => setState(() => _weekOffset--),
+          onPressed: _weekOffset < 0
+              ? () => setState(() => _weekOffset++)
+              : null,
           tooltip: 'Next week',
         ),
       ],

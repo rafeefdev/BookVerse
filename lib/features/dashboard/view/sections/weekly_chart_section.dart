@@ -106,24 +106,37 @@ class WeeklyChartSection extends StatelessWidget {
                     ),
                   ],
                   const Spacer(),
-                  SegmentedButton<bool>(
-                    segments: const [
-                      ButtonSegment(
-                        value: false,
-                        label: Text('Duration'),
-                        icon: Icon(Icons.timer_outlined, size: 16),
+                  Material(
+                    color: colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: onToggle,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              showPages
+                                  ? Icons.menu_book
+                                  : Icons.timer_outlined,
+                              size: 16,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              showPages ? 'Pages' : 'Duration',
+                              style: textTheme.labelSmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      ButtonSegment(
-                        value: true,
-                        label: Text('Pages'),
-                        icon: Icon(Icons.menu_book, size: 16),
-                      ),
-                    ],
-                    selected: {showPages},
-                    onSelectionChanged: (_) => onToggle(),
-                    style: ButtonStyle(
-                      visualDensity: VisualDensity.compact,
-                      textStyle: WidgetStatePropertyAll(textTheme.labelSmall),
                     ),
                   ),
                 ],
