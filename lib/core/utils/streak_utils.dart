@@ -1,9 +1,17 @@
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 
 int computeStreak(List<ReadingSessionModel> allSessions, DateTime todayStart) {
+  final todayHasActivity = allSessions.any(
+    (s) =>
+        !s.timestamp.isBefore(todayStart) &&
+        s.timestamp.isBefore(todayStart.add(const Duration(days: 1))),
+  );
+  final startDay = todayHasActivity
+      ? todayStart
+      : todayStart.subtract(const Duration(days: 1));
   int streak = 0;
   for (var i = 0; ; i++) {
-    final dayStart = todayStart.subtract(Duration(days: i));
+    final dayStart = startDay.subtract(Duration(days: i));
     final dayEnd = dayStart.add(const Duration(days: 1));
     final hasActivity = allSessions.any(
       (s) => !s.timestamp.isBefore(dayStart) && s.timestamp.isBefore(dayEnd),

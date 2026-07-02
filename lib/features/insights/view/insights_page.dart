@@ -12,6 +12,7 @@ import 'package:book_verse/features/insights/view/sections/all_time_stats_sectio
 import 'package:book_verse/features/insights/viewmodel/insights_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class InsightsPage extends ConsumerWidget {
   const InsightsPage({super.key});
@@ -28,7 +29,7 @@ class InsightsPage extends ConsumerWidget {
         top: false,
         bottom: true,
         child: insightsAsync.when(
-          data: (state) => _buildContent(state, ref, textTheme, colorScheme),
+          data: (state) => _buildContent(context, state, ref, textTheme, colorScheme),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('Error: $e')),
         ),
@@ -38,6 +39,7 @@ class InsightsPage extends ConsumerWidget {
 }
 
 Widget _buildContent(
+  BuildContext context,
   InsightsState state,
   WidgetRef ref,
   TextTheme textTheme,
@@ -50,7 +52,7 @@ Widget _buildContent(
       children: [
         NarrativeHeaderSection(state, textTheme, colorScheme),
         const SizedBox(height: 16),
-        _goalCard(ref),
+        _goalCard(context, ref),
         const SizedBox(height: 20),
         StreakSection(state, textTheme, colorScheme),
         if (state.monthlyMinutes.isNotEmpty) ...[
@@ -78,12 +80,15 @@ Widget _buildContent(
   );
 }
 
-Widget _goalCard(WidgetRef ref) {
+Widget _goalCard(BuildContext context, WidgetRef ref) {
   final progressAsync = ref.watch(goalProgressProvider);
   return progressAsync.when(
     data: (progress) {
       if (progress == null) return const SizedBox.shrink();
-      return GoalProgressCard(progress: progress, onTap: () {});
+      return GoalProgressCard(
+        progress: progress,
+        onTap: () => context.push('/settings/goal'),
+      );
     },
     loading: () => const SizedBox.shrink(),
     error: (_, __) => const SizedBox.shrink(),

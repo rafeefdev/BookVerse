@@ -42,12 +42,18 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   )
                   case final banner?)
                 banner,
-              TodaySummarySection(state, textTheme, colorScheme),
+              TodaySummarySection(
+                state,
+                goalProgressAsync.valueOrNull,
+                textTheme,
+                colorScheme,
+              ),
               const SizedBox(height: 16),
               WeeklyChartSection(
                 state: state,
                 showPages: _showPages,
                 onToggle: () => setState(() => _showPages = !_showPages),
+                onTap: () => context.push('/dashboard/weekly-report'),
                 textTheme: textTheme,
                 colorScheme: colorScheme,
               ),
