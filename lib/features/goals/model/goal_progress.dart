@@ -25,8 +25,9 @@ class GoalProgress {
   GoalStatus get status {
     if (targetPages == 0 && targetMinutes == 0) return GoalStatus.noGoal;
     if (isComplete) return GoalStatus.ahead;
-    if (pagesProgress >= 0.8 && minutesProgress >= 0.8)
+    if (pagesProgress >= 0.8 && minutesProgress >= 0.8) {
       return GoalStatus.onTrack;
+    }
     return GoalStatus.behind;
   }
 
