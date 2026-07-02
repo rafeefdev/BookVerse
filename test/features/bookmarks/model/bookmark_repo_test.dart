@@ -23,10 +23,12 @@ void main() {
   group('BookmarkRepo', () {
     group('getReadingProgressWithBooks', () {
       test('returns empty list when no bookmarks', () async {
-        when(() => mockBookmark.getBookmarkedBooks())
-            .thenAnswer((_) async => []);
-        when(() => mockTracker.getAllReadingProgress())
-            .thenAnswer((_) async => []);
+        when(
+          () => mockBookmark.getBookmarkedBooks(),
+        ).thenAnswer((_) async => []);
+        when(
+          () => mockTracker.getAllReadingProgress(),
+        ).thenAnswer((_) async => []);
 
         final result = await repo.getReadingProgressWithBooks();
 
@@ -79,9 +81,7 @@ void main() {
           ],
         );
         when(() => mockTracker.getAllReadingProgress()).thenAnswer(
-          (_) async => [
-            ReadingProgressModel(bookId: 'b1', currentPage: 50),
-          ],
+          (_) async => [ReadingProgressModel(bookId: 'b1', currentPage: 50)],
         );
 
         final result = await repo.getReadingProgressWithBooks();
@@ -94,11 +94,9 @@ void main() {
 
     group('isBookmarked', () {
       test('returns true when reading progress exists', () async {
-        when(() => mockTracker.getReadingProgress('b1'))
-            .thenAnswer((_) async => ReadingProgressModel(
-                  bookId: 'b1',
-                  currentPage: 10,
-                ));
+        when(() => mockTracker.getReadingProgress('b1')).thenAnswer(
+          (_) async => ReadingProgressModel(bookId: 'b1', currentPage: 10),
+        );
 
         final result = await repo.isBookmarked('b1');
 
@@ -106,8 +104,9 @@ void main() {
       });
 
       test('returns false when no reading progress', () async {
-        when(() => mockTracker.getReadingProgress('b1'))
-            .thenAnswer((_) async => null);
+        when(
+          () => mockTracker.getReadingProgress('b1'),
+        ).thenAnswer((_) async => null);
 
         final result = await repo.isBookmarked('b1');
 
@@ -129,29 +128,37 @@ void main() {
           pageCount: 100,
         );
 
-        when(() => mockBookmark.addToBookmark(book.toMap()))
-            .thenAnswer((_) async => {});
-        when(() => mockTracker.saveReadingProgress(
-          ReadingProgressModel(bookId: 'b1', currentPage: 0),
-        )).thenAnswer((_) async => {});
+        when(
+          () => mockBookmark.addToBookmark(book.toMap()),
+        ).thenAnswer((_) async => {});
+        when(
+          () => mockTracker.saveReadingProgress(
+            ReadingProgressModel(bookId: 'b1', currentPage: 0),
+          ),
+        ).thenAnswer((_) async => {});
 
         await repo.addToBookmark(book);
 
         verify(() => mockBookmark.addToBookmark(book.toMap())).called(1);
-        verify(() => mockTracker.saveReadingProgress(
-          ReadingProgressModel(bookId: 'b1', currentPage: 0),
-        )).called(1);
+        verify(
+          () => mockTracker.saveReadingProgress(
+            ReadingProgressModel(bookId: 'b1', currentPage: 0),
+          ),
+        ).called(1);
       });
     });
 
     group('removeBookmark', () {
       test('delegates to removeBookmarkCascade', () async {
-        when(() => mockBookmark.removeBookmark('b1'))
-            .thenAnswer((_) async => {});
-        when(() => mockTracker.deleteReadingProgress('b1'))
-            .thenAnswer((_) async => {});
-        when(() => mockTracker.deleteReadingSessions('b1'))
-            .thenAnswer((_) async => {});
+        when(
+          () => mockBookmark.removeBookmark('b1'),
+        ).thenAnswer((_) async => {});
+        when(
+          () => mockTracker.deleteReadingProgress('b1'),
+        ).thenAnswer((_) async => {});
+        when(
+          () => mockTracker.deleteReadingSessions('b1'),
+        ).thenAnswer((_) async => {});
 
         await repo.removeBookmark('b1');
 

@@ -14,26 +14,28 @@ class SettingsPage extends ConsumerWidget {
       body: SafeArea(
         top: false,
         bottom: true,
-        child: ListView(children: [
-          _navTile(
-            context,
-            icon: Icons.flag_outlined,
-            title: 'Reading Goal',
-            subtitle: 'Set your daily reading targets',
-            onTap: () => context.push('/settings/goal'),
-          ),
-          const Divider(),
-          _navTile(
-            context,
-            icon: Icons.notifications_outlined,
-            title: 'Reading Reminders',
-            subtitle: 'Configure notification schedule',
-            onTap: () => context.push('/settings/reminder'),
-          ),
-          const Divider(),
-          const AppearanceSection(),
-          const DataSection(),
-        ]),
+        child: ListView(
+          children: [
+            _navTile(
+              context,
+              icon: Icons.flag_outlined,
+              title: 'Reading Goal',
+              subtitle: 'Set your daily reading targets',
+              onTap: () => context.push('/settings/goal'),
+            ),
+            const Divider(),
+            _navTile(
+              context,
+              icon: Icons.notifications_outlined,
+              title: 'Reading Reminders',
+              subtitle: 'Configure notification schedule',
+              onTap: () => context.push('/settings/reminder'),
+            ),
+            const Divider(),
+            const AppearanceSection(),
+            const DataSection(),
+          ],
+        ),
       ),
     );
   }

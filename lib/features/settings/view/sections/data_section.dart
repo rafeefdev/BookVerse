@@ -26,12 +26,16 @@ class DataSection extends ConsumerWidget {
                   children: [
                     Text(
                       'Data',
-                      style: textTheme.titleSmall?.copyWith(color: cs.onSurfaceVariant),
+                      style: textTheme.titleSmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Manage data and backups',
-                      style: textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                      style: textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -60,11 +64,16 @@ class DataSection extends ConsumerWidget {
                   onTap: () => _handleRestore(context, cs, textTheme),
                 ),
                 ListTile(
-                  leading: Icon(Icons.cleaning_services_outlined, color: cs.onSurfaceVariant),
+                  leading: Icon(
+                    Icons.cleaning_services_outlined,
+                    color: cs.onSurfaceVariant,
+                  ),
                   title: const Text('Clear Cache'),
                   subtitle: Text(
                     'Clear cached book covers and temporary data',
-                    style: textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
                   ),
                   onTap: () => _handleClearCache(context, ref),
                 ),
@@ -333,10 +342,7 @@ class DataSection extends ConsumerWidget {
                 'sessions restored.',
               ),
               const SizedBox(height: 8),
-              Text(
-                'Previous data saved to:',
-                style: textTheme.bodySmall,
-              ),
+              Text('Previous data saved to:', style: textTheme.bodySmall),
               const SizedBox(height: 4),
               Container(
                 width: double.infinity,
@@ -403,10 +409,7 @@ class DataSection extends ConsumerWidget {
                   const SizedBox(height: 12),
                   ExpansionTile(
                     tilePadding: EdgeInsets.zero,
-                    title: Text(
-                      'How to fix this',
-                      style: textTheme.titleSmall,
-                    ),
+                    title: Text('How to fix this', style: textTheme.titleSmall),
                     children: [
                       for (final tip in _tipsFor(code))
                         Padding(

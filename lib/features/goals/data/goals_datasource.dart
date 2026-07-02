@@ -16,10 +16,7 @@ class GoalsDatasource {
 
   Future<DailyGoal?> getGoal() async {
     try {
-      final maps = await _db.query(
-        readingGoalsTable,
-        where: 'id = 1',
-      );
+      final maps = await _db.query(readingGoalsTable, where: 'id = 1');
       if (maps.isNotEmpty) return DailyGoal.fromJson(maps.first);
       return null;
     } catch (e, stack) {

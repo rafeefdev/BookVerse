@@ -8,10 +8,7 @@ import 'package:mocktail/mocktail.dart';
 import '../../../helpers/test_providers.dart';
 
 void main() {
-  registerFallbackValue(ReadingProgressModel(
-    bookId: '',
-    currentPage: 0,
-  ));
+  registerFallbackValue(ReadingProgressModel(bookId: '', currentPage: 0));
   late MockReadingTrackerDatasource mockDatasource;
   late MockBookmarkDatasource mockBookmark;
   late MockLibraryFolderDatasource mockFolder;
@@ -47,9 +44,9 @@ void main() {
       when(() => mockDatasource.getReadingProgress('b1')).thenAnswer(
         (_) async => ReadingProgressModel(bookId: 'b1', currentPage: 50),
       );
-      when(() => mockDatasource.getBookmark('b1')).thenAnswer(
-        (_) async => book.toMap(),
-      );
+      when(
+        () => mockDatasource.getBookmark('b1'),
+      ).thenAnswer((_) async => book.toMap());
       when(
         () => mockDatasource.saveReadingProgress(any<ReadingProgressModel>()),
       ).thenAnswer((_) async => {});
@@ -61,9 +58,13 @@ void main() {
 
       await notifier.updateReadingProgress(200, userPageCount: 350);
 
-      final captured = verify(
-        () => mockDatasource.saveReadingProgress(captureAny<ReadingProgressModel>()),
-      ).captured.single as ReadingProgressModel;
+      final captured =
+          verify(
+                () => mockDatasource.saveReadingProgress(
+                  captureAny<ReadingProgressModel>(),
+                ),
+              ).captured.single
+              as ReadingProgressModel;
 
       expect(captured.currentPage, 200);
       expect(captured.userPageCount, 350);
@@ -90,9 +91,9 @@ void main() {
           userPageCount: 350,
         ),
       );
-      when(() => mockDatasource.getBookmark('b1')).thenAnswer(
-        (_) async => book.toMap(),
-      );
+      when(
+        () => mockDatasource.getBookmark('b1'),
+      ).thenAnswer((_) async => book.toMap());
       when(
         () => mockDatasource.saveReadingProgress(any<ReadingProgressModel>()),
       ).thenAnswer((_) async => {});
@@ -104,9 +105,13 @@ void main() {
 
       await notifier.updateReadingProgress(200);
 
-      final captured = verify(
-        () => mockDatasource.saveReadingProgress(captureAny<ReadingProgressModel>()),
-      ).captured.single as ReadingProgressModel;
+      final captured =
+          verify(
+                () => mockDatasource.saveReadingProgress(
+                  captureAny<ReadingProgressModel>(),
+                ),
+              ).captured.single
+              as ReadingProgressModel;
 
       expect(captured.currentPage, 200);
       expect(captured.userPageCount, 350);
@@ -131,10 +136,12 @@ void main() {
         book: book,
       );
 
-      when(() => mockDatasource.getReadingProgress('b1'))
-          .thenAnswer((_) async => initialProgress);
-      when(() => mockDatasource.getBookmark('b1'))
-          .thenAnswer((_) async => book.toMap());
+      when(
+        () => mockDatasource.getReadingProgress('b1'),
+      ).thenAnswer((_) async => initialProgress);
+      when(
+        () => mockDatasource.getBookmark('b1'),
+      ).thenAnswer((_) async => book.toMap());
       when(
         () => mockDatasource.saveReadingProgress(any<ReadingProgressModel>()),
       ).thenAnswer((_) async => {});
@@ -152,6 +159,5 @@ void main() {
       expect(state.valueOrNull?.currentPage, 200);
       expect(state.valueOrNull?.userPageCount, 350);
     });
-
   });
 }

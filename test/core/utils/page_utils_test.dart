@@ -7,10 +7,7 @@ import '../../helpers/factories.dart';
 void main() {
   group('computePagesInRange', () {
     test('empty range returns 0', () {
-      expect(
-        computePagesInRange([], [], DateTime(2026, 6, 7)),
-        0,
-      );
+      expect(computePagesInRange([], [], DateTime(2026, 6, 7)), 0);
     });
 
     test('single session with startPage computes diff', () {
@@ -22,10 +19,7 @@ void main() {
           endPage: 30,
         ),
       ];
-      expect(
-        computePagesInRange(sessions, sessions, DateTime(2026, 6, 7)),
-        20,
-      );
+      expect(computePagesInRange(sessions, sessions, DateTime(2026, 6, 7)), 20);
     });
 
     test('single session without startPage uses 0', () {
@@ -36,10 +30,7 @@ void main() {
           endPage: 30,
         ),
       ];
-      expect(
-        computePagesInRange(sessions, sessions, DateTime(2026, 6, 7)),
-        30,
-      );
+      expect(computePagesInRange(sessions, sessions, DateTime(2026, 6, 7)), 30);
     });
 
     test('multiple books accumulate correctly', () {
@@ -92,10 +83,7 @@ void main() {
           startPage: 30,
         ),
       ];
-      expect(
-        computePagesInRange(sessions, sessions, DateTime(2026, 6, 7)),
-        0,
-      );
+      expect(computePagesInRange(sessions, sessions, DateTime(2026, 6, 7)), 0);
     });
 
     test('multiple sessions same book sequential', () {
@@ -112,10 +100,7 @@ void main() {
           endPage: 50,
         ),
       ];
-      expect(
-        computePagesInRange(range, range, DateTime(2026, 6, 7)),
-        40,
-      );
+      expect(computePagesInRange(range, range, DateTime(2026, 6, 7)), 40);
     });
 
     test('gap in history uses last known endPage regardless of gap', () {

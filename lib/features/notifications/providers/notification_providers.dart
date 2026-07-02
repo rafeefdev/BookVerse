@@ -70,8 +70,9 @@ Future<void> scheduleDailyReminderWithServices({
   }
 
   final lastNotifRaw = prefs.getString(_lastNotificationDateKey);
-  final lastNotificationDate =
-      lastNotifRaw != null ? DateTime.tryParse(lastNotifRaw) : null;
+  final lastNotificationDate = lastNotifRaw != null
+      ? DateTime.tryParse(lastNotifRaw)
+      : null;
 
   // deep inactivity: max 1 per week
   if (allSessionList.isNotEmpty && streak == 0) {
@@ -98,8 +99,9 @@ Future<void> scheduleDailyReminderWithServices({
   int pagesBehind = 0;
   if (goal != null && goal.enabled && settings.typeGoal) {
     hasGoal = true;
-    final todaySessions = allSessionList
-        .where((s) => !s.timestamp.isBefore(todayStart));
+    final todaySessions = allSessionList.where(
+      (s) => !s.timestamp.isBefore(todayStart),
+    );
     int pagesRead = 0;
     for (final s in todaySessions) {
       if (s.startPage != null && s.endPage > s.startPage!) {

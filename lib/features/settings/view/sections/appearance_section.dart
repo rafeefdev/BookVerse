@@ -19,7 +19,11 @@ class AppearanceSection extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
           child: Row(
             children: [
-              Icon(Icons.palette_outlined, size: 20, color: cs.onSurfaceVariant),
+              Icon(
+                Icons.palette_outlined,
+                size: 20,
+                color: cs.onSurfaceVariant,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(
@@ -27,12 +31,16 @@ class AppearanceSection extends ConsumerWidget {
                   children: [
                     Text(
                       'Appearance',
-                      style: textTheme.titleSmall?.copyWith(color: cs.onSurfaceVariant),
+                      style: textTheme.titleSmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Customize app appearance',
-                      style: textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                      style: textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),

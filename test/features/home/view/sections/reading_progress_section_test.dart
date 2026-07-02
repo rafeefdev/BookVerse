@@ -28,18 +28,15 @@ void main() {
     required Widget child,
   }) {
     return ProviderScope(
-      overrides: [
-        bookmarkRepoProvider.overrideWithValue(bookmarkRepo),
-      ],
-      child: MaterialApp(
-        home: Scaffold(body: child),
-      ),
+      overrides: [bookmarkRepoProvider.overrideWithValue(bookmarkRepo)],
+      child: MaterialApp(home: Scaffold(body: child)),
     );
   }
 
   group('ReadingProgressSection', () {
-    testWidgets('uses effectivePageCount when userPageCount is set',
-        (tester) async {
+    testWidgets('uses effectivePageCount when userPageCount is set', (
+      tester,
+    ) async {
       final mockRepo = _MockBookmarkRepo();
       final progress = ReadingProgressModel(
         bookId: 'b1',
@@ -48,8 +45,9 @@ void main() {
         userPageCount: 350,
       );
 
-      when(() => mockRepo.getReadingProgressWithBooks())
-          .thenAnswer((_) async => [progress]);
+      when(
+        () => mockRepo.getReadingProgressWithBooks(),
+      ).thenAnswer((_) async => [progress]);
 
       await tester.pumpWidget(
         wrapWithProviders(
@@ -63,8 +61,9 @@ void main() {
       expect(find.text('175 / 300 pages'), findsNothing);
     });
 
-    testWidgets('uses book.pageCount when userPageCount is null',
-        (tester) async {
+    testWidgets('uses book.pageCount when userPageCount is null', (
+      tester,
+    ) async {
       final mockRepo = _MockBookmarkRepo();
       final progress = ReadingProgressModel(
         bookId: 'b1',
@@ -72,8 +71,9 @@ void main() {
         book: book,
       );
 
-      when(() => mockRepo.getReadingProgressWithBooks())
-          .thenAnswer((_) async => [progress]);
+      when(
+        () => mockRepo.getReadingProgressWithBooks(),
+      ).thenAnswer((_) async => [progress]);
 
       await tester.pumpWidget(
         wrapWithProviders(
@@ -89,8 +89,9 @@ void main() {
     testWidgets('shows Save to Library when not bookmarked', (tester) async {
       final mockRepo = _MockBookmarkRepo();
 
-      when(() => mockRepo.getReadingProgressWithBooks())
-          .thenAnswer((_) async => []);
+      when(
+        () => mockRepo.getReadingProgressWithBooks(),
+      ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         wrapWithProviders(

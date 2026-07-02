@@ -23,14 +23,14 @@ void main() {
     mockFolder = MockLibraryFolderDatasource();
 
     // Default mocks: empty data
-    when(() => mockDatasource.getAllReadingSessions())
-        .thenAnswer((_) async => []);
-    when(() => mockBookmark.getBookmarkedBooks())
-        .thenAnswer((_) async => []);
-    when(() => mockDatasource.getAllReadingProgress())
-        .thenAnswer((_) async => []);
-    when(() => mockFolder.getAllFolders())
-        .thenAnswer((_) async => []);
+    when(
+      () => mockDatasource.getAllReadingSessions(),
+    ).thenAnswer((_) async => []);
+    when(() => mockBookmark.getBookmarkedBooks()).thenAnswer((_) async => []);
+    when(
+      () => mockDatasource.getAllReadingProgress(),
+    ).thenAnswer((_) async => []);
+    when(() => mockFolder.getAllFolders()).thenAnswer((_) async => []);
   });
 
   ProviderContainer createContainer() {
@@ -175,9 +175,9 @@ void main() {
     });
 
     test('currentlyReading limited to 5 books', () async {
-      when(() => mockDatasource.getAllReadingSessions()).thenAnswer(
-        (_) async => [],
-      );
+      when(
+        () => mockDatasource.getAllReadingSessions(),
+      ).thenAnswer((_) async => []);
       // Mock LibraryNotifier to return 7 currently reading books
       // by providing bookmark + progress data
       final books = List.generate(
@@ -196,17 +196,15 @@ void main() {
       );
       final List<ReadingProgressModel> progressEntries = List.generate(
         7,
-        (i) => ReadingProgressModel(
-          bookId: 'b$i',
-          currentPage: 50,
-          book: null,
-        ),
+        (i) => ReadingProgressModel(bookId: 'b$i', currentPage: 50, book: null),
       );
 
-      when(() => mockBookmark.getBookmarkedBooks())
-          .thenAnswer((_) async => books);
-      when(() => mockDatasource.getAllReadingProgress())
-          .thenAnswer((_) async => progressEntries);
+      when(
+        () => mockBookmark.getBookmarkedBooks(),
+      ).thenAnswer((_) async => books);
+      when(
+        () => mockDatasource.getAllReadingProgress(),
+      ).thenAnswer((_) async => progressEntries);
 
       final container = createContainer();
       final state = await container.read(dashboardProvider.future);

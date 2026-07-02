@@ -55,18 +55,18 @@ class ReminderSettings {
   }
 
   Map<String, dynamic> toJson() => {
-        'enabled': enabled,
-        'hour': hour,
-        'minute': minute,
-        'quietStartHour': quietStartHour,
-        'quietStartMinute': quietStartMinute,
-        'quietEndHour': quietEndHour,
-        'quietEndMinute': quietEndMinute,
-        'typeResumeBook': typeResumeBook,
-        'typeStreakProtection': typeStreakProtection,
-        'typeReengagement': typeReengagement,
-        'typeGoal': typeGoal,
-      };
+    'enabled': enabled,
+    'hour': hour,
+    'minute': minute,
+    'quietStartHour': quietStartHour,
+    'quietStartMinute': quietStartMinute,
+    'quietEndHour': quietEndHour,
+    'quietEndMinute': quietEndMinute,
+    'typeResumeBook': typeResumeBook,
+    'typeStreakProtection': typeStreakProtection,
+    'typeReengagement': typeReengagement,
+    'typeGoal': typeGoal,
+  };
 
   factory ReminderSettings.fromJson(Map<String, dynamic> json) =>
       ReminderSettings(

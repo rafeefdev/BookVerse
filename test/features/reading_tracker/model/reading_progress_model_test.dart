@@ -23,28 +23,23 @@ void main() {
     });
 
     test('fromJson with userPageCount', () {
-      final json = {
-        'bookId': 'b1',
-        'currentPage': 50,
-        'userPageCount': 400,
-      };
+      final json = {'bookId': 'b1', 'currentPage': 50, 'userPageCount': 400};
       final model = ReadingProgressModel.fromJson(json);
       expect(model.userPageCount, 400);
       expect(model.effectivePageCount, 400);
     });
 
     test('fromJson with null lastRead', () {
-      final json = {
-        'bookId': 'b1',
-        'currentPage': 0,
-      };
+      final json = {'bookId': 'b1', 'currentPage': 0};
       final model = ReadingProgressModel.fromJson(json);
       expect(model.lastRead, isNull);
     });
 
     test('effectivePageCount uses userPageCount when available', () {
       final model = ReadingProgressModel(
-        bookId: 'b1', currentPage: 10, userPageCount: 300,
+        bookId: 'b1',
+        currentPage: 10,
+        userPageCount: 300,
       );
       expect(model.effectivePageCount, 300);
     });
@@ -62,7 +57,9 @@ void main() {
         pageCount: 250,
       );
       final model = ReadingProgressModel(
-        bookId: 'b1', currentPage: 10, book: book,
+        bookId: 'b1',
+        currentPage: 10,
+        book: book,
       );
       expect(model.effectivePageCount, 250);
     });

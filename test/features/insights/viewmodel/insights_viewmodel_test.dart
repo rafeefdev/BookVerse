@@ -24,10 +24,10 @@ void main() {
     mockDatasource = MockReadingTrackerDatasource();
     mockRepo = MockLibraryRepo();
 
-    when(() => mockDatasource.getAllReadingSessions())
-        .thenAnswer((_) async => []);
-    when(() => mockRepo.getAllProgressWithBooks())
-        .thenAnswer((_) async => []);
+    when(
+      () => mockDatasource.getAllReadingSessions(),
+    ).thenAnswer((_) async => []);
+    when(() => mockRepo.getAllProgressWithBooks()).thenAnswer((_) async => []);
   });
 
   group('InsightsViewModel', () {
@@ -110,9 +110,7 @@ void main() {
         ],
       );
       when(() => mockRepo.getAllProgressWithBooks()).thenAnswer(
-        (_) async => [
-          ReadingProgressModel(bookId: 'b1', currentPage: 10),
-        ],
+        (_) async => [ReadingProgressModel(bookId: 'b1', currentPage: 10)],
       );
 
       final container = ProviderContainer(
@@ -140,9 +138,7 @@ void main() {
         ],
       );
       when(() => mockRepo.getAllProgressWithBooks()).thenAnswer(
-        (_) async => [
-          ReadingProgressModel(bookId: 'b1', currentPage: 10),
-        ],
+        (_) async => [ReadingProgressModel(bookId: 'b1', currentPage: 10)],
       );
 
       final container = ProviderContainer(
@@ -171,9 +167,7 @@ void main() {
         }),
       );
       when(() => mockRepo.getAllProgressWithBooks()).thenAnswer(
-        (_) async => [
-          ReadingProgressModel(bookId: 'b1', currentPage: 30),
-        ],
+        (_) async => [ReadingProgressModel(bookId: 'b1', currentPage: 30)],
       );
 
       final container = ProviderContainer(
@@ -240,9 +234,9 @@ void main() {
         categories: ['Science'],
       );
 
-      when(() => mockDatasource.getAllReadingSessions()).thenAnswer(
-        (_) async => [],
-      );
+      when(
+        () => mockDatasource.getAllReadingSessions(),
+      ).thenAnswer((_) async => []);
       when(() => mockRepo.getAllProgressWithBooks()).thenAnswer(
         (_) async => [
           ReadingProgressModel(bookId: 'b1', currentPage: 10, book: book1),
@@ -262,7 +256,9 @@ void main() {
 
       expect(state.genreDistribution, hasLength(2));
       // Fiction: 2 books (66.67%), Science: 1 book (33.33%)
-      final fiction = state.genreDistribution.firstWhere((g) => g.genre == 'Fiction');
+      final fiction = state.genreDistribution.firstWhere(
+        (g) => g.genre == 'Fiction',
+      );
       expect(fiction.bookCount, 2);
       expect(fiction.percentage, closeTo(66.67, 0.1));
     });
@@ -337,8 +333,9 @@ void main() {
         ),
       ];
 
-      when(() => mockDatasource.getAllReadingSessions())
-          .thenAnswer((_) async => sessions);
+      when(
+        () => mockDatasource.getAllReadingSessions(),
+      ).thenAnswer((_) async => sessions);
 
       final container = ProviderContainer(
         overrides: [
@@ -381,7 +378,9 @@ void main() {
       );
       final state = await container.read(insightsProvider.future);
 
-      final nightOwl = state.achievements.firstWhere((a) => a.id == 'night_owl');
+      final nightOwl = state.achievements.firstWhere(
+        (a) => a.id == 'night_owl',
+      );
       expect(nightOwl.unlocked, true);
     });
 
@@ -407,14 +406,16 @@ void main() {
       );
       final state = await container.read(insightsProvider.future);
 
-      final nightOwl = state.achievements.firstWhere((a) => a.id == 'night_owl');
+      final nightOwl = state.achievements.firstWhere(
+        (a) => a.id == 'night_owl',
+      );
       expect(nightOwl.unlocked, false);
     });
 
     test('genre distribution handles null book gracefully', () async {
-      when(() => mockDatasource.getAllReadingSessions()).thenAnswer(
-        (_) async => [],
-      );
+      when(
+        () => mockDatasource.getAllReadingSessions(),
+      ).thenAnswer((_) async => []);
       when(() => mockRepo.getAllProgressWithBooks()).thenAnswer(
         (_) async => [
           ReadingProgressModel(bookId: 'b1', currentPage: 10, book: null),
@@ -448,9 +449,9 @@ void main() {
         categories: null,
       );
 
-      when(() => mockDatasource.getAllReadingSessions()).thenAnswer(
-        (_) async => [],
-      );
+      when(
+        () => mockDatasource.getAllReadingSessions(),
+      ).thenAnswer((_) async => []);
       when(() => mockRepo.getAllProgressWithBooks()).thenAnswer(
         (_) async => [
           ReadingProgressModel(bookId: 'b1', currentPage: 10, book: book),
@@ -472,10 +473,12 @@ void main() {
     });
 
     test('streakStatus returns none only when no sessions at all', () async {
-      when(() => mockDatasource.getAllReadingSessions())
-          .thenAnswer((_) async => []);
-      when(() => mockRepo.getAllProgressWithBooks())
-          .thenAnswer((_) async => []);
+      when(
+        () => mockDatasource.getAllReadingSessions(),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockRepo.getAllProgressWithBooks(),
+      ).thenAnswer((_) async => []);
 
       final container = ProviderContainer(
         overrides: [
@@ -502,9 +505,7 @@ void main() {
         ],
       );
       when(() => mockRepo.getAllProgressWithBooks()).thenAnswer(
-        (_) async => [
-          ReadingProgressModel(bookId: 'b1', currentPage: 10),
-        ],
+        (_) async => [ReadingProgressModel(bookId: 'b1', currentPage: 10)],
       );
 
       final container = ProviderContainer(
@@ -541,8 +542,9 @@ void main() {
         ),
       ];
 
-      when(() => mockDatasource.getAllReadingSessions())
-          .thenAnswer((_) async => sessions);
+      when(
+        () => mockDatasource.getAllReadingSessions(),
+      ).thenAnswer((_) async => sessions);
 
       final container = ProviderContainer(
         overrides: [

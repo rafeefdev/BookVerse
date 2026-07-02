@@ -12,7 +12,8 @@ void _ensureFfi() {
 
 Future<Database> openTestDb() async {
   _ensureFfi();
-  return await databaseFactory.openDatabase(inMemoryDatabasePath,
+  return await databaseFactory.openDatabase(
+    inMemoryDatabasePath,
     options: OpenDatabaseOptions(
       version: 1,
       onCreate: (db, version) async {
