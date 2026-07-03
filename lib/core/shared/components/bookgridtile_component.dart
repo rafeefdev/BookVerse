@@ -106,7 +106,7 @@ Widget _thumbnail(Book book, ColorScheme colorScheme) {
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
                   book.thumbnail,
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) =>
                       const Center(child: Icon(Icons.book, size: 32)),
                   loadingBuilder: (context, child, loadingProgress) {
