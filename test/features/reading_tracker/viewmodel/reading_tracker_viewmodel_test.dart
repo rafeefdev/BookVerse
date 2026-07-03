@@ -11,7 +11,12 @@ import '../../../helpers/test_providers.dart';
 void main() {
   registerFallbackValue(ReadingProgressModel(bookId: '', currentPage: 0));
   registerFallbackValue(
-    ReadingSessionModel(bookId: '', durationInSeconds: 0, endPage: 0, timestamp: DateTime(0)),
+    ReadingSessionModel(
+      bookId: '',
+      durationInSeconds: 0,
+      endPage: 0,
+      timestamp: DateTime(0),
+    ),
   );
   late MockReadingTrackerDatasource mockDatasource;
   late MockBookmarkDatasource mockBookmark;
@@ -167,9 +172,9 @@ void main() {
 
   group('ReadingTrackerNotifier - addReadingSession', () {
     test('delegates to datasource with correct session', () async {
-      when(() => mockDatasource.saveReadingSession(any())).thenAnswer(
-        (_) async => {},
-      );
+      when(
+        () => mockDatasource.saveReadingSession(any()),
+      ).thenAnswer((_) async => {});
 
       final container = createContainer();
       final notifier = container.read(
@@ -186,18 +191,16 @@ void main() {
 
       await notifier.addReadingSession(session);
 
-      verify(
-        () => mockDatasource.saveReadingSession(session),
-      ).called(1);
+      verify(() => mockDatasource.saveReadingSession(session)).called(1);
     });
 
     test('handles multiple sessions for same book', () async {
       int saveCount = 0;
-      when(() => mockDatasource.saveReadingSession(any())).thenAnswer(
-        (_) async {
-          saveCount++;
-        },
-      );
+      when(() => mockDatasource.saveReadingSession(any())).thenAnswer((
+        _,
+      ) async {
+        saveCount++;
+      });
 
       final container = createContainer();
       final notifier = container.read(

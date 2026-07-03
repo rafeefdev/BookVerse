@@ -11,6 +11,7 @@ class ReminderSettings {
   final int quietStartMinute;
   final int quietEndHour;
   final int quietEndMinute;
+  final bool adaptiveTiming;
   final bool typeResumeBook;
   final bool typeStreakProtection;
   final bool typeReengagement;
@@ -24,6 +25,7 @@ class ReminderSettings {
     this.quietStartMinute = 0,
     this.quietEndHour = 7,
     this.quietEndMinute = 0,
+    this.adaptiveTiming = true,
     this.typeResumeBook = true,
     this.typeStreakProtection = true,
     this.typeReengagement = true,
@@ -54,6 +56,8 @@ class ReminderSettings {
     return '${h.toString().padLeft(2, ' ')}:${quietEndMinute.toString().padLeft(2, '0')} $amPm';
   }
 
+  String get adaptiveTimingLabel => adaptiveTiming ? 'On' : 'Off';
+
   Map<String, dynamic> toJson() => {
     'enabled': enabled,
     'hour': hour,
@@ -62,6 +66,7 @@ class ReminderSettings {
     'quietStartMinute': quietStartMinute,
     'quietEndHour': quietEndHour,
     'quietEndMinute': quietEndMinute,
+    'adaptiveTiming': adaptiveTiming,
     'typeResumeBook': typeResumeBook,
     'typeStreakProtection': typeStreakProtection,
     'typeReengagement': typeReengagement,
@@ -77,6 +82,7 @@ class ReminderSettings {
         quietStartMinute: json['quietStartMinute'] as int? ?? 0,
         quietEndHour: json['quietEndHour'] as int? ?? 7,
         quietEndMinute: json['quietEndMinute'] as int? ?? 0,
+        adaptiveTiming: json['adaptiveTiming'] as bool? ?? true,
         typeResumeBook: json['typeResumeBook'] as bool? ?? true,
         typeStreakProtection: json['typeStreakProtection'] as bool? ?? true,
         typeReengagement: json['typeReengagement'] as bool? ?? true,
@@ -107,6 +113,7 @@ class ReminderSettings {
     int? quietStartMinute,
     int? quietEndHour,
     int? quietEndMinute,
+    bool? adaptiveTiming,
     bool? typeResumeBook,
     bool? typeStreakProtection,
     bool? typeReengagement,
@@ -120,6 +127,7 @@ class ReminderSettings {
       quietStartMinute: quietStartMinute ?? this.quietStartMinute,
       quietEndHour: quietEndHour ?? this.quietEndHour,
       quietEndMinute: quietEndMinute ?? this.quietEndMinute,
+      adaptiveTiming: adaptiveTiming ?? this.adaptiveTiming,
       typeResumeBook: typeResumeBook ?? this.typeResumeBook,
       typeStreakProtection: typeStreakProtection ?? this.typeStreakProtection,
       typeReengagement: typeReengagement ?? this.typeReengagement,

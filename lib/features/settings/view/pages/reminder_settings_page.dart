@@ -147,13 +147,35 @@ class _ReminderSettingsPageState extends State<ReminderSettingsPage> {
                   ),
                   if (_settings.enabled) ...[
                     const SizedBox(height: 8),
-                    _timeTile(
-                      'Reminder Time',
-                      _settings.timeLabel,
-                      cs,
-                      textTheme,
-                      onTap: _pickTime,
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Adaptive Timing'),
+                      subtitle: const Text('Learn from your reading patterns'),
+                      value: _settings.adaptiveTiming,
+                      onChanged: (v) =>
+                          _save(_settings.copyWith(adaptiveTiming: v)),
                     ),
+                    if (_settings.adaptiveTiming)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 4,
+                        ),
+                        child: Text(
+                          'Optimal time is computed from your reading history.',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
+                      )
+                    else
+                      _timeTile(
+                        'Reminder Time',
+                        _settings.timeLabel,
+                        cs,
+                        textTheme,
+                        onTap: _pickTime,
+                      ),
                     const SizedBox(height: 4),
                     _timeTile(
                       'Quiet Hours Start',

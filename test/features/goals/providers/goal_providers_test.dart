@@ -48,9 +48,9 @@ void main() {
     }
 
     test('returns null when goal is disabled', () async {
-      when(() => mockGoals.getGoal()).thenAnswer(
-        (_) async => enabledGoal.copyWith(enabled: false),
-      );
+      when(
+        () => mockGoals.getGoal(),
+      ).thenAnswer((_) async => enabledGoal.copyWith(enabled: false));
 
       final container = createContainer();
       container.read(dailyGoalProvider.notifier);
@@ -65,7 +65,8 @@ void main() {
       container.read(dailyGoalProvider.notifier);
       await Future<void>.delayed(Duration.zero);
 
-      final result = await container.read(goalProgressProvider.future) as GoalProgress;
+      final result =
+          await container.read(goalProgressProvider.future) as GoalProgress;
       expect(result.pagesRead, 0);
       expect(result.minutesRead, 0);
       expect(result.targetPages, 30);
@@ -96,7 +97,8 @@ void main() {
       container.read(dailyGoalProvider.notifier);
       await Future<void>.delayed(Duration.zero);
 
-      final result = await container.read(goalProgressProvider.future) as GoalProgress;
+      final result =
+          await container.read(goalProgressProvider.future) as GoalProgress;
       expect(result.pagesRead, 29);
       expect(result.minutesRead, 15);
     });
@@ -125,7 +127,8 @@ void main() {
       container.read(dailyGoalProvider.notifier);
       await Future<void>.delayed(Duration.zero);
 
-      final result = await container.read(goalProgressProvider.future) as GoalProgress;
+      final result =
+          await container.read(goalProgressProvider.future) as GoalProgress;
       expect(result.pagesRead, 14);
       expect(result.minutesRead, 10);
     });
@@ -146,7 +149,8 @@ void main() {
       container.read(dailyGoalProvider.notifier);
       await Future<void>.delayed(Duration.zero);
 
-      final result = await container.read(goalProgressProvider.future) as GoalProgress;
+      final result =
+          await container.read(goalProgressProvider.future) as GoalProgress;
       expect(result.pagesRead, 0);
     });
 
@@ -167,7 +171,8 @@ void main() {
       container.read(dailyGoalProvider.notifier);
       await Future<void>.delayed(Duration.zero);
 
-      final result = await container.read(goalProgressProvider.future) as GoalProgress;
+      final result =
+          await container.read(goalProgressProvider.future) as GoalProgress;
       expect(result.minutesRead, 2);
     });
 
@@ -188,7 +193,8 @@ void main() {
       container.read(dailyGoalProvider.notifier);
       await Future<void>.delayed(Duration.zero);
 
-      final result = await container.read(goalProgressProvider.future) as GoalProgress;
+      final result =
+          await container.read(goalProgressProvider.future) as GoalProgress;
       expect(result.pagesRead, 0);
       expect(result.minutesRead, 10);
     });

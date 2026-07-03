@@ -5,10 +5,13 @@ import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin _plugin;
+  bool _canScheduleExact = false;
 
   NotificationService(this._plugin);
 
   static const _lastNotificationDateKey = 'last_notification_date';
+
+  bool get canScheduleExact => _canScheduleExact;
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
@@ -45,7 +48,9 @@ class NotificationService {
           >();
 
       await androidPlugin?.requestNotificationsPermission();
-      await androidPlugin?.requestExactAlarmsPermission();
+
+      final exactGranted = await androidPlugin?.requestExactAlarmsPermission();
+      _canScheduleExact = exactGranted ?? false;
     }
   }
 
@@ -143,13 +148,17 @@ class NotificationService {
       final id = at.day;
       final tzAt = tz.TZDateTime.from(at, tz.local);
 
+      final scheduleMode = _canScheduleExact
+          ? AndroidScheduleMode.exactAllowWhileIdle
+          : AndroidScheduleMode.inexactAllowWhileIdle;
+
       await _plugin.zonedSchedule(
         id: id,
         title: decision.title,
         body: decision.body,
         scheduledDate: tzAt,
         notificationDetails: details,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: scheduleMode,
         matchDateTimeComponents: DateTimeComponents.time,
         payload: decision.payload,
       );
