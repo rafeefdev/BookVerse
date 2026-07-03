@@ -1,9 +1,13 @@
 import 'package:book_verse/core/utils/clock.dart';
+import 'package:book_verse/core/utils/streak_utils.dart';
 import 'package:book_verse/features/goals/data/goals_datasource.dart';
 import 'package:book_verse/features/notifications/model/reminder_type.dart';
+import 'package:book_verse/features/notifications/service/adaptive_time_learner.dart';
 import 'package:book_verse/features/notifications/service/notification_service.dart';
 import 'package:book_verse/features/notifications/service/reminder_engine.dart';
 import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
+import 'package:book_verse/features/reading_tracker/model/reading_progress_model.dart';
+import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 import 'package:book_verse/features/settings/model/reminder_settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -41,33 +45,22 @@ Future<void> scheduleDailyReminderWithServices({
 
   final sessions = await datasource.getAllReadingSessions();
   final allProgress = await datasource.getAllReadingProgress();
+  final allSessionList = sessions.toList();
 
   final currentlyReading =
       allProgress
           .where((p) => p.book != null && p.currentPage < p.effectivePageCount)
           .toList()
         ..sort(
-          (a, b) => (b.lastRead ?? DateTime(2000)).compareTo(
-            a.lastRead ?? DateTime(2000),
-          ),
+          (a, b) => _scoreBook(
+            b,
+            allSessionList,
+            now,
+          ).compareTo(_scoreBook(a, allSessionList, now)),
         );
 
-  final allSessionList = sessions.toList();
-
-  // compute streak
-  int streak = 0;
-  for (var i = 0; ; i++) {
-    final dayStart = todayStart.subtract(Duration(days: i));
-    final dayEnd = dayStart.add(const Duration(days: 1));
-    final hasActivity = allSessionList.any(
-      (s) => !s.timestamp.isBefore(dayStart) && s.timestamp.isBefore(dayEnd),
-    );
-    if (hasActivity) {
-      streak++;
-    } else {
-      break;
-    }
-  }
+  // compute streak using shared utility (consistent with Insights)
+  final streak = computeStreak(allSessionList, todayStart);
 
   final lastNotifRaw = prefs.getString(_lastNotificationDateKey);
   final lastNotificationDate = lastNotifRaw != null
@@ -134,10 +127,17 @@ Future<void> scheduleDailyReminderWithServices({
   };
   if (!typeEnabled) return;
 
+  // Compute adaptive hour if enabled
+  int? adaptiveHour;
+  if (settings.adaptiveTiming) {
+    adaptiveHour = AdaptiveTimeLearner.computeOptimalHour(allSessionList);
+  }
+
   final at = engine.bestTime(
     now: now,
     streak: streak,
     lastNotificationDate: lastNotificationDate,
+    adaptiveHour: adaptiveHour,
     preferredHour: settings.hour,
     quietStartHour: settings.quietStartHour,
     quietEndHour: settings.quietEndHour,
@@ -146,6 +146,40 @@ Future<void> scheduleDailyReminderWithServices({
   await notificationService.cancelAll();
   await notificationService.schedule(decision, at);
   await prefs.setString(_lastNotificationDateKey, at.toIso8601String());
+}
+
+/// Hybrid score for multi-book priority ordering.
+/// Combines recency (40%), engagement (35%), and incompleteness (25%).
+double _scoreBook(
+  ReadingProgressModel progress,
+  List<ReadingSessionModel> allSessions,
+  DateTime now,
+) {
+  double score = 0;
+
+  // Recency: 40% — how recently was this book touched
+  final recencyHours = progress.lastRead != null
+      ? now.difference(progress.lastRead!).inHours
+      : 8760;
+  final recencyNorm = (1 - (recencyHours / 8760).clamp(0, 1));
+  score += recencyNorm * 0.40;
+
+  // Engagement (7-day): 35% — session count (17.5%) + total duration (17.5%)
+  final weekAgo = now.subtract(const Duration(days: 7));
+  final recentSessions = allSessions.where(
+    (s) => s.bookId == progress.bookId && !s.timestamp.isBefore(weekAgo),
+  );
+  final sessionCount = recentSessions.length;
+  final totalMinutes =
+      recentSessions.fold<int>(0, (sum, s) => sum + s.durationInSeconds) / 60;
+  score += (sessionCount / 10).clamp(0, 1) * 0.175;
+  score += (totalMinutes / 120).clamp(0, 1) * 0.175;
+
+  // Incompleteness: 25% — further from completion = higher priority
+  final pct = progress.currentPage / progress.effectivePageCount;
+  score += (1 - pct.clamp(0, 1)) * 0.25;
+
+  return score;
 }
 
 /// Riverpod integration wrapper.

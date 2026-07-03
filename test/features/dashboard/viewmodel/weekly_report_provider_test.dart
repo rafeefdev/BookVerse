@@ -21,9 +21,7 @@ void main() {
     when(
       () => mockDatasource.getAllReadingSessions(),
     ).thenAnswer((_) async => []);
-    when(
-      () => mockBookmark.getBookmarkedBooks(),
-    ).thenAnswer((_) async => []);
+    when(() => mockBookmark.getBookmarkedBooks()).thenAnswer((_) async => []);
   });
 
   group('weeklyReportProvider', () {

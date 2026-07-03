@@ -211,12 +211,15 @@ class ReminderEngine {
     required DateTime now,
     required int streak,
     required DateTime? lastNotificationDate,
+    int? adaptiveHour,
     int preferredHour = 19,
     int quietStartHour = 22,
     int quietEndHour = 7,
   }) {
     int defaultHour;
-    if (preferredHour >= 0 && preferredHour < 24) {
+    if (adaptiveHour != null && adaptiveHour >= 0 && adaptiveHour < 24) {
+      defaultHour = adaptiveHour;
+    } else if (preferredHour >= 0 && preferredHour < 24) {
       defaultHour = preferredHour;
     } else if (streak >= 3) {
       defaultHour = 20;
@@ -233,11 +236,11 @@ class ReminderEngine {
     }
 
     if (defaultHour >= quietStartHour || defaultHour < quietEndHour) {
-      return DateTime(now.year, now.month, now.day, quietEndHour);
-    }
-
-    if (defaultHour >= quietStartHour) {
-      return DateTime(now.year, now.month, now.day + 1, quietEndHour);
+      var shifted = DateTime(now.year, now.month, now.day, quietEndHour);
+      if (shifted.isBefore(now)) {
+        shifted = shifted.add(const Duration(days: 1));
+      }
+      return shifted;
     }
 
     return scheduled;
