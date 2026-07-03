@@ -151,7 +151,7 @@ Widget _buildDetailPage(
               runSpacing: 8,
               children: [
                 Text(
-                  bookAuthors(selectedBook),
+                  selectedBook.title,
                   softWrap: true,
                   style: context.textTheme.titleLarge,
                 ),

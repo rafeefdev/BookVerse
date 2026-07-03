@@ -29,7 +29,8 @@ class InsightsPage extends ConsumerWidget {
         top: false,
         bottom: true,
         child: insightsAsync.when(
-          data: (state) => _buildContent(context, state, ref, textTheme, colorScheme),
+          data: (state) =>
+              _buildContent(context, state, ref, textTheme, colorScheme),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('Error: $e')),
         ),

@@ -114,6 +114,38 @@ void main() {
         );
         expect(model.startPage, greaterThanOrEqualTo(0));
       });
+
+      test('durationInSeconds can be large for long sessions', () {
+        final model = ReadingSessionModel(
+          bookId: 'b1',
+          durationInSeconds: 72000, // 20 hours
+          endPage: 500,
+          timestamp: now,
+        );
+        expect(model.durationInSeconds, 72000);
+      });
+
+      test('startPage is <= endPage for valid session range', () {
+        final model = ReadingSessionModel(
+          bookId: 'b1',
+          durationInSeconds: 600,
+          endPage: 50,
+          timestamp: now,
+          startPage: 30,
+        );
+        expect(model.endPage, greaterThanOrEqualTo(model.startPage!));
+      });
+
+      test('endPage equals startPage is valid (no pages read)', () {
+        final model = ReadingSessionModel(
+          bookId: 'b1',
+          durationInSeconds: 300,
+          endPage: 30,
+          timestamp: now,
+          startPage: 30,
+        );
+        expect(model.endPage, model.startPage);
+      });
     });
   });
 }

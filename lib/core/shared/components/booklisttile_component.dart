@@ -44,7 +44,7 @@ Widget bookListTile(
               )
             : Container(
                 width: 50,
-                height: 80,
+                height: 70,
                 decoration: BoxDecoration(
                   color: scheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(6),

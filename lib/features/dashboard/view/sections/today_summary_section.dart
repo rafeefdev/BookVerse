@@ -42,9 +42,8 @@ class TodaySummarySection extends StatelessWidget {
         Expanded(
           child: DashboardStatCard(
             icon: Icons.timer_outlined,
-            value: goalProgress != null
-                ? '${state.todayMinutes}/${goalProgress!.targetMinutes}'
-                : '${state.todayMinutes}',
+            value: '${state.todayMinutes}',
+            target: goalProgress?.targetMinutes.toString(),
             unit: 'minutes',
             colorScheme: colorScheme,
             textTheme: textTheme,
@@ -54,9 +53,8 @@ class TodaySummarySection extends StatelessWidget {
         Expanded(
           child: DashboardStatCard(
             icon: Icons.menu_book,
-            value: goalProgress != null
-                ? '${state.todayPages}/${goalProgress!.targetPages}'
-                : '${state.todayPages}',
+            value: '${state.todayPages}',
+            target: goalProgress?.targetPages.toString(),
             unit: 'pages',
             colorScheme: colorScheme,
             textTheme: textTheme,

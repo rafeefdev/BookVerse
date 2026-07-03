@@ -25,10 +25,12 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Weekly Report')),
-      body: reportAsync.when(
-        data: (state) => _buildContent(state, textTheme, colorScheme),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+      body: SafeArea(
+        child: reportAsync.when(
+          data: (state) => _buildContent(state, textTheme, colorScheme),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('Error: $e')),
+        ),
       ),
     );
   }
@@ -40,7 +42,7 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
   ) {
     final reportState = state as WeeklyReportState;
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
