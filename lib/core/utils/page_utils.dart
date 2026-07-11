@@ -100,17 +100,7 @@ double computeNiceCeiling(double maxValue) {
   final magnitude =
       math.pow(10, (math.log(maxValue) / math.log(10)).floor()).toDouble();
   final normalized = maxValue / magnitude;
-  double nice;
-  if (normalized <= 1.0) {
-    nice = magnitude;
-  } else if (normalized <= 2.0) {
-    nice = 2 * magnitude;
-  } else if (normalized <= 5.0) {
-    nice = 5 * magnitude;
-  } else {
-    nice = 10 * magnitude;
-  }
-  return nice;
+  return normalized.ceilToDouble() * magnitude;
 }
 
 List<double> computeGridLines(double ceiling, {int maxLines = 5}) {

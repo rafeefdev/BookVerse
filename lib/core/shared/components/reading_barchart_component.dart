@@ -42,43 +42,25 @@ class ReadingBarChart extends StatelessWidget {
         );
     final refMax = computeNiceCeiling(maxValue);
     final gridLines = computeGridLines(refMax);
-    final labelColor =
-        colorScheme.onSurfaceVariant.withValues(alpha: 0.5);
-    final gridColor =
-        colorScheme.outlineVariant.withValues(alpha: 0.3);
+
+    final axisLabelStyle = textTheme.labelSmall?.copyWith(
+      fontSize: 10,
+      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+    );
 
     return SizedBox(
       height: containerHeight + 48,
       child: Row(
         children: [
           SizedBox(
-            width: 30,
+            width: 32,
             child: Column(
               children: [
-                Text(
-                  valueFormatter(refMax),
-                  style: textTheme.labelSmall?.copyWith(
-                    fontSize: 9,
-                    color: labelColor,
-                  ),
-                ),
+                Text(valueFormatter(refMax), style: axisLabelStyle),
                 const Spacer(),
-                for (int i = gridLines.length - 1; i >= 0; i--)
-                  Text(
-                    valueFormatter(gridLines[i]),
-                    style: textTheme.labelSmall?.copyWith(
-                      fontSize: 9,
-                      color: labelColor,
-                    ),
-                  ),
+                for (final line in gridLines.reversed)
+                  Text(valueFormatter(line), style: axisLabelStyle),
                 const Spacer(),
-                Text(
-                  '0',
-                  style: textTheme.labelSmall?.copyWith(
-                    fontSize: 9,
-                    color: labelColor,
-                  ),
-                ),
               ],
             ),
           ),
@@ -94,19 +76,21 @@ class ReadingBarChart extends StatelessWidget {
                           (line / refMax * containerHeight),
                       left: 0,
                       right: 0,
-                      child: Container(height: 1, color: gridColor),
+                      child: Container(
+                        height: 1,
+                        color: colorScheme.outlineVariant
+                            .withValues(alpha: 0.12),
+                      ),
                     ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(height: 1, color: gridColor),
-                  ),
                   Positioned(
                     top: containerHeight,
                     left: 0,
                     right: 0,
-                    child: Container(height: 1, color: gridColor),
+                    child: Container(
+                      height: 1,
+                      color: colorScheme.outlineVariant
+                          .withValues(alpha: 0.12),
+                    ),
                   ),
                   Align(
                     alignment: Alignment.bottomCenter,
@@ -131,13 +115,13 @@ class ReadingBarChart extends StatelessWidget {
                                       valueFormatter(day.value),
                                       style: textTheme.labelSmall
                                           ?.copyWith(
-                                        fontSize: 9,
-                                        color: colorScheme
-                                            .onSurfaceVariant,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: colorScheme.onSurface,
                                       ),
                                     ),
                                   if (!showLabel)
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: 14),
                                   const SizedBox(height: 4),
                                   Container(
                                     height: barHeight.clamp(
