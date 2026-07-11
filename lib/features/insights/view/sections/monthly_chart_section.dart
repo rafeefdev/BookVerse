@@ -1,3 +1,5 @@
+import 'package:book_verse/core/shared/components/reading_barchart_component.dart';
+import 'package:book_verse/core/utils/page_utils.dart';
 import 'package:book_verse/features/insights/model/insights_state.dart';
 import 'package:book_verse/features/insights/view/components/insights_helpers.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +17,15 @@ class MonthlyChartSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const containerHeight = 180.0;
     final recentMonths = state.monthlyMinutes.take(6).toList();
     if (recentMonths.isEmpty) return const SizedBox.shrink();
+
+    final barData = recentMonths
+        .map((m) => ReadingBarData(
+              label: monthLabel(m.month),
+              value: m.minutes.toDouble(),
+            ))
+        .toList();
 
     return Card(
       child: Padding(
@@ -27,48 +35,12 @@ class MonthlyChartSection extends StatelessWidget {
           children: [
             Text('Monthly Activity', style: textTheme.titleMedium),
             const SizedBox(height: 20),
-            SizedBox(
-              height: containerHeight + 48,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: List.generate(recentMonths.length, (i) {
-                  final month = recentMonths[i];
-                  final barHeight = (month.minutes / 60.0) * containerHeight;
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          if (month.minutes > 0)
-                            Text(
-                              '${month.minutes}m',
-                              style: textTheme.labelSmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          const SizedBox(height: 4),
-                          Container(
-                            height: barHeight.clamp(4.0, containerHeight),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: colorScheme.primary,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            monthLabel(month.month),
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              ),
+            ReadingBarChart(
+              data: barData,
+              containerHeight: 180,
+              showPages: false,
+              barColor: (_) => colorScheme.primary,
+              valueFormatter: (v) => formatMinutes(v.toInt()),
             ),
           ],
         ),

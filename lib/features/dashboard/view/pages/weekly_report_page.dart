@@ -1,5 +1,7 @@
+import 'package:book_verse/core/shared/components/reading_barchart_component.dart';
 import 'package:book_verse/core/shared/helpers/book_authors.dart';
 import 'package:book_verse/core/theme/themes_extension.dart';
+import 'package:book_verse/core/utils/page_utils.dart';
 import 'package:book_verse/features/dashboard/model/weekly_report_state.dart';
 import 'package:book_verse/features/dashboard/viewmodel/weekly_report_provider.dart';
 import 'package:flutter/material.dart';
@@ -142,8 +144,8 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${summary.totalSessions} sessions  •  '
-                      '${_formatMinutes(summary.totalDurationSeconds ~/ 60)}  •  '
+            '${summary.totalSessions} sessions  •  '
+            '${formatMinutes(summary.totalDurationSeconds ~/ 60)}  •  '
                       '${summary.totalPages} pages',
                       style: textTheme.labelSmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
@@ -234,61 +236,27 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
     TextTheme textTheme,
     ColorScheme colorScheme,
   ) {
-    final values = state.weeklyReading
-        .map((d) => _showPages ? d.pages : d.minutes)
+    final barData = state.weeklyReading
+        .map((d) => ReadingBarData(
+              label: d.label,
+              value: (_showPages ? d.pages : d.minutes).toDouble(),
+              isHighlighted: d.isToday,
+            ))
         .toList();
-    const containerHeight = 200.0;
 
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: SizedBox(
-          height: containerHeight + 48,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: List.generate(state.weeklyReading.length, (i) {
-              final day = state.weeklyReading[i];
-              final val = values[i];
-              final refMax = _showPages ? 150.0 : 60.0;
-              final barHeight = (val / refMax) * containerHeight;
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      if (val > 0)
-                        Text(
-                          '$val',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      const SizedBox(height: 4),
-                      Container(
-                        height: barHeight.clamp(4.0, containerHeight),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: day.isToday
-                              ? colorScheme.primary
-                              : colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        day.label,
-                        style: textTheme.labelSmall?.copyWith(
-                          fontWeight: day.isToday ? FontWeight.bold : null,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }),
-          ),
+        child: ReadingBarChart(
+          data: barData,
+          containerHeight: 200,
+          showPages: _showPages,
+          barColor: (isHighlighted) => isHighlighted
+              ? colorScheme.primary
+              : colorScheme.primaryContainer,
+          valueFormatter: _showPages
+              ? (v) => '${v.toInt()}'
+              : (v) => formatMinutes(v.toInt()),
         ),
       ),
     );
@@ -314,7 +282,7 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
         Expanded(
           child: _insightCard(
             Icons.timer_outlined,
-            _formatMinutes(state.totalMinutes),
+            formatMinutes(state.totalMinutes),
             'Duration',
             colorScheme,
             textTheme,
@@ -383,14 +351,5 @@ class _WeeklyReportPageState extends ConsumerState<WeeklyReportPage> {
         ),
       ),
     );
-  }
-
-  String _formatMinutes(int minutes) {
-    final hours = minutes ~/ 60;
-    final mins = minutes % 60;
-    if (hours > 0) {
-      return '${hours}h ${mins}m';
-    }
-    return '${mins}m';
   }
 }

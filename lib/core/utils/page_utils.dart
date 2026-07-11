@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 
 // Duration formatting
@@ -91,4 +93,32 @@ int computeAllTimePages(List<ReadingSessionModel> allSessions) {
     total += bookTotal;
   }
   return total;
+}
+
+double computeNiceCeiling(double maxValue) {
+  if (maxValue <= 0) return 25;
+  final magnitude =
+      math.pow(10, (math.log(maxValue) / math.log(10)).floor()).toDouble();
+  final normalized = maxValue / magnitude;
+  double nice;
+  if (normalized <= 1.0) {
+    nice = magnitude;
+  } else if (normalized <= 2.0) {
+    nice = 2 * magnitude;
+  } else if (normalized <= 5.0) {
+    nice = 5 * magnitude;
+  } else {
+    nice = 10 * magnitude;
+  }
+  return nice;
+}
+
+List<double> computeGridLines(double ceiling, {int maxLines = 5}) {
+  if (ceiling <= 0) return [];
+  final step = computeNiceCeiling(ceiling / maxLines);
+  final lines = <double>[];
+  for (double v = step; v < ceiling; v += step) {
+    lines.add(v);
+  }
+  return lines;
 }

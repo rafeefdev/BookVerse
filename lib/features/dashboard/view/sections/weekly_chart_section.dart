@@ -1,3 +1,5 @@
+import 'package:book_verse/core/shared/components/reading_barchart_component.dart';
+import 'package:book_verse/core/utils/page_utils.dart';
 import 'package:book_verse/features/dashboard/model/dashboard_state.dart';
 import 'package:flutter/material.dart';
 
@@ -21,10 +23,13 @@ class WeeklyChartSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final values = state.weeklyReading
-        .map((d) => showPages ? d.pages : d.minutes)
+    final barData = state.weeklyReading
+        .map((d) => ReadingBarData(
+              label: d.label,
+              value: (showPages ? d.pages : d.minutes).toDouble(),
+              isHighlighted: d.isToday,
+            ))
         .toList();
-    const containerHeight = 180.0;
 
     return Card(
       child: InkWell(
@@ -37,56 +42,16 @@ class WeeklyChartSection extends StatelessWidget {
             children: [
               Text('Weekly Progress', style: textTheme.titleMedium),
               const SizedBox(height: 20),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                height: containerHeight + 48,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: List.generate(state.weeklyReading.length, (i) {
-                    final day = state.weeklyReading[i];
-                    final val = values[i];
-                    final refMax = showPages ? 150.0 : 60.0;
-                    final barHeight = (val / refMax) * containerHeight;
-                    return Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            if (val > 0)
-                              Text(
-                                '$val',
-                                style: textTheme.labelSmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            const SizedBox(height: 4),
-                            Container(
-                              height: barHeight.clamp(4.0, containerHeight),
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: day.isToday
-                                    ? colorScheme.primary
-                                    : colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              day.label,
-                              style: textTheme.labelSmall?.copyWith(
-                                fontWeight: day.isToday
-                                    ? FontWeight.bold
-                                    : null,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                ),
+              ReadingBarChart(
+                data: barData,
+                containerHeight: 180,
+                showPages: showPages,
+                barColor: (isHighlighted) => isHighlighted
+                    ? colorScheme.primary
+                    : colorScheme.primaryContainer,
+                valueFormatter: showPages
+                    ? (v) => '${v.toInt()}'
+                    : (v) => formatMinutes(v.toInt()),
               ),
               const SizedBox(height: 16),
               Row(
