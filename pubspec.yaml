@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_local_notifications:
+  flutter_native_timezone:
   timezone:
   flutter_dotenv: ^5.2.1
   flutter_riverpod: ^2.6.1

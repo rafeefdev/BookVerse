@@ -13,7 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
-import 'package:timezone/data/latest.dart' as tz;
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +45,13 @@ Future<void> main() async {
     log('Failed to initialize database: $e\n$stack');
   }
 
-  tz.initializeTimeZones();
+  tz_data.initializeTimeZones();
+  try {
+    final timezoneName = await FlutterNativeTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timezoneName));
+  } catch (_) {
+    // Fallback to UTC if native timezone detection fails
+  }
 
   runApp(
     ProviderScope(

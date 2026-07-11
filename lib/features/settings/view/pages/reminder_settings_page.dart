@@ -1,17 +1,18 @@
 import 'package:book_verse/core/theme/themes_extension.dart';
-import 'package:book_verse/features/notifications/service/notification_service.dart';
+import 'package:book_verse/features/notifications/providers/notification_providers.dart';
 import 'package:book_verse/features/settings/model/reminder_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ReminderSettingsPage extends StatefulWidget {
+class ReminderSettingsPage extends ConsumerStatefulWidget {
   const ReminderSettingsPage({super.key});
 
   @override
-  State<ReminderSettingsPage> createState() => _ReminderSettingsPageState();
+  ConsumerState<ReminderSettingsPage> createState() =>
+      _ReminderSettingsPageState();
 }
 
-class _ReminderSettingsPageState extends State<ReminderSettingsPage> {
+class _ReminderSettingsPageState extends ConsumerState<ReminderSettingsPage> {
   ReminderSettings _settings = ReminderSettings.defaults();
   bool _loaded = false;
 
@@ -34,6 +35,7 @@ class _ReminderSettingsPageState extends State<ReminderSettingsPage> {
   Future<void> _save(ReminderSettings s) async {
     await s.save();
     if (mounted) setState(() => _settings = s);
+    await scheduleDailyReminder(ref);
   }
 
   Future<void> _pickTime() async {
@@ -84,8 +86,7 @@ class _ReminderSettingsPageState extends State<ReminderSettingsPage> {
 
   Future<void> _testNotification() async {
     try {
-      final service = NotificationService(FlutterLocalNotificationsPlugin());
-      await service.initialize(requestPermissions: true);
+      final service = ref.read(notificationServiceProvider);
       await service.show(
         title: 'Test Notification',
         body: 'Reading reminders are working!',
@@ -109,6 +110,13 @@ class _ReminderSettingsPageState extends State<ReminderSettingsPage> {
         );
       }
     }
+  }
+
+  String get _nextReminderText {
+    if (_settings.adaptiveTiming) {
+      return 'Next reminder: Adaptive (learned from your reading history)';
+    }
+    return 'Next reminder: Today at ${_settings.timeLabel}';
   }
 
   @override
@@ -226,7 +234,7 @@ class _ReminderSettingsPageState extends State<ReminderSettingsPage> {
                     const SizedBox(height: 16),
                     const Divider(),
                     Text(
-                      'Next reminder: Today at ${_settings.timeLabel}',
+                      _nextReminderText,
                       style: textTheme.bodySmall?.copyWith(
                         color: cs.onSurfaceVariant,
                       ),
