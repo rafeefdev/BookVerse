@@ -1086,4 +1086,217 @@ void main() {
       },
     );
   });
+
+  // --------------- bestTime ---------------
+
+  group('bestTime — preferred hour/minute', () {
+    test('uses preferredHour and preferredMinute when no adaptive', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        preferredHour: 20,
+        preferredMinute: 30,
+      );
+      expect(result.hour, 20);
+      expect(result.minute, 30);
+    });
+
+    test('preferredMinute of 0 when not specified', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        preferredHour: 19,
+      );
+      expect(result.hour, 19);
+      expect(result.minute, 0);
+    });
+
+    test('preferredMinute is clamped to 0-59', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        preferredHour: 19,
+        preferredMinute: 90,
+      );
+      expect(result.minute, 59);
+    });
+
+    test('past time pushes to tomorrow', () {
+      final now = DateTime(2024, 6, 21, 21, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        preferredHour: 19,
+        preferredMinute: 30,
+      );
+      expect(result.day, 22);
+      expect(result.hour, 19);
+      expect(result.minute, 30);
+    });
+  });
+
+  group('bestTime — adaptive hour', () {
+    test('adaptiveHour overrides preferred and uses minute=0', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        adaptiveHour: 21,
+        preferredHour: 19,
+        preferredMinute: 45,
+      );
+      expect(result.hour, 21);
+      expect(result.minute, 0);
+    });
+
+    test('null adaptiveHour falls back to preferred', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        adaptiveHour: null,
+        preferredHour: 20,
+        preferredMinute: 15,
+      );
+      expect(result.hour, 20);
+      expect(result.minute, 15);
+    });
+  });
+
+  group('bestTime — streak fallback', () {
+    test('streak >= 3 defaults to 20:00 when no preferred hour', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 3,
+        lastNotificationDate: null,
+        preferredHour: -1,
+      );
+      expect(result.hour, 20);
+      expect(result.minute, 0);
+    });
+
+    test('streak 1-2 defaults to 19:00 when no preferred hour', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 1,
+        lastNotificationDate: null,
+        preferredHour: -1,
+      );
+      expect(result.hour, 19);
+      expect(result.minute, 0);
+    });
+
+    test('streak 0 defaults to 18:00 when no preferred hour', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        preferredHour: -1,
+      );
+      expect(result.hour, 18);
+      expect(result.minute, 0);
+    });
+  });
+
+  group('bestTime — quiet hours', () {
+    test('scheduling in quiet hours shifts to quietEnd', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        preferredHour: 22,
+        preferredMinute: 30,
+        quietStartHour: 22,
+        quietStartMinute: 0,
+        quietEndHour: 7,
+        quietEndMinute: 0,
+      );
+      expect(result.hour, 7);
+      expect(result.minute, 0);
+    });
+
+    test('scheduling before quiet hours is not shifted', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        preferredHour: 20,
+        preferredMinute: 0,
+        quietStartHour: 22,
+        quietStartMinute: 0,
+        quietEndHour: 7,
+        quietEndMinute: 0,
+      );
+      expect(result.hour, 20);
+      expect(result.minute, 0);
+    });
+
+    test('quiet hours with minutes — 22:15 is in quiet range starting 22:30', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        preferredHour: 22,
+        preferredMinute: 15,
+        quietStartHour: 22,
+        quietStartMinute: 30,
+        quietEndHour: 7,
+        quietEndMinute: 0,
+      );
+      // 22:15 is BEFORE quietStart 22:30, so NOT in quiet hours
+      expect(result.hour, 22);
+      expect(result.minute, 15);
+    });
+
+    test('quiet hours with minutes — 22:35 IS in quiet range starting 22:30', () {
+      final now = DateTime(2024, 6, 21, 12, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        preferredHour: 22,
+        preferredMinute: 35,
+        quietStartHour: 22,
+        quietStartMinute: 30,
+        quietEndHour: 7,
+        quietEndMinute: 30,
+      );
+      expect(result.hour, 7);
+      expect(result.minute, 30);
+    });
+
+    test('quietEnd in the past shifts to next day', () {
+      // now is 08:00, quietEnd is 07:30 (already past today)
+      final now = DateTime(2024, 6, 21, 8, 0);
+      final result = engine.bestTime(
+        now: now,
+        streak: 0,
+        lastNotificationDate: null,
+        preferredHour: 23,
+        preferredMinute: 0,
+        quietStartHour: 22,
+        quietStartMinute: 0,
+        quietEndHour: 7,
+        quietEndMinute: 0,
+      );
+      expect(result.day, 22);
+      expect(result.hour, 7);
+      expect(result.minute, 0);
+    });
+  });
 }

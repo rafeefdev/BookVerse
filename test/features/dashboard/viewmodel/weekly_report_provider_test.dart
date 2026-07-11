@@ -1,6 +1,8 @@
 import 'package:book_verse/core/utils/clock.dart';
 import 'package:book_verse/features/dashboard/viewmodel/weekly_report_provider.dart';
+import 'package:book_verse/features/library/model/library_repo_di.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -10,6 +12,7 @@ void main() {
   late FakeClock clock;
   late MockReadingTrackerDatasource mockDatasource;
   late MockBookmarkDatasource mockBookmark;
+  late MockLibraryRepo mockLibraryRepo;
 
   final today = DateTime(2026, 6, 10); // Wednesday
 
@@ -17,12 +20,21 @@ void main() {
     clock = FakeClock(today);
     mockDatasource = MockReadingTrackerDatasource();
     mockBookmark = MockBookmarkDatasource();
+    mockLibraryRepo = MockLibraryRepo();
 
     when(
       () => mockDatasource.getAllReadingSessions(),
     ).thenAnswer((_) async => []);
     when(() => mockBookmark.getBookmarkedBooks()).thenAnswer((_) async => []);
+    when(() => mockLibraryRepo.getAllProgressWithBooks()).thenAnswer(
+      (_) async => [],
+    );
+    when(() => mockLibraryRepo.getAllFolders()).thenAnswer((_) async => []);
   });
+
+  List<Override> libraryOverrides() => [
+    libraryRepoProvider.overrideWithValue(mockLibraryRepo),
+  ];
 
   group('weeklyReportProvider', () {
     test('empty state returns zeros and correct week range', () async {
@@ -30,6 +42,7 @@ void main() {
         clock: clock,
         readingTrackerDatasource: mockDatasource,
         bookmarkDatasource: mockBookmark,
+        additionalOverrides: libraryOverrides(),
       );
       final state = await container.read(weeklyReportProvider(0).future);
 
@@ -59,6 +72,7 @@ void main() {
         clock: clock,
         readingTrackerDatasource: mockDatasource,
         bookmarkDatasource: mockBookmark,
+        additionalOverrides: libraryOverrides(),
       );
       final state = await container.read(weeklyReportProvider(0).future);
 
@@ -95,6 +109,7 @@ void main() {
         clock: clock,
         readingTrackerDatasource: mockDatasource,
         bookmarkDatasource: mockBookmark,
+        additionalOverrides: libraryOverrides(),
       );
       final state = await container.read(weeklyReportProvider(0).future);
 
@@ -107,6 +122,7 @@ void main() {
         clock: clock,
         readingTrackerDatasource: mockDatasource,
         bookmarkDatasource: mockBookmark,
+        additionalOverrides: libraryOverrides(),
       );
       final state = await container.read(weeklyReportProvider(0).future);
 
@@ -139,6 +155,7 @@ void main() {
         clock: clock,
         readingTrackerDatasource: mockDatasource,
         bookmarkDatasource: mockBookmark,
+        additionalOverrides: libraryOverrides(),
       );
       final state = await container.read(weeklyReportProvider(0).future);
 
@@ -162,6 +179,7 @@ void main() {
         clock: clock,
         readingTrackerDatasource: mockDatasource,
         bookmarkDatasource: mockBookmark,
+        additionalOverrides: libraryOverrides(),
       );
       final state = await container.read(weeklyReportProvider(-1).future);
 
@@ -194,6 +212,7 @@ void main() {
         clock: clock,
         readingTrackerDatasource: mockDatasource,
         bookmarkDatasource: mockBookmark,
+        additionalOverrides: libraryOverrides(),
       );
       final state = await container.read(weeklyReportProvider(0).future);
 
@@ -227,6 +246,7 @@ void main() {
         clock: clock,
         readingTrackerDatasource: mockDatasource,
         bookmarkDatasource: mockBookmark,
+        additionalOverrides: libraryOverrides(),
       );
       final state = await container.read(weeklyReportProvider(0).future);
 

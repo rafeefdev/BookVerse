@@ -124,7 +124,7 @@ class NotificationService {
     );
   }
 
-  Future<void> schedule(ReminderDecision decision, DateTime at) async {
+  Future<bool> schedule(ReminderDecision decision, DateTime at) async {
     try {
       const androidDetails = AndroidNotificationDetails(
         'reading_reminder',
@@ -162,8 +162,9 @@ class NotificationService {
         matchDateTimeComponents: DateTimeComponents.time,
         payload: decision.payload,
       );
+      return true;
     } catch (_) {
-      // Silently handle platform unavailability (e.g. in tests)
+      return false;
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:book_verse/core/utils/clock.dart';
 import 'package:book_verse/features/goals/data/goals_datasource.dart';
+import 'package:book_verse/features/notifications/model/reminder_type.dart';
 import 'package:book_verse/features/notifications/providers/notification_providers.dart';
 import 'package:book_verse/features/notifications/service/notification_service.dart';
 import 'package:book_verse/features/notifications/service/reminder_engine.dart';
@@ -12,6 +13,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../../../helpers/test_db.dart';
+
+class _FakeNotificationService extends NotificationService {
+  _FakeNotificationService() : super(FlutterLocalNotificationsPlugin());
+
+  @override
+  Future<bool> schedule(ReminderDecision decision, DateTime at) async {
+    return true;
+  }
+}
 
 void main() {
   late Database db;
@@ -26,9 +36,7 @@ void main() {
     db = await openTestDb();
     datasource = ReadingTrackerDatasource(db);
     goalsDatasource = GoalsDatasource(db);
-    notificationService = NotificationService(
-      FlutterLocalNotificationsPlugin(),
-    );
+    notificationService = _FakeNotificationService();
     prefs = await SharedPreferences.getInstance();
     engine = const ReminderEngine();
   });

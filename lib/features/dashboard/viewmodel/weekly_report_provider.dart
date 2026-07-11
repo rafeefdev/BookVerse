@@ -5,6 +5,7 @@ import 'package:book_verse/features/bookmarks/data/bookmark_datasource.dart';
 import 'package:book_verse/features/dashboard/model/dashboard_state.dart';
 import 'package:book_verse/features/dashboard/model/weekly_book_summary.dart';
 import 'package:book_verse/features/dashboard/model/weekly_report_state.dart';
+import 'package:book_verse/features/library/viewmodel/library_viewmodel.dart';
 import 'package:book_verse/features/reading_tracker/data/reading_tracker_datasource.dart';
 import 'package:book_verse/features/reading_tracker/model/reading_session_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +17,7 @@ final weeklyReportProvider = FutureProvider.family<WeeklyReportState, int>((
   final clock = ref.watch(clockProvider);
   final datasource = ref.watch(readingTrackerDatasourceProvider);
   final bookmarkDatasource = ref.watch(bookmarkDatasourceProvider);
+  ref.watch(libraryNotifierProvider);
   final sessions = await datasource.getAllReadingSessions();
 
   final now = clock.now();

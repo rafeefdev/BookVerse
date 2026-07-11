@@ -213,30 +213,64 @@ class ReminderEngine {
     required DateTime? lastNotificationDate,
     int? adaptiveHour,
     int preferredHour = 19,
+    int preferredMinute = 0,
     int quietStartHour = 22,
+    int quietStartMinute = 0,
     int quietEndHour = 7,
+    int quietEndMinute = 0,
   }) {
     int defaultHour;
+    int defaultMinute;
     if (adaptiveHour != null && adaptiveHour >= 0 && adaptiveHour < 24) {
       defaultHour = adaptiveHour;
+      defaultMinute = 0;
     } else if (preferredHour >= 0 && preferredHour < 24) {
       defaultHour = preferredHour;
+      defaultMinute = preferredMinute.clamp(0, 59);
     } else if (streak >= 3) {
       defaultHour = 20;
+      defaultMinute = 0;
     } else if (streak >= 1) {
       defaultHour = 19;
+      defaultMinute = 0;
     } else {
       defaultHour = 18;
+      defaultMinute = 0;
     }
 
-    final scheduled = DateTime(now.year, now.month, now.day, defaultHour);
+    final scheduled = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      defaultHour,
+      defaultMinute,
+    );
 
     if (scheduled.isBefore(now)) {
       return scheduled.add(const Duration(days: 1));
     }
 
-    if (defaultHour >= quietStartHour || defaultHour < quietEndHour) {
-      var shifted = DateTime(now.year, now.month, now.day, quietEndHour);
+    final quietStart = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      quietStartHour,
+      quietStartMinute,
+    );
+    final quietEnd = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      quietEndHour,
+      quietEndMinute,
+    );
+
+    final inQuietHours = quietStartHour > quietEndHour
+        ? (!scheduled.isBefore(quietStart) || scheduled.isBefore(quietEnd))
+        : (!scheduled.isBefore(quietStart) && scheduled.isBefore(quietEnd));
+
+    if (inQuietHours) {
+      var shifted = quietEnd;
       if (shifted.isBefore(now)) {
         shifted = shifted.add(const Duration(days: 1));
       }

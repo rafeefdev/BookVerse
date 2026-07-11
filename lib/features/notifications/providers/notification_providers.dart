@@ -139,13 +139,18 @@ Future<void> scheduleDailyReminderWithServices({
     lastNotificationDate: lastNotificationDate,
     adaptiveHour: adaptiveHour,
     preferredHour: settings.hour,
+    preferredMinute: settings.minute,
     quietStartHour: settings.quietStartHour,
+    quietStartMinute: settings.quietStartMinute,
     quietEndHour: settings.quietEndHour,
+    quietEndMinute: settings.quietEndMinute,
   );
 
   await notificationService.cancelAll();
-  await notificationService.schedule(decision, at);
-  await prefs.setString(_lastNotificationDateKey, at.toIso8601String());
+  final scheduled = await notificationService.schedule(decision, at);
+  if (scheduled) {
+    await prefs.setString(_lastNotificationDateKey, at.toIso8601String());
+  }
 }
 
 /// Hybrid score for multi-book priority ordering.
